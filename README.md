@@ -1,53 +1,58 @@
-# FOCUS
-Editeur de texte pour la prise de notes
+React-TypeScript-Electron sample with Create React App and Electron Builder
+===========================================================================
 
-# Description du projet
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app) with `--template typescript`option.
 
-## Contexte
-En tant qu’étudiants, nous avons besoin de pouvoir prendre des notes rapidement. Des solutions existent déjà pour cela, cependant les logiciels de traitement de texte comme Microsoft Word sont assez lourds pour cette utilisation, et les éditeurs de texte markdown ne possèdent en général pas certaines fonctionnalités comme la coloration du texte.
+On the top of it, the following features have been added with relatively small changes:
 
-De plus, nous aimerions avoir la possibilité de pouvoir organiser nos notes, ou encore faire des fiches de révisions aisément.
+* TypeScript supports for Electron main process source code
+* Hot-reload support for Electron app
+* Electron Builder support
 
-# Notre projet
-Notre projet est donc de concevoir un éditeur de texte et de prises de notes s’articulant autour de 4 points clefs:
-    - La prise de notes de manière simple et rapide, par exemple lors d’un cours magistral ou d’une conférence.
+## Available Scripts in addition to the existing ones
 
-    - La transformation des notes en un cours plus structuré, avec par exemple la possibilité de faire ressortir les définitions ou encore de séparer le cours en différentes parties et faire un sommaire. De plus, une intégration avec la syntaxe mermaid nous permettrait de réaliser toutes sortes de diagrammes.
+### `npm run electron:dev`
 
+Runs the Electron app in the development mode.
 
-    - Des aides à l’apprentissage. L’idée serait de pouvoir par exemple créer des textes à trous, masquer les définitions en un clic.
+The Electron app will reload if you make edits in the `electron` directory.<br>
+You will also see any lint errors in the console.
 
+### `npm run electron:build`
 
-    - La création de fiches de révision.
+Builds the Electron app package for production to the `dist` folder.
 
+Your Electron app is ready to be distributed!
 
-# Caractéristiques générales
-    - Possibilité d’utiliser des raccourcis clavier.
-    - Personnalisable: on peut changer le thème, les raccourcis clavier, les boutons affichés dans le logiciel.
-    - Utilisation d’une police monospace pour l’interface de prise de note
-    - Interface responsive:  si l’écran est grand, on affiche plus de fonctionnalités, sinon on affiche l’essentiel uniquement.
+## Project directory structure
 
-
-
-# Travail demandé
-## Prise de notes 
-    - Utilisation du markdown
-    - Quill (gras, souligné, italique, …)
-    - Coloration du texte
-    - Système de TODO
-    - Pouvoir créer des tableaux rapidement
-    - Système d'autocomplétion 
-
-## Formatage de cours
-    - Utilisation de schémas: intégration de Mermaid
-    - Pouvoir créer des définitions de manière structurée 
-    - Pouvoir créer des sections, un sommaire
-    - Barre de vue verticale de l’ensemble du document (type VSCode)
-
-## Apprentissage
-    - Algorithme de création de textes à trous (masquer les définitions)
-    - Système de surlignage (type PandaNote)
-
-## Création de fiches de révision
-    - Essentiel des cours
-    - Export en PDF
+```bash
+my-app/
+├── package.json
+│
+## render process
+├── tsconfig.json
+├── public/
+├── src/
+│
+## main process
+├── electron/
+│   ├── main.ts
+│   └── tsconfig.json
+│
+## build output
+├── build/
+│   ├── index.html
+│   ├── static/
+│   │   ├── css/
+│   │   └── js/
+│   │
+│   └── electron/
+│      └── main.js
+│
+## distribution packages
+└── dist/
+    ├── mac/
+    │   └── my-app.app
+    └── my-app-0.1.0.dmg
+```
