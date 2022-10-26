@@ -1,14 +1,5 @@
-React-TypeScript-Electron sample with Create React App and Electron Builder
-===========================================================================
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app) with `--template typescript`option.
-
-On the top of it, the following features have been added with relatively small changes:
-
-* TypeScript supports for Electron main process source code
-* Hot-reload support for Electron app
-* Electron Builder support
-
+# FOCUS
+Editeur de texte pour la prise de notes
 ## Available Scripts in addition to the existing ones
 
 ### `npm run electron:dev`
@@ -56,3 +47,37 @@ my-app/
     │   └── my-app.app
     └── my-app-0.1.0.dmg
 ```
+
+
+
+# Applicaction de review de cours en 4 parties
+    - Review de diapo prise de note
+    - Formatage des notes transformation en cours
+    - Apprentisage
+    - Fiche de révision
+
+## caractéristique
+    tout raccourci clavier et boutton
+    personnalisable
+    monospace
+    responsive 
+
+## Prise de note et 
+    utilisation du markdown
+    Quill
+    Couleur
+    systeme de //TODO
+    tableau rapide
+
+## formatage de cours
+    Utilisation de shema : integration de mermaid
+    Definition 
+    Plan et sommaire 
+    bar de vue VSCode
+
+## apprentisage
+    algo de création de texte à trous
+    cacher les déffinition
+    Systeme de surlignage PandaNote
+
+## création de fiche de révision
