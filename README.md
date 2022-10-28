@@ -2,52 +2,29 @@
 Editeur de texte pour la prise de notes
 ## Available Scripts in addition to the existing ones
 
-### `npm run electron:dev`
-
-Runs the Electron app in the development mode.
-
-The Electron app will reload if you make edits in the `electron` directory.<br>
-You will also see any lint errors in the console.
-
-### `npm run electron:build`
-
-Builds the Electron app package for production to the `dist` folder.
-
-Your Electron app is ready to be distributed!
 
 ## Project directory structure
 
 ```bash
-my-app/
-├── package.json
+├── electron                  Electron-related code
+│   ├── main                  Main-process source code
+│   ├── preload               Preload-scripts source code
+│   └── resources             Resources for the production build
+│       ├── icon.icns             Icon for the application on macOS
+│       ├── icon.ico              Icon for the application
+│       ├── installerIcon.ico     Icon for the application installer
+│       ├── uninstallerIcon.ico   Icon for the application uninstaller
+|       └── iconset               
+|           └── 256x256.png       Icon for the application on Linux
 │
-## render process
-├── tsconfig.json
-├── public/
-├── src/
+├── release                   Generated after production build, contains executables
+│   └── {version}
+│       ├── {os}-unpacked     Contains unpacked application executable
+│       └── Setup.{ext}       Installer for the application
 │
-## main process
-├── electron/
-│   ├── main.ts
-│   └── tsconfig.json
-│
-## build output
-├── build/
-│   ├── index.html
-│   ├── static/
-│   │   ├── css/
-│   │   └── js/
-│   │
-│   └── electron/
-│      └── main.js
-│
-## distribution packages
-└── dist/
-    ├── mac/
-    │   └── my-app.app
-    └── my-app-0.1.0.dmg
+├── public                    Static assets
+└── src                       Renderer source code, your React application
 ```
-
 
 
 # Applicaction de review de cours en 4 parties

@@ -8,6 +8,9 @@
 // ├─┬ dist
 // │ └── index.html    > Electron-Renderer
 //
+
+
+
 process.env.DIST_ELECTRON = join(__dirname, '../..')
 process.env.DIST = join(process.env.DIST_ELECTRON, '../dist')
 process.env.PUBLIC = app.isPackaged ? process.env.DIST : join(process.env.DIST_ELECTRON, '../public')
@@ -104,3 +107,15 @@ ipcMain.handle('open-win', (event, arg) => {
     // childWindow.webContents.openDevTools({ mode: "undocked", activate: true })
   }
 })
+
+
+
+const { Menu } = require('electron')
+const template: Electron.MenuItemConstructorOptions[] = [{
+  label: 'File',
+  submenu: [
+    { label: 'New', click: () => { console.log("New") } },
+  ]
+}]
+const menu = Menu.buildFromTemplate(template)
+Menu.setApplicationMenu(menu)
