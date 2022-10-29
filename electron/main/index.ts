@@ -47,6 +47,9 @@ async function createWindow() {
     },
   })
 
+  win.webContents.openDevTools();
+
+
   if (app.isPackaged) {
     win.loadFile(indexHtml)
   } else {
@@ -109,7 +112,7 @@ ipcMain.handle('open-win', (event, arg) => {
 })
 
 
-
+/*
 const { Menu } = require('electron')
 const template: Electron.MenuItemConstructorOptions[] = [{
   label: 'File',
@@ -119,3 +122,4 @@ const template: Electron.MenuItemConstructorOptions[] = [{
 }]
 const menu = Menu.buildFromTemplate(template)
 Menu.setApplicationMenu(menu)
+*/
