@@ -46,26 +46,14 @@ function getCaretIndex(element: React.ChangeEvent<HTMLDivElement>) {
 
 function setToBold(element: React.MouseEvent<HTMLInputElement>) {
     element.preventDefault()
-    console.log("Bold");
 
     const selection = window.getSelection();
     const range = selection!.getRangeAt(0);
     const newNode = document.createElement("b");
     newNode.appendChild(range.extractContents());
+    newNode.innerHTML='\&#8203';
     range.insertNode(newNode);
-   
+
 }
 
-function Components(item: any) {
-    switch (item.type) {
-        case "h1":
-            return <h1>{item.value}</h1>
-        case "h2":
-            return <h2>{item.value}</h2>
-        case "text":
-            return <p>{item.value}</p>
-        default:
-            return <p>{item.value}</p>
-    }
-}
 
