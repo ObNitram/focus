@@ -11,8 +11,7 @@ const App: React.FC = () => {
 
   return (
     <div className={styles.app}>
-      <h1>Editeur</h1>
-      <Editor />
+      
     </div>
   )
 }
