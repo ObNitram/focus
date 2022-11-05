@@ -1,20 +1,20 @@
-import { TextNode } from "lexical";
+import { EditorConfig, TextNode } from "lexical";
 
 export class EmojiNode extends TextNode {
   static getType() {
     return "emoji";
   }
 
-  static clone(node) {
+  static clone(node: EmojiNode) {
     return new EmojiNode(node.__className, node.__text, node.__key);
   }
 
-  constructor(className, text, key) {
+  constructor(className: string, text: string, key?: string) {
     super(text, key);
     this.__className = className;
   }
 
-  createDOM(config) {
+  createDOM(config: EditorConfig) {
     const dom = document.createElement("span");
     const inner = super.createDOM(config);
     dom.className = this.__className;
@@ -23,8 +23,8 @@ export class EmojiNode extends TextNode {
     return dom;
   }
 
-  updateDOM(prevNode, dom, config) {
-    const inner = dom.firstChild;
+  updateDOM(prevNode: EmojiNode, dom: HTMLElement, config: EditorConfig): boolean {
+    const inner: HTMLElement = dom.firstChild as HTMLElement;
     if (inner === null) {
       return true;
     }
@@ -33,10 +33,10 @@ export class EmojiNode extends TextNode {
   }
 }
 
-export function $isEmojiNode(node) {
+export function $isEmojiNode(node: any): node is EmojiNode {
   return node instanceof EmojiNode;
 }
 
-export function $createEmojiNode(className, emojiText) {
+export function $createEmojiNode(className: string, emojiText: string) {
   return new EmojiNode(className, emojiText).setMode("token");
 }

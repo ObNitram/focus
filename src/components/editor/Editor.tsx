@@ -1,4 +1,4 @@
-import {$getRoot, $getSelection, ParagraphNode} from 'lexical';
+import {$getRoot, $getSelection, ParagraphNode, EditorState} from 'lexical';
 import {useEffect} from 'react';
 
 import styles from "styles/editor.module.scss";
@@ -9,6 +9,7 @@ import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import {HistoryPlugin} from '@lexical/react/LexicalHistoryPlugin';
 import {OnChangePlugin} from '@lexical/react/LexicalOnChangePlugin';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
+import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
 
 import EmojisPlugin from "./plugins/EmojisPlugin";
 
@@ -16,7 +17,7 @@ import editorConfig from "../..//config/editor/editorConfig";
 
 import Toolbar from './Toolbar';
 
-function onChange(editorState) {
+function onChange(editorState: EditorState) {
     editorState.read(() => {
       // Read the contents of the EditorState here.
       const root = $getRoot();
@@ -49,12 +50,9 @@ export default function Editor() {
 
                 <div className={styles.editorInner}>
                     <RichTextPlugin
-                        contentEditable={
-                            <ContentEditable className={styles.editorInput}>
-                                <ParagraphNode className={styles.editorParagraph} />
-                            </ContentEditable>
-                        }
+                        contentEditable={<ContentEditable className={styles.editorInput} />}
                         placeholder={<Placeholder />}
+                        ErrorBoundary={LexicalErrorBoundary}
                     />
                     <OnChangePlugin onChange={onChange} />
                     <HistoryPlugin />

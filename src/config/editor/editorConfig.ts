@@ -3,7 +3,6 @@ import { EmojiNode } from "../../components/editor/nodes/EmojiNode";
 import styles from "../../assets/styles/editor.module.scss";
 
 const theme = {
-  namespace: "my-editor",
   ltr: "ltr",
   rtl: "rtl",
   placeholder: styles.editorPlaceholder,
@@ -16,9 +15,10 @@ const theme = {
 }
 
 const editorConfig = {
-    onError(error) {
+    onError(error: any) {
       throw error;
     },
+    namespace: "my-editor",
     theme,
     nodes: [EmojiNode]
   };

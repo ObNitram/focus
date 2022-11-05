@@ -1,11 +1,9 @@
-import { $createEmojiNode } from "../nodes/EmojiNode";
+import { $createEmojiNode, EmojiNode } from "../nodes/EmojiNode";
 import { useEffect } from "react";
-import { TextNode } from "lexical";
+import { TextNode, LexicalEditor } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 
-import styles from "../../../assets/styles/editor.module.scss";
-
-const emojis = {
+const emojis: { [key: string]: string } = {
   ":grinning:": "😀",
     ":smiley:": "😃",
     ":smile:": "😄",
@@ -204,10 +202,10 @@ const emojis = {
     ":muscle:": "💪",
 };
 
-function emoticonTransform(node) {
+function emoticonTransform(node: EmojiNode) {
   const textContent = node.getTextContent();
 
-  textContent.replace(/:[a-z_]+:/g, (word) => {
+  textContent.replace(/:[a-z_]+:/g, (word: string): string => {
     if (word in emojis) {
 
       const offset = textContent.indexOf(word);
@@ -221,10 +219,11 @@ function emoticonTransform(node) {
         }
       });
     }
+    return word;
   });
 }
 
-function useEmojis(editor) {
+function useEmojis(editor: LexicalEditor) {
   useEffect(() => {
     const removeTransform = editor.registerNodeTransform(
       TextNode,

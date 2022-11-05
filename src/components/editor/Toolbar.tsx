@@ -1,7 +1,13 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useState, useEffect, useCallback } from "react";
 
-import { $getSelection, FORMAT_TEXT_COMMAND, SELECTION_CHANGE_COMMAND } from "lexical";
+import { 
+    $getSelection, 
+    NodeSelection,
+    RangeSelection,
+    GridSelection,
+    FORMAT_TEXT_COMMAND, 
+    SELECTION_CHANGE_COMMAND } from "lexical";
 import { mergeRegister } from "@lexical/utils";
 
 import styles from "styles/editor.toolbar.module.scss";
@@ -16,11 +22,15 @@ export default function Toolbar() {
     const [isUnderline, setIsUnderline] = useState(false);
 
     const updateToolbar = useCallback(() => {
-        const selection = $getSelection();
+        const selection : null | RangeSelection | NodeSelection | GridSelection = $getSelection();
 
-        setIsBold(selection.hasFormat("bold"));
-        setIsItalic(selection.hasFormat("italic"));
-        setIsUnderline(selection.hasFormat("underline"));
+        const temp: RangeSelection = selection as RangeSelection;
+
+        if (temp) {
+            setIsBold(temp.hasFormat("bold"));
+            setIsItalic(temp.hasFormat("italic"));
+            setIsUnderline(temp.hasFormat("underline"));
+        }
     }, [editor]);
 
     useEffect(() => {
