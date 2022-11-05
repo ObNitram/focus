@@ -1,99 +1,72 @@
-import React, { Component, ReactElement } from 'react';
-import { useState } from 'react'
+import {$getRoot, $getSelection, ParagraphNode} from 'lexical';
+import {useEffect} from 'react';
 
+import styles from "styles/editor.module.scss";
 
-//import styles from 'styles/app.module.scss'
-import styles from 'styles/app.module.scss'
+import { LexicalComposer } from "@lexical/react/LexicalComposer";
+import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
+import { ContentEditable } from "@lexical/react/LexicalContentEditable";
+import {HistoryPlugin} from '@lexical/react/LexicalHistoryPlugin';
+import {OnChangePlugin} from '@lexical/react/LexicalOnChangePlugin';
+import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 
-import ButtonEditor from './ButtonEditor';
-
-interface IProps { }
-
-interface IState {
-    boldButton: any
+const theme = {
+    ltr: "ltr",
+    rtl: "rtl",
+    placeholder: styles.editorPlaceholder,
+    paragraph: styles.editorParagraph,
 }
 
+function onChange(editorState) {
+    editorState.read(() => {
+      // Read the contents of the EditorState here.
+      const root = $getRoot();
+      const selection = $getSelection();
+  
+      console.log(root, selection);
+    });
+}
 
+function MyCustomAutoFocusPlugin() {
+    const [editor] = useLexicalComposerContext();
+  
+    useEffect(() => {
+      // Focus the editor when the effect fires!
+      editor.focus();
+    }, [editor]);
+  
+    return null;
+}
 
-export default class Editor extends React.Component<IProps, IState> {
+function onError(error) {
+    console.error(error);
+}
 
-    constructor(props: IProps) {
-        //console.log("constructor")
-        super(props);
-        this.state = { boldButton: false }
-    }
+function Placeholder() {
+    return <div className={styles.editorPlaceholder}>Enter some plain text...</div>;
+  }
 
-    render() {
-        //console.log("render : " + this.state.boldButton);
-        return <div>
-            <ButtonEditor func={this.setToBold.bind(this)} state={this.state.boldButton} />
-            <div className={styles.texteditor} contentEditable="true" onInput={this.getCaretIndex}></div>
-        </div>;
-    }
+export default function Editor() {
+    const initialConfig = {
+        theme,
+        onError,
+    };
 
-    getCaretIndex(element: React.ChangeEvent<HTMLDivElement>) {
-        console.log("Element :" + element.target.innerHTML);
-/*
-        let position = 0;
-        const isSupported = typeof window.getSelection !== "undefined";
-        if (isSupported) {
-            const selection = window.getSelection();
-            if (selection!.rangeCount !== 0) {
-                const range = window.getSelection()!.getRangeAt(0);
-                const preCaretRange = range.cloneRange();
-                preCaretRange.selectNodeContents(element.target);
-                preCaretRange.setEnd(range.endContainer, range.endOffset);
-                position = preCaretRange.toString().length;
-            }
-        }
-        console.log("Caret Index :" + position);
-        */
-    }
-
-    setToBold(element: React.MouseEvent<HTMLButtonElement>) {
-        //console.log("Funct = setToBold()");
-        element.preventDefault();
-        
-        const selection = window.getSelection();
-        if (selection!.rangeCount == 0) {//TODO verify if this is the right way to check if there is a selection
-            //console.log("No selection");
-            return;
-        }
-        
-        if (this.state.boldButton == false) {
-            //console.log("add bold")
-            this.setState({ boldButton: true });
-            const range = selection!.getRangeAt(0);//TODO add management of multiple ranges
-            const newNode = document.createElement("b");
-            newNode.appendChild(range.extractContents());
-            if (newNode.innerHTML == "") {
-                //console.log("node is empty");
-                newNode.innerHTML = '\&#8203';//TODO correct chrome bug
-            }
-
-            range.insertNode(document.createTextNode(' '));//TODO correct chrome bug
-            range.insertNode(newNode);
-
-        }
-        else {
-            //console.log("remove bold");
-            this.setState({ boldButton: false });
-            const range = selection!.getRangeAt(0);//TODO add management of multiple ranges
-            
-            let newRange = document.createRange();
-            console.log("range.startContainer" + range.startContainer);
-            console.log("range.startOffset : " + range.startOffset);
-            console.log(range.endContainer);
-            console.log("range.endOffset : " + range.endOffset);
-            //newRange.setStart(range.endContainer.parentNode!.parentNode!.childNodes[4],0);
-            newRange.collapse(true);
-
-            
-            selection?.removeAllRanges();
-            selection?.addRange(newRange);
-        }
-       
-    }
-
-
+    return (
+        <LexicalComposer initialConfig={initialConfig}>
+            <div className={styles.editorContainer}>
+                <PlainTextPlugin
+                    contentEditable={
+                        <ContentEditable className={styles.editorInput}>
+                            <ParagraphNode className={styles.editorParagraph} />
+                        </ContentEditable>
+                    }
+                    placeholder={<Placeholder />}
+                />
+                <OnChangePlugin onChange={onChange} />
+                <HistoryPlugin />
+                <MyCustomAutoFocusPlugin />
+            </div>
+        </LexicalComposer>
+    );
 }
