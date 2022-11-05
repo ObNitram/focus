@@ -10,20 +10,11 @@ import {HistoryPlugin} from '@lexical/react/LexicalHistoryPlugin';
 import {OnChangePlugin} from '@lexical/react/LexicalOnChangePlugin';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 
-import Toolbar from './Toolbar';
+import EmojisPlugin from "./plugins/EmojisPlugin";
 
-const theme = {
-    namespace: "my-editor",
-    ltr: "ltr",
-    rtl: "rtl",
-    placeholder: styles.editorPlaceholder,
-    paragraph: styles.editorParagraph,
-    text: {
-        bold: styles.editorTextBold,
-        italic: styles.editorTextItalic,
-        underline: styles.editorTextUnderline
-    }
-}
+import editorConfig from "../..//config/editor/editorConfig";
+
+import Toolbar from './Toolbar';
 
 function onChange(editorState) {
     editorState.read(() => {
@@ -45,22 +36,14 @@ function MyCustomAutoFocusPlugin() {
     return null;
 }
 
-function onError(error) {
-    console.error(error);
-}
-
 function Placeholder() {
     return <div className={styles.editorPlaceholder}>Enter some plain text...</div>;
   }
 
 export default function Editor() {
-    const initialConfig = {
-        theme,
-        onError,
-    };
 
     return (
-        <LexicalComposer initialConfig={initialConfig}>
+        <LexicalComposer initialConfig={editorConfig}>
             <div className={styles.editorContainer}>
                 <Toolbar />
 
@@ -76,6 +59,7 @@ export default function Editor() {
                     <OnChangePlugin onChange={onChange} />
                     <HistoryPlugin />
                     <MyCustomAutoFocusPlugin />
+                    <EmojisPlugin />
                 </div>
             </div>
         </LexicalComposer>

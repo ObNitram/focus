@@ -5,7 +5,6 @@ import { $getSelection, FORMAT_TEXT_COMMAND, SELECTION_CHANGE_COMMAND } from "le
 import { mergeRegister } from "@lexical/utils";
 
 import styles from "styles/editor.toolbar.module.scss";
-import { isItalic, isUnderline } from "lexical/LexicalUtils";
 
 const LowPriority = 1;
 
@@ -18,7 +17,6 @@ export default function Toolbar() {
 
     const updateToolbar = useCallback(() => {
         const selection = $getSelection();
-        console.log(selection);
 
         setIsBold(selection.hasFormat("bold"));
         setIsItalic(selection.hasFormat("italic"));
