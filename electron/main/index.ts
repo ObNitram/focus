@@ -47,7 +47,10 @@ async function createWindow() {
     },
   })
 
-  win.webContents.openDevTools();
+  // open devtools if in development
+  if (process.env.VITE_DEV_SERVER_URL) {
+    win.webContents.openDevTools();
+  }
 
 
   if (app.isPackaged) {
