@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 import styles from 'styles/app.module.scss'
 
-import Editor from './components/editor/Editor'
+import Editor from "./components/editor/Editor"
 
 const App: React.FC = () => {
   const [count, setCount] = useState(0)
@@ -11,7 +11,10 @@ const App: React.FC = () => {
 
   return (
     <div className={styles.app}>
+
+      <h1>Text editor</h1>
       
+
     </div>
   )
 }

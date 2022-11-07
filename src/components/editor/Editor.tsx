@@ -1,59 +1,65 @@
-import React, { Component } from 'react';
-import { useState } from 'react'
+import {$getRoot, $getSelection, ParagraphNode, EditorState} from 'lexical';
+import {useEffect} from 'react';
 
+import styles from "styles/editor.module.scss";
 
-//import styles from 'styles/app.module.scss'
-import styles from 'styles/app.module.scss'
+import { LexicalComposer } from "@lexical/react/LexicalComposer";
+import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import { ContentEditable } from "@lexical/react/LexicalContentEditable";
+import {HistoryPlugin} from '@lexical/react/LexicalHistoryPlugin';
+import {OnChangePlugin} from '@lexical/react/LexicalOnChangePlugin';
+import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
+import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
 
+import EmojisPlugin from "./plugins/EmojisPlugin";
 
+import editorConfig from "../..//config/editor/editorConfig";
 
+import Toolbar from './Toolbar';
 
-const doc = [{ "type": "h1", "value": "Hello world in h1" },
-{ "type": "h2", "value": "Hello world in h2" },
-{ "type": "text", "value": "Hello world" },];
+function onChange(editorState: EditorState) {
+    editorState.read(() => {
+      // Read the contents of the EditorState here.
+      const root = $getRoot();
+      const selection = $getSelection();
 
-
-const Editor: React.FC = () => {
-
-    return <div>
-        <input type="button" value="G" onMouseDown={setToBold}/>
-        <input type="button" value="I" />
-        <input type="button" value="S" />
-        <div className={styles.texteditor} contentEditable="true" onInput={getCaretIndex}></div>
-    </div>;
-
+    });
 }
 
-export default Editor
-
-function getCaretIndex(element: React.ChangeEvent<HTMLDivElement>) {
-    console.log("Element :" + element.target.innerHTML);
-
-    let position = 0;
-    const isSupported = typeof window.getSelection !== "undefined";
-    if (isSupported) {
-        const selection = window.getSelection();
-        if (selection!.rangeCount !== 0) {
-            const range = window.getSelection()!.getRangeAt(0);
-            const preCaretRange = range.cloneRange();
-            preCaretRange.selectNodeContents(element.target);
-            preCaretRange.setEnd(range.endContainer, range.endOffset);
-            position = preCaretRange.toString().length;
-        }
-    }
-    console.log("Caret Index :" + position);
+function MyCustomAutoFocusPlugin() {
+    const [editor] = useLexicalComposerContext();
+  
+    useEffect(() => {
+      // Focus the editor when the effect fires!
+      editor.focus();
+    }, [editor]);
+  
+    return null;
 }
 
-function setToBold(element: React.MouseEvent<HTMLInputElement>) {
-    element.preventDefault()
+function Placeholder() {
+    return <div className={styles.editorPlaceholder}>Enter some plain text...</div>;
+  }
 
-    const selection = window.getSelection();
-    const range = selection!.getRangeAt(0);
-    const newNode = document.createElement("b");
-    newNode.appendChild(range.extractContents());
-    newNode.innerHTML='\&#8203';
-    range.insertNode(newNode);
+export default function Editor() {
 
+    return (
+        <LexicalComposer initialConfig={editorConfig}>
+            <div className={styles.editorContainer}>
+                <Toolbar />
+
+                <div className={styles.editorInner}>
+                    <RichTextPlugin
+                        contentEditable={<ContentEditable className={styles.editorInput} />}
+                        placeholder={<Placeholder />}
+                        ErrorBoundary={LexicalErrorBoundary}
+                    />
+                    <OnChangePlugin onChange={onChange} />
+                    <HistoryPlugin />
+                    <MyCustomAutoFocusPlugin />
+                    <EmojisPlugin />
+                </div>
+            </div>
+        </LexicalComposer>
+    );
 }
-
-
