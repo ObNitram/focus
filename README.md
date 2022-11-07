@@ -19,11 +19,17 @@ Editeur de texte pour la prise de notes
 │
 ├── release                   Generated after production build, contains executables
 │   └── {version}
-│       ├── {os}-unpacked     Contains unpacked application executable
-│       └── Setup.{ext}       Installer for the application
+│       ├── {os}-unpacked         Contains unpacked application executable
+│       └── Setup.{ext}           Installer for the application
 │
 ├── public                    Static assets
+│
 └── src                       Renderer source code, your React application
+    ├── assets
+    │   ├── styles            Scss/css 
+    │   └── utils             Test script, tools, utils fonction for test and debug
+    │
+    └──components             React components
 ```
 
 
