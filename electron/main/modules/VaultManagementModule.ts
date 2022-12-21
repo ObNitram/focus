@@ -11,7 +11,7 @@ const urlProd = join('file://', process.env.DIST, 'index.html') + '#/vault-manag
 function setupWindow(win: BrowserWindow) {
 
   // resize window
-  win.setSize(1000, 300);
+  win.setSize(1000, 350);
   win.setResizable(false);
 
   if (process.env.VITE_DEV_SERVER_URL) { // electron-vite-vue#298

@@ -4,6 +4,7 @@ import { createHashRouter, RouterProvider } from 'react-router-dom'
 import App from './App'
 import './samples/node-api'
 import VaultManager from './VaultManager'
+import VaultManagerCreateVault from './VaultManagerCreateVault'
 
 const router = createHashRouter([
   {
@@ -13,6 +14,10 @@ const router = createHashRouter([
   {
     path: '/vault-manager',
     element: <VaultManager />,
+  },
+  {
+    path: '/vault-manager/create-vault',
+    element: <VaultManagerCreateVault />,
   }
 ])
 

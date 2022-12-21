@@ -1,6 +1,8 @@
 import './assets/styles/index.scss'
 import styles from 'styles/vaultManager.module.scss'
 
+import { Link } from 'react-router-dom'
+
 const { ipcRenderer } = window.require('electron')
 
 function chooseDirectory() {
@@ -19,7 +21,7 @@ const VaultManager: React.FC = () => {
             <h2>Create new vault</h2>
             <p>Create a new vault under the folder of your choice.</p>
           </div>
-          <button>Create</button>
+          <Link className={styles.button} to="/vault-manager/create-vault">Create</Link>
         </li>
         <li>
           <div>
