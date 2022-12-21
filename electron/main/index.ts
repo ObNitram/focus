@@ -16,6 +16,8 @@ import { app, BrowserWindow, shell, ipcMain } from 'electron'
 import { release } from 'os'
 import { join } from 'path'
 
+import * as VaultManagement from './modules/VaultManagementModule'
+
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration()
 
@@ -30,8 +32,8 @@ if (!app.requestSingleInstanceLock()) {
 let win: BrowserWindow | null = null
 // Here, you can also use other preload
 const preload = join(__dirname, '../preload/index.js')
-const url = process.env.VITE_DEV_SERVER_URL
-const indexHtml = join(process.env.DIST, 'index.html')
+const urlDev = process.env.VITE_DEV_SERVER_URL
+const urlProd = join('file://', process.env.DIST, 'index.html')
 
 async function createWindow() {
   win = new BrowserWindow({
@@ -40,16 +42,16 @@ async function createWindow() {
     webPreferences: {
       preload,
       nodeIntegration: true,
-      contextIsolation: false,
+      contextIsolation: false
     },
   })
 
   if (process.env.VITE_DEV_SERVER_URL) { // electron-vite-vue#298
-    win.loadURL(url)
+    win.loadURL(urlDev)
     // Open devTool if the app is not packaged
     win.webContents.openDevTools()
   } else {
-    win.loadFile(indexHtml)
+    win.loadURL(urlProd)
   }
 
   // Test actively push message to the Electron-Renderer
@@ -64,7 +66,10 @@ async function createWindow() {
   })
 }
 
-app.whenReady().then(createWindow)
+app.whenReady().then(() => {
+  createWindow();
+  VaultManagement.init(win, ipcMain);
+})
 
 app.on('window-all-closed', () => {
   win = null
@@ -99,8 +104,8 @@ ipcMain.handle('open-win', (event, arg) => {
   })
 
   if (process.env.VITE_DEV_SERVER_URL) {
-    childWindow.loadURL(`${url}#${arg}`)
+    childWindow.loadURL(`${urlDev}#${arg}`)
   } else {
-    childWindow.loadFile(indexHtml, { hash: arg })
+    childWindow.loadURL(`${urlProd}#${arg}`)
   }
 })

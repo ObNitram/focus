@@ -1,0 +1,41 @@
+@import'./variables.scss';
+
+.vaultManager {
+
+    h1 {
+        text-align: center;
+    }
+
+    ul {
+        list-style: none;
+
+        li {
+            display: flex;
+            flex-direction: row;
+            padding: 0.5rem;
+
+            h2 {
+                font-size: 1.2rem;
+                margin: 0;
+            }
+
+            p {
+                margin: 0;
+            }
+
+            button {
+                margin-left: auto;
+                border-radius: 0.6rem;
+                padding: 0.5rem 2rem;
+                background-color: $button_color;
+                color: $text_color;
+                border: none;
+
+                &:hover {
+                    background-color: darken($button_color, 10%);
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+}
