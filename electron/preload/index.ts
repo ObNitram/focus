@@ -25,9 +25,6 @@ const safeDOM = {
   },
 }
 
-
-
-
 /**
  * https://tobiasahlin.com/spinkit
  * https://connoratherton.com/loaders

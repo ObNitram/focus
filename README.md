@@ -14,7 +14,7 @@ Editeur de texte pour la prise de notes
 │       ├── icon.ico              Icon for the application
 │       ├── installerIcon.ico     Icon for the application installer
 │       ├── uninstallerIcon.ico   Icon for the application uninstaller
-|       └── iconset               
+|       └── iconset
 |           └── 256x256.png       Icon for the application on Linux
 │
 ├── release                   Generated after production build, contains executables
@@ -26,7 +26,7 @@ Editeur de texte pour la prise de notes
 │
 └── src                       Renderer source code, your React application
     ├── assets
-    │   ├── styles            Scss/css 
+    │   ├── styles            Scss/css
     │   └── utils             Test script, tools, utils fonction for test and debug
     │
     └──components             React components
@@ -43,9 +43,9 @@ Editeur de texte pour la prise de notes
     tout raccourci clavier et boutton
     personnalisable
     monospace
-    responsive 
+    responsive
 
-## Prise de note et 
+## Prise de note et
     utilisation du markdown
     Quill
     Couleur
@@ -54,8 +54,8 @@ Editeur de texte pour la prise de notes
 
 ## formatage de cours
     Utilisation de shema : integration de mermaid
-    Definition 
-    Plan et sommaire 
+    Definition
+    Plan et sommaire
     bar de vue VSCode
 
 ## apprentisage

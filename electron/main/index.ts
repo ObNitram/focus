@@ -8,9 +8,6 @@
 // ├─┬ dist
 // │ └── index.html    > Electron-Renderer
 //
-
-
-
 process.env.DIST_ELECTRON = join(__dirname, '../..')
 process.env.DIST = join(process.env.DIST_ELECTRON, '../dist')
 process.env.PUBLIC = app.isPackaged ? process.env.DIST : join(process.env.DIST_ELECTRON, '../public')
@@ -47,17 +44,12 @@ async function createWindow() {
     },
   })
 
-  // open devtools if in development
-  if (process.env.VITE_DEV_SERVER_URL) {
-    win.webContents.openDevTools();
-  }
-
-
-  if (app.isPackaged) {
-    win.loadFile(indexHtml)
-  } else {
+  if (process.env.VITE_DEV_SERVER_URL) { // electron-vite-vue#298
     win.loadURL(url)
-    // win.webContents.openDevTools()
+    // Open devTool if the app is not packaged
+    win.webContents.openDevTools()
+  } else {
+    win.loadFile(indexHtml)
   }
 
   // Test actively push message to the Electron-Renderer
@@ -112,16 +104,3 @@ ipcMain.handle('open-win', (event, arg) => {
     childWindow.loadFile(indexHtml, { hash: arg })
   }
 })
-
-
-/*
-const { Menu } = require('electron')
-const template: Electron.MenuItemConstructorOptions[] = [{
-  label: 'File',
-  submenu: [
-    { label: 'New', click: () => { console.log("New") } },
-  ]
-}]
-const menu = Menu.buildFromTemplate(template)
-Menu.setApplicationMenu(menu)
-*/
