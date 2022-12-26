@@ -6,20 +6,27 @@ import React, { useState } from 'react'
 
 const { ipcRenderer } = window.require('electron')
 
+let theLocation: Function | null = null
+
+ipcRenderer.on('directory-chosen', (event, path) => {
+  if (path !== undefined) {
+    if (path.length > 100) {
+      path = path.substring(0, 100) + '...'
+    }
+
+    if (theLocation != null) {
+      theLocation(path)
+    }
+  }
+})
+
 const VaultManagerCreateVault: React.FC = () => {
 
-  ipcRenderer.on('directory-chosen', (event, path) => {
-    if (path !== undefined) {
-      if (path.length > 100) {
-        path = path.substring(0, 100) + '...'
-      }
-      setLocation(path)
-    }
-  })
-
-  const [location, setLocation] = useState('No location chosen, default to your Documents folder')
+  const [location, setLocation] = useState(null)
   const [cannotCreateVault, setCannotCreateVault] = useState(true)
   const [vaultName, setVaultName] = useState('')
+
+  theLocation = setLocation
 
   function setTextInputValue(value: string) {
     setVaultName(value)
@@ -32,6 +39,10 @@ const VaultManagerCreateVault: React.FC = () => {
 
   function chooseDirectory() {
     ipcRenderer.send('choose-directory')
+  }
+
+  function createVault() {
+    ipcRenderer.send('create-vault', vaultName, location)
   }
 
   return (
@@ -55,12 +66,12 @@ const VaultManagerCreateVault: React.FC = () => {
           <div>
             <h2>Location</h2>
             <p>Choose where you want to store your vault.</p>
-            <p id={styles.location}>{location}</p>
+            <p id={styles.location}>{location != null ? location : 'No location chosen, default to your Documents folder'}</p>
           </div>
           <button onClick={chooseDirectory}>Browse</button>
         </li>
       </ul>
-      <button disabled={cannotCreateVault}>Create vault</button>
+      <button disabled={cannotCreateVault} onClick={createVault}>Create vault</button>
     </div>
   )
 }
