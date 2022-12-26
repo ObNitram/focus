@@ -1,5 +1,6 @@
 import { join } from 'path'
 import { mkdirSync } from 'fs'
+import { Dirent, readdirSync } from 'original-fs'
 
 /**
  * Creates a folder in the given path
@@ -18,4 +19,31 @@ export function createFolder(folderName: string, folderPath: string): string | n
         return null
     }
     return folder
+}
+
+export function getFolderContent(folderPath: string, recursive: boolean = false) {
+    let content = []
+    let files: any[]
+
+    try {
+        files = readdirSync(folderPath)
+    }
+    catch (e) {
+        console.log("Error while reading folder: ", e)
+        return content
+    }
+    for (const file of files) {
+        let currIsDirectory = file.isDirectory()
+
+        if (!currIsDirectory && !file.name.endsWith('.md')) {
+            continue
+        }
+
+        content.push({
+            name: file.name,
+            isDirectory: currIsDirectory,
+            children: currIsDirectory && recursive ? getFolderContent(join(folderPath, file.name), recursive) : []
+        })
+    }
+    return content
 }

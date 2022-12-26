@@ -1,0 +1,79 @@
+@import'./variables.scss';
+
+.sidebar {
+    background-color: $main-color;
+    width: 30%;
+    height: 100%;
+    position: fixed;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    h2 {
+        color: $text-color;
+        font-size: 1.5rem;
+        font-weight: normal;
+        margin: 0;
+        padding: 0;
+        padding-top: 1rem;
+        padding-left: 1rem;
+        text-align: left;
+    }
+
+    .sidebar_list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        margin-top: 1rem;
+        padding-left: 1rem;
+
+        li {
+            margin: 0;
+            padding: 0;
+            font-size: 1rem;
+            color: $text-color;
+            font-weight: normal;
+            text-align: left;
+            cursor: pointer;
+
+            display: flex;
+            flex-direction: column;
+
+            &.sidebar_list_folder {
+
+                margin-bottom: 1rem;
+                font-size: 1rem;
+                font-weight: bold;
+
+                ul {
+                    flex: none;
+                    border-left: 1px solid $text-color;
+                    margin-left: 10px;
+                }
+
+                &.sidebar_list_folder_expanded {
+
+                    ul {
+                        display: block;
+                    }
+
+                    .sidebar_list_folder_name::before {
+                        content: '-';
+                        margin: 0 0.5rem;
+                    }
+                }
+
+                &.sidebar_list_folder_collapsed {
+
+                    ul {
+                        display: none;
+                    }
+
+                    .sidebar_list_folder_name::before {
+                        content: '+';
+                        margin-right: 0 0.5rem;
+                    }
+                }
+            }
+        }
+    }
+}

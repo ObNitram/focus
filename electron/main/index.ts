@@ -17,6 +17,7 @@ import { release } from 'os'
 import { join } from 'path'
 
 import * as VaultManagement from './modules/VaultManagementModule'
+import * as FileSystemModule from './modules/FileSystemModule'
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration()
@@ -39,12 +40,14 @@ async function createWindow() {
   win = new BrowserWindow({
     title: 'Main window',
     icon: join(process.env.PUBLIC, 'favicon.svg'),
+    fullscreenable: true,
     webPreferences: {
       preload,
       nodeIntegration: true,
       contextIsolation: false
     },
   })
+  win.maximize()
 
   if (process.env.VITE_DEV_SERVER_URL) { // electron-vite-vue#298
     win.loadURL(urlDev)
@@ -66,9 +69,17 @@ async function createWindow() {
   })
 }
 
+function setupEvents() {
+  ipcMain.on('get-folder-content', (event, arg) => {
+    const content = FileSystemModule.getFolderContent(arg, true)
+    event.reply('folder-content', content)
+  })
+}
+
 app.whenReady().then(() => {
+  setupEvents();
   createWindow();
-  VaultManagement.init(win, ipcMain);
+  //VaultManagement.init(win, ipcMain);
 })
 
 app.on('window-all-closed', () => {
