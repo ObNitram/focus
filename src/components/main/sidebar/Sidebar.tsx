@@ -7,14 +7,6 @@ const { ipcRenderer } = window.require('electron')
 
 let theFiles: Function | null = null
 
-function setupEvents() {
-  ipcRenderer.on('folder-content', (event, files) => {
-    if (theFiles) {
-      theFiles(files)
-    }
-  })
-}
-
 function getFiles(dir: string) {
   if (dir) ipcRenderer.send('get-folder-content', dir)
 }
@@ -23,17 +15,25 @@ export default function Sidebar(props: any) {
   const [files, setFiles] = React.useState(null)
   const [folderName, setFolderName] = React.useState('MyVault')
 
-  setupEvents()
-  theFiles = setFiles
+  function setupEvents() {
+    ipcRenderer.on('folder-content', (event, files) => {
+      setFiles(files)
+    })
+  }
+
+  function retrieveFolderName() {
+    if (props.dir) {
+      const path = props.dir.split('/')
+      const name = path[path.length - 1]
+      setFolderName(name)
+    }
+  }
 
   useEffect(() => {
+    retrieveFolderName()
     getFiles(props.dir)
     ipcRenderer.removeAllListeners('folder-content')
     setupEvents()
-
-    if (props.folderName) {
-      setFolderName(props.folderName)
-    }
   }, [props.folderName, props.dir])
 
   return (

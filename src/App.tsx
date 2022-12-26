@@ -11,7 +11,7 @@ const App: React.FC = () => {
 
   return (
     <div className={styles.app}>
-      <Sidebar folderName={null} dir={null} />
+      <Sidebar dir={null} />
 
       {/* <h1>Text editor</h1>
       <Editor/> */}

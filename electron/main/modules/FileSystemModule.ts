@@ -23,10 +23,10 @@ export function createFolder(folderName: string, folderPath: string): string | n
 
 export function getFolderContent(folderPath: string, recursive: boolean = false) {
     let content = []
-    let files: any[]
+    let files: Dirent[]
 
     try {
-        files = readdirSync(folderPath)
+        files = readdirSync(folderPath, { withFileTypes: true })
     }
     catch (e) {
         console.log("Error while reading folder: ", e)
