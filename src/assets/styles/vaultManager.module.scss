@@ -2,13 +2,32 @@
 
 .vaultManager {
 
-    h1 {
-        text-align: center;
+    text-align: center;
+
+    .button, button {
+        border-radius: 0.6rem;
+        padding: 0.5rem 2rem;
+        background-color: $button_color;
+        color: $text_color;
+        border: none;
+        text-decoration: none;
+        font-weight: bold;
+
+        &:hover {
+            background-color: darken($button_color, 10%);
+            cursor: pointer;
+        }
+
+        &:disabled {
+            background-color: $disabled_button_color;
+            cursor: not-allowed;
+        }
     }
 
     ul {
         list-style: none;
         padding: 10px;
+        text-align: left;
 
         li {
             display: flex;
@@ -45,20 +64,14 @@
                 }
             }
 
-            button, .button {
+            button,
+            .button {
                 margin-left: auto;
                 margin-top: auto;
-                border-radius: 0.6rem;
-                padding: 0.5rem 2rem;
-                background-color: $button_color;
-                color: $text_color;
-                border: none;
-                text-decoration: none;
+            }
 
-                &:hover {
-                    background-color: darken($button_color, 10%);
-                    cursor: pointer;
-                }
+            #location {
+                color: $secondary_text_color;
             }
         }
     }

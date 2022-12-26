@@ -11,7 +11,7 @@ const urlProd = join('file://', process.env.DIST, 'index.html') + '#/vault-manag
 function setupWindow(win: BrowserWindow) {
 
   // resize window
-  win.setSize(1000, 350);
+  win.setSize(1000, 420);
   win.setResizable(false);
 
   if (process.env.VITE_DEV_SERVER_URL) { // electron-vite-vue#298
@@ -31,7 +31,7 @@ function setupEvents(ipc: IpcMain, win: BrowserWindow) {
       buttonLabel: 'Use as vault',
       properties: ['openDirectory'],
     })
-    event.returnValue = filePaths[0]
+    event.reply('directory-chosen', filePaths[0])
   })
 }
 
