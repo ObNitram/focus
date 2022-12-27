@@ -18,15 +18,14 @@
         font-size: 0.8rem;
         padding: 0.5rem 0;
         display: flex;
-        justify-content: space-evenly;
-
-        svg {
-            margin-right: 0.5rem;
-        }
 
         &:hover {
             background-color: $main-color;
             cursor: pointer;
+        }
+
+        svg {
+            margin-left: 0.5rem;
         }
     }
 }

@@ -50,7 +50,7 @@ export default function Dropdown(props: DropdownProps) {
     return (
         <ul className={`${styles.dropdown} ${hidden ? styles.hidden : ''}`}>
             {items.map((item: DropdownItem) => (
-                <li key={item.key} onClick={handleDropdownItemClick(item)}>{item.selected ? <BsCheckLg/> : ''}{item.title}</li>
+                <li key={item.key} onClick={handleDropdownItemClick(item)}>{item.title}{item.selected ? <BsCheckLg/> : ''}</li>
             ))}
         </ul>
     )
