@@ -78,6 +78,8 @@
     }
 
     .sidebar_topbar {
+        display: relative;
+
         button {
             background-color: $main-color;
             border: none;
@@ -92,6 +94,10 @@
             text-align: center;
 
             &:hover {
+                background-color: $top_menu_bar;
+            }
+
+            &.selected {
                 background-color: $top_menu_bar;
             }
         }

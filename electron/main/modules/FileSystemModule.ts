@@ -1,6 +1,6 @@
 import { join } from 'path'
 import { mkdirSync } from 'fs'
-import { Dirent, readdirSync } from 'original-fs'
+import { Dirent, readdirSync, statSync } from 'original-fs'
 
 /**
  * Creates a folder in the given path
@@ -39,9 +39,13 @@ export function getFolderContent(folderPath: string, recursive: boolean = false)
             continue
         }
 
+        const fileStats = statSync(join(folderPath, file.name))
+
         content.push({
             name: file.name,
             isDirectory: currIsDirectory,
+            createdTime: fileStats.birthtimeMs,
+            modifiedTime: fileStats.mtimeMs,
             children: currIsDirectory && recursive ? getFolderContent(join(folderPath, file.name), recursive) : []
         })
     }
