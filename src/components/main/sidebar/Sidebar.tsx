@@ -2,10 +2,9 @@ import React, { useEffect } from 'react'
 import styles from 'styles/sidebar.module.scss'
 
 import FileList from "./FileList"
+import TopBar from "./TopBar"
 
 const { ipcRenderer } = window.require('electron')
-
-let theFiles: Function | null = null
 
 function getFiles(dir: string) {
   if (dir) ipcRenderer.send('get-folder-content', dir)
@@ -14,6 +13,7 @@ function getFiles(dir: string) {
 export default function Sidebar(props: any) {
   const [files, setFiles] = React.useState(null)
   const [folderName, setFolderName] = React.useState('MyVault')
+  const [collapsed, setCollapsed] = React.useState(true)
 
   function setupEvents() {
     ipcRenderer.on('folder-content', (event, files) => {
@@ -36,10 +36,15 @@ export default function Sidebar(props: any) {
     setupEvents()
   }, [props.folderName, props.dir])
 
+  function handleCollapseAll() {
+    setCollapsed(!collapsed)
+  }
+
   return (
     <div className={styles.sidebar}>
+        <TopBar onCollapseAll={handleCollapseAll}/>
         <h2>{folderName}</h2>
-        <FileList files={files}/>
+        <FileList collapsed={collapsed} files={files}/>
     </div>
   )
 }

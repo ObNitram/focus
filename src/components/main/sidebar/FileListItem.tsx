@@ -12,7 +12,8 @@ export default function FileListItem(this: any, props: any) {
 
     useEffect(() => {
         setItem(props.item);
-    }, [props.item]);
+        setIsDirCollapsed(props.collapsed)
+    }, [props.item, props.collapsed]);
 
     if (!item) return null;
 
