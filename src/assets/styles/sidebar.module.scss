@@ -28,12 +28,13 @@
 
         li {
             margin: 0;
-            padding: 0;
+            padding: 0.5rem;
             font-size: 1rem;
             color: $text-color;
             font-weight: normal;
             text-align: left;
             cursor: pointer;
+            border-radius: 0.5rem;
 
             display: flex;
             flex-direction: column;
@@ -71,6 +72,31 @@
                     .sidebar_list_folder_name::before {
                         content: '+';
                         margin-right: 0 0.5rem;
+                    }
+                }
+            }
+
+            &.sidebar_list_file {
+                // make the input text look like a normal text
+                input {
+                    background-color: transparent;
+                    border: none;
+                    border-radius: 0.5rem;
+                    color: $text-color;
+                    font-size: 1rem;
+                    font-weight: normal;
+                    margin: 0;
+                    padding: 0.5rem;
+                    text-align: left;
+                    width: 100%;
+
+                    &:focus {
+                        outline: none;
+                    }
+
+                    &:hover {
+                        background-color: $top_menu_bar;
+                        cursor: pointer;
                     }
                 }
             }

@@ -19,8 +19,8 @@ export default function FileListItem(this: any, props: any) {
 
     if (item.isDirectory) {
         return (
-            <li onClick={expendOrCollapseFolder} className={`${styles.sidebar_list_folder} ${isDirCollapsed ? styles.sidebar_list_folder_collapsed : styles.sidebar_list_folder_expanded}`}>
-                <p className={styles.sidebar_list_folder_name}>{item.name}</p>
+            <li className={`${styles.sidebar_list_folder} ${isDirCollapsed ? styles.sidebar_list_folder_collapsed : styles.sidebar_list_folder_expanded}`}>
+                <p onClick={expendOrCollapseFolder} className={styles.sidebar_list_folder_name}>{item.name}</p>
                 <ul>
                     {item.children.map((item: any) => (
                         <FileListItem key={item.name} item={item} />
@@ -33,7 +33,7 @@ export default function FileListItem(this: any, props: any) {
     else {
         return (
             <li className={styles.sidebar_list_file}>
-                <p>{item.name}</p>
+                <input type="text" value={item.name} unselectable="on" readOnly />
             </li>
         )
     }
