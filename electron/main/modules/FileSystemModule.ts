@@ -18,27 +18,33 @@ class File {
     }
 }
 
-function findAvailableName(name: string, dir: string) {
+function findAvailableName(dir: string, name: string) {
     // if the note already exists, we append a number to the name
     let i = 0
     let fullPath
+    let modifiedName = name
 
     try {
         while (true) {
             if (i > 0) {
-                name = `${name} (${i})`
+                if (name.endsWith('.md')) {
+                    modifiedName = `${name.slice(0, -3)} (${i}).md`
+                }
+                else {
+                    modifiedName = `${name} (${i})`
+                }
             }
-            fullPath = join(dir, name)
+            fullPath = join(dir, modifiedName)
             statSync(fullPath)
             i++
         }
     } catch (e) {
-        return name
+        return modifiedName
     }
 }
 
 export function createFolder(dir: string, folderName: string) {
-    folderName = findAvailableName(folderName, dir)
+    folderName = findAvailableName(dir, folderName)
     let folderFullPath = join(dir, folderName)
 
     try {
@@ -52,7 +58,7 @@ export function createFolder(dir: string, folderName: string) {
 }
 
 export function createNote(dir: string) {
-    let noteName = findAvailableName('Untitled', dir) + '.md'
+    let noteName = findAvailableName(dir, 'Untitled.md')
     let noteFullPath = join(dir, noteName)
 
     try {
