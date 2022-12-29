@@ -22,6 +22,10 @@ export default function Sidebar(props: any) {
       filesCopy = [...filesCopy, note]
       setFiles(filesCopy)
     })
+    ipcRenderer.on('folder-created', (event, folder) => {
+      filesCopy = [...filesCopy, folder]
+      setFiles(filesCopy)
+    })
   }
 
   function retrieveFolderName() {
@@ -41,6 +45,7 @@ export default function Sidebar(props: any) {
     getFiles(props.dir)
     ipcRenderer.removeAllListeners('folder-content')
     ipcRenderer.removeAllListeners('note-created')
+    ipcRenderer.removeAllListeners('folder-created')
     setupEvents()
   }, [props.folderName, props.dir])
 

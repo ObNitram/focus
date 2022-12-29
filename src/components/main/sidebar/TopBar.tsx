@@ -72,10 +72,15 @@ export default function TopBar(props: TopBarProps) {
         ipcRenderer.send('create-note')
     }
 
+    function handleCreateFolder() {
+        collapseOrExpandAll(true)
+        ipcRenderer.send('create-folder')
+    }
+
     return (
         <div className={styles.sidebar_topbar}>
             <button title='Create new note' onClick={handleCreateNote}><MdOutlineEditNote/></button>
-            <button title='Create new folder'><AiFillFolderAdd/></button>
+            <button title='Create new folder' onClick={handleCreateFolder}><AiFillFolderAdd/></button>
             <button title='Change sort order' onClick={handleChangeSortOrder} className={changeSortOrderHidden ? '' : styles.selected}><TbSortDescending/>
                 <Dropdown items={sortOrderItems} hidden={changeSortOrderHidden} onItemSelect={props.onSortOrderChange}/>
             </button>

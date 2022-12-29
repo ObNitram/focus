@@ -74,6 +74,7 @@ function setupEvents() {
     const content = FileSystemModule.getFolderContent(arg, true)
     event.reply('folder-content', content)
   })
+
   ipcMain.on('create-note', (event, arg) => {
     // TODO: Set vault path after getting saved value
 
@@ -81,6 +82,16 @@ function setupEvents() {
 
     if (note) {
       event.reply('note-created', note)
+    }
+  })
+
+  ipcMain.on('create-folder', (event, arg) => {
+    // TODO: Set vault path after getting saved value
+
+    const folder = FileSystemModule.createFolder('/home/logan/Downloads', 'Untitled')
+
+    if (folder) {
+      event.reply('folder-created', folder)
     }
   })
 }

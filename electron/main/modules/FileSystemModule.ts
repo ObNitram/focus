@@ -18,25 +18,45 @@ class File {
     }
 }
 
+function findAvailableName(name: string, dir: string) {
+    // if the note already exists, we append a number to the name
+    let i = 0
+    let fullPath
+
+    try {
+        while (true) {
+            if (i > 0) {
+                name = `${name} (${i})`
+            }
+            fullPath = join(dir, name)
+            statSync(fullPath)
+            i++
+        }
+    } catch (e) {
+        return name
+    }
+}
+
+export function createFolder(dir: string, folderName: string) {
+    folderName = findAvailableName(folderName, dir)
+    let folderFullPath = join(dir, folderName)
+
+    try {
+        mkdirSync(folderFullPath)
+    }
+    catch (e) {
+        console.log("Error while creating folder: ", e)
+    }
+    console.log("Folder created: ", folderFullPath)
+    return new File(folderName, true, Date.now(), Date.now(), [])
+}
+
 export function createNote(dir: string) {
-    let noteName = 'Untitled.md'
+    let noteName = findAvailableName('Untitled', dir) + '.md'
     let noteFullPath = join(dir, noteName)
 
     try {
-        // if the note already exists, we append a number to the name
-        let i = 0
-
-        try {
-            while (true) {
-                noteName = i === 0 ? 'Untitled.md' : `Untitled (${i}).md`
-                noteFullPath = join(dir, noteName)
-                statSync(noteFullPath)
-                i++
-            }
-        } catch (e) {
-            // if the file doesn't exist, we create it
-            writeFileSync(noteFullPath, '')
-        }
+        writeFileSync(noteFullPath, '')
     } catch (e) {
         console.log("Error while creating note: ", e)
     }
