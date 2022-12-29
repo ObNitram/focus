@@ -7,6 +7,7 @@ import TopBar from "./TopBar"
 const { ipcRenderer } = window.require('electron')
 
 let filesCopy: any = []
+let currSortOrder: any = 'name-asc'
 
 export default function Sidebar(props: any) {
   const [files, setFiles] = React.useState<any>([])
@@ -17,14 +18,17 @@ export default function Sidebar(props: any) {
     ipcRenderer.on('folder-content', (event, theFiles) => {
       setFiles(theFiles)
       filesCopy = [...theFiles]
+      changeSortOrderRecursive(filesCopy)
     })
     ipcRenderer.on('note-created', (event, note) => {
       filesCopy = [...filesCopy, note]
       setFiles(filesCopy)
+      changeSortOrderRecursive(filesCopy)
     })
     ipcRenderer.on('folder-created', (event, folder) => {
       filesCopy = [...filesCopy, folder]
       setFiles(filesCopy)
+      changeSortOrderRecursive(filesCopy)
     })
   }
 
@@ -51,10 +55,11 @@ export default function Sidebar(props: any) {
 
   function handleCollapseAll(collapse: boolean) {
     setCollapsed(collapse)
+    filesCopy = [...files]
   }
 
-  function changeSortOrderRecursive(item: any, files: any) {
-    switch (item.key) {
+  function changeSortOrderRecursive(files: any) {
+    switch (currSortOrder) {
       case 'name-asc':
         files.sort((a: any, b: any) => a.name.localeCompare(b.name))
         break
@@ -76,14 +81,15 @@ export default function Sidebar(props: any) {
     }
     files.forEach((file: any) => {
       if (file.isDirectory) {
-        changeSortOrderRecursive(item, file.children)
+        changeSortOrderRecursive(file.children)
       }
     })
   }
 
   function handleSortOrderChange(item: any) {
     const filesCopy = [...files]
-    changeSortOrderRecursive(item, filesCopy)
+    currSortOrder = item.key
+    changeSortOrderRecursive(filesCopy)
     setFiles(filesCopy)
   }
 
