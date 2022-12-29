@@ -53,51 +53,38 @@ export default function Sidebar(props: any) {
     setCollapsed(collapse)
   }
 
-  function handleSortOrderChange(item: any) {
-
+  function changeSortOrderRecursive(item: any, files: any) {
     switch (item.key) {
       case 'name-asc':
-        setFiles([...files].sort((a: any, b: any) => {
-          a.children.sort((a: any, b: any) => a.name.localeCompare(b.name))
-          b.children.sort((a: any, b: any) => a.name.localeCompare(b.name))
-          return (a.name.localeCompare(b.name))
-        }))
+        files.sort((a: any, b: any) => a.name.localeCompare(b.name))
         break
       case 'name-desc':
-        setFiles([...files].sort((a: any, b: any) => {
-          a.children.sort((a: any, b: any) => b.name.localeCompare(a.name))
-          b.children.sort((a: any, b: any) => b.name.localeCompare(a.name))
-          return (b.name.localeCompare(a.name))
-        }))
+        files.sort((a: any, b: any) => b.name.localeCompare(a.name))
         break
       case 'modified-desc':
-        setFiles([...files].sort((a: any, b: any) => {
-          a.children.sort((a: any, b: any) => b.modifiedTime - a.modifiedTime)
-          b.children.sort((a: any, b: any) => b.modifiedTime - a.modifiedTime)
-          return (b.modifiedTime - a.modifiedTime)
-        }))
+        files.sort((a: any, b: any) => b.modified.localeCompare(a.modified))
         break
       case 'modified-asc':
-        setFiles([...files].sort((a: any, b: any) => {
-          a.children.sort((a: any, b: any) => a.modifiedTime - b.modifiedTime)
-          b.children.sort((a: any, b: any) => a.modifiedTime - b.modifiedTime)
-          return (a.modifiedTime - b.modifiedTime)
-        }))
+        files.sort((a: any, b: any) => a.modified.localeCompare(b.modified))
         break
       case 'created-desc':
-        setFiles([...files].sort((a: any, b: any) => {
-          a.children.sort((a: any, b: any) => b.createdTime - a.createdTime)
-          b.children.sort((a: any, b: any) => b.createdTime - a.createdTime)
-          return (b.createdTime - a.createdTime)
-        }))
+        files.sort((a: any, b: any) => b.created.localeCompare(a.created))
         break
       case 'created-asc':
-        setFiles([...files].sort((a: any, b: any) => {
-          a.children.sort((a: any, b: any) => a.createdTime - b.createdTime)
-          b.children.sort((a: any, b: any) => a.createdTime - b.createdTime)
-          return (a.createdTime - b.createdTime)
-        }))
+        files.sort((a: any, b: any) => a.created.localeCompare(b.created))
+        break
     }
+    files.forEach((file: any) => {
+      if (file.isDirectory) {
+        changeSortOrderRecursive(item, file.children)
+      }
+    })
+  }
+
+  function handleSortOrderChange(item: any) {
+    const filesCopy = [...files]
+    changeSortOrderRecursive(item, filesCopy)
+    setFiles(filesCopy)
   }
 
   return (
