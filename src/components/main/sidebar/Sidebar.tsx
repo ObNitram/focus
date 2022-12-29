@@ -6,9 +6,7 @@ import TopBar from "./TopBar"
 
 const { ipcRenderer } = window.require('electron')
 
-function getFiles(dir: string) {
-  if (dir) ipcRenderer.send('get-folder-content', dir)
-}
+let filesCopy: any = []
 
 export default function Sidebar(props: any) {
   const [files, setFiles] = React.useState<any>([])
@@ -16,8 +14,13 @@ export default function Sidebar(props: any) {
   const [collapsed, setCollapsed] = React.useState(true)
 
   function setupEvents() {
-    ipcRenderer.on('folder-content', (event, files) => {
-      setFiles(files)
+    ipcRenderer.on('folder-content', (event, theFiles) => {
+      setFiles(theFiles)
+      filesCopy = [...theFiles]
+    })
+    ipcRenderer.on('note-created', (event, note) => {
+      filesCopy = [...filesCopy, note]
+      setFiles(filesCopy)
     })
   }
 
@@ -29,15 +32,20 @@ export default function Sidebar(props: any) {
     }
   }
 
+  function getFiles(dir: string) {
+    if (dir) ipcRenderer.send('get-folder-content', dir)
+  }
+
   useEffect(() => {
     retrieveFolderName()
     getFiles(props.dir)
     ipcRenderer.removeAllListeners('folder-content')
+    ipcRenderer.removeAllListeners('note-created')
     setupEvents()
   }, [props.folderName, props.dir])
 
-  function handleCollapseAll() {
-    setCollapsed(!collapsed)
+  function handleCollapseAll(collapse: boolean) {
+    setCollapsed(collapse)
   }
 
   function handleSortOrderChange(item: any) {

@@ -45,7 +45,7 @@ const sortOrderItems = [
 ]
 
 export interface TopBarProps {
-    onCollapseAll: () => void
+    onCollapseAll: (collapse: boolean) => void
     onSortOrderChange: (item: DropdownItem) => void
 }
 
@@ -53,18 +53,28 @@ export default function TopBar(props: TopBarProps) {
     const [collapsed, setCollapsed] = useState(true)
     const [changeSortOrderHidden, setChangeSortOrderHidden] = useState(true)
 
+    function collapseOrExpandAll(collapse: boolean = !collapsed) {
+        setCollapsed(collapse)
+        props.onCollapseAll(collapse)
+    }
+
+
     function handleCollapseAll() {
-        props.onCollapseAll()
-        setCollapsed(!collapsed)
+        collapseOrExpandAll()
     }
 
     function handleChangeSortOrder() {
         setChangeSortOrderHidden(!changeSortOrderHidden)
     }
 
+    function handleCreateNote() {
+        collapseOrExpandAll(true)
+        ipcRenderer.send('create-note')
+    }
+
     return (
         <div className={styles.sidebar_topbar}>
-            <button title='Create new note'><MdOutlineEditNote/></button>
+            <button title='Create new note' onClick={handleCreateNote}><MdOutlineEditNote/></button>
             <button title='Create new folder'><AiFillFolderAdd/></button>
             <button title='Change sort order' onClick={handleChangeSortOrder} className={changeSortOrderHidden ? '' : styles.selected}><TbSortDescending/>
                 <Dropdown items={sortOrderItems} hidden={changeSortOrderHidden} onItemSelect={props.onSortOrderChange}/>

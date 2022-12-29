@@ -1,24 +1,47 @@
 import { join } from 'path'
 import { mkdirSync } from 'fs'
-import { Dirent, readdirSync, statSync } from 'original-fs'
+import { Dirent, readdirSync, statSync, writeFileSync } from 'original-fs'
 
-/**
- * Creates a folder in the given path
- * @param folderName The name of the folder to create
- * @param folderPath The path where the folder should be created
- * @returns The path of the created folder or null if an error occurred
- */
-export function createFolder(folderName: string, folderPath: string): string | null {
-    const folder = join(folderPath, folderName)
+class File {
+    name: string
+    isDirectory: boolean
+    createdTime: number
+    modifiedTime: number
+    children: File[]
+
+    constructor(name: string, isDirectory: boolean, createdTime: number, modifiedTime: number, children: File[]) {
+        this.name = name
+        this.isDirectory = isDirectory
+        this.createdTime = createdTime
+        this.modifiedTime = modifiedTime
+        this.children = children
+    }
+}
+
+export function createNote(dir: string) {
+    let noteName = 'Untitled.md'
+    let noteFullPath = join(dir, noteName)
 
     try {
-        mkdirSync(folder)
+        // if the note already exists, we append a number to the name
+        let i = 0
+
+        try {
+            while (true) {
+                noteName = i === 0 ? 'Untitled.md' : `Untitled (${i}).md`
+                noteFullPath = join(dir, noteName)
+                statSync(noteFullPath)
+                i++
+            }
+        } catch (e) {
+            // if the file doesn't exist, we create it
+            writeFileSync(noteFullPath, '')
+        }
+    } catch (e) {
+        console.log("Error while creating note: ", e)
     }
-    catch (e) {
-        console.log("Error while creating folder: ", e)
-        return null
-    }
-    return folder
+    console.log("Note created: ", noteFullPath)
+    return new File(noteName, false, Date.now(), Date.now(), [])
 }
 
 export function getFolderContent(folderPath: string, recursive: boolean = false) {
@@ -41,13 +64,13 @@ export function getFolderContent(folderPath: string, recursive: boolean = false)
 
         const fileStats = statSync(join(folderPath, file.name))
 
-        content.push({
-            name: file.name,
-            isDirectory: currIsDirectory,
-            createdTime: fileStats.birthtimeMs,
-            modifiedTime: fileStats.mtimeMs,
-            children: currIsDirectory && recursive ? getFolderContent(join(folderPath, file.name), recursive) : []
-        })
+        content.push(new File(
+            file.name,
+            currIsDirectory,
+            fileStats.birthtimeMs,
+            fileStats.mtimeMs,
+            currIsDirectory && recursive ? getFolderContent(join(folderPath, file.name), recursive) : []
+        ))
     }
     return content
 }
