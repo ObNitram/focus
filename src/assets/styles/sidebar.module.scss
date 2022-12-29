@@ -41,8 +41,6 @@
 
             &.sidebar_list_folder {
 
-                margin-bottom: 1rem;
-                font-size: 1rem;
                 font-weight: bold;
 
                 ul {
@@ -71,7 +69,7 @@
 
                     .sidebar_list_folder_name::before {
                         content: '+';
-                        margin-right: 0 0.5rem;
+                        margin: 0 0.5rem;
                     }
                 }
             }
