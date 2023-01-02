@@ -16,32 +16,27 @@ export default function Sidebar(props: any) {
 
   function setupEvents() {
     ipcRenderer.on('folder-content', (event, theFiles) => {
-      setFiles(theFiles[0].children)
-      filesCopy = [...theFiles]
-      changeSortOrderRecursive(filesCopy)
+      changeSortOrderRecursive(theFiles[0].children)
+      filesCopy = theFiles[0].children
+      setFiles(filesCopy)
 
       // Retrieve folder name
       setFolderName(theFiles[0].name)
     })
     ipcRenderer.on('note-created', (event, note) => {
-      filesCopy = [...filesCopy, note]
-      setFiles(filesCopy)
+      filesCopy.push(note)
       changeSortOrderRecursive(filesCopy)
+      setFiles(filesCopy)
     })
     ipcRenderer.on('folder-created', (event, folder) => {
-      filesCopy = [...filesCopy, folder]
-      setFiles(filesCopy)
+      filesCopy.push(folder)
       changeSortOrderRecursive(filesCopy)
+      setFiles(filesCopy)
     })
     ipcRenderer.on('note-or-folder-deleted', (event, path) => {
-      console.log('note-or-folder-deleted', path)
-      filesCopy = filesCopy.filter((file: any) => file.path !== path)
+      filesCopy = filterDeletedNoteOrFolderRecursive(filesCopy, path)
       setFiles(filesCopy)
     })
-  }
-
-  function getFiles() {
-    ipcRenderer.send('get-folder-content')
   }
 
   useEffect(() => {
@@ -49,12 +44,28 @@ export default function Sidebar(props: any) {
     ipcRenderer.removeAllListeners('folder-content')
     ipcRenderer.removeAllListeners('note-created')
     ipcRenderer.removeAllListeners('folder-created')
+    ipcRenderer.removeAllListeners('note-or-folder-deleted')
     setupEvents()
   }, [props.folderName])
 
+  function filterDeletedNoteOrFolderRecursive(theFiles: any, path: string) {
+    let filesCopy = [...theFiles]
+    filesCopy.forEach((file: any, index: number) => {
+      if (file.path === path) {
+        filesCopy.splice(index, 1)
+      } else if (file.isDirectory) {
+        file.children = filterDeletedNoteOrFolderRecursive(file.children, path)
+      }
+    })
+    return filesCopy
+  }
+
+  function getFiles() {
+    ipcRenderer.send('get-folder-content')
+  }
+
   function handleCollapseAll(collapse: boolean) {
     setCollapsed(collapse)
-    filesCopy = [...files]
   }
 
   function changeSortOrderRecursive(files: any) {
