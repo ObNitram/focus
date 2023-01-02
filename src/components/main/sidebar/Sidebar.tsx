@@ -77,16 +77,16 @@ export default function Sidebar(props: any) {
         files.sort((a: any, b: any) => b.name.localeCompare(a.name))
         break
       case 'modified-desc':
-        files.sort((a: any, b: any) => b.modified.localeCompare(a.modified))
+        files.sort((a: any, b: any) => b.modifiedTime - a.modifiedTime)
         break
       case 'modified-asc':
-        files.sort((a: any, b: any) => a.modified.localeCompare(b.modified))
+        files.sort((a: any, b: any) => a.modifiedTime - b.modifiedTime)
         break
       case 'created-desc':
-        files.sort((a: any, b: any) => b.created.localeCompare(a.created))
+        files.sort((a: any, b: any) => b.createdTime - a.createdTime)
         break
       case 'created-asc':
-        files.sort((a: any, b: any) => a.created.localeCompare(b.created))
+        files.sort((a: any, b: any) => a.createdTime - b.createdTime)
         break
     }
     files.forEach((file: any) => {
