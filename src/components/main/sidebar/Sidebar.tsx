@@ -24,12 +24,12 @@ export default function Sidebar(props: any) {
       setFolderName(theFiles[0].name)
     })
     ipcRenderer.on('note-created', (event, note) => {
-      filesCopy.push(note)
+      filesCopy = [...filesCopy, note]
       changeSortOrderRecursive(filesCopy)
       setFiles(filesCopy)
     })
     ipcRenderer.on('folder-created', (event, folder) => {
-      filesCopy.push(folder)
+      filesCopy = [...filesCopy, folder]
       changeSortOrderRecursive(filesCopy)
       setFiles(filesCopy)
     })
