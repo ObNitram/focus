@@ -18,6 +18,7 @@ import { join } from 'path'
 
 import * as VaultManagement from './modules/VaultManagementModule'
 import * as FileSystemModule from './modules/FileSystemModule'
+import { getPathVault, initConfig } from './modules/ManageConfig'
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration()
@@ -104,10 +105,17 @@ function setupEvents() {
   })
 }
 
+let pathVault:string|null = null
+initConfig();
+
 app.whenReady().then(() => {
   setupEvents();
-  createWindow();
-  //VaultManagement.init(win, ipcMain);
+  pathVault = getPathVault()
+  if(pathVault == null){
+    VaultManagement.init(ipcMain);
+  }else{
+    createWindow();
+  }
 })
 
 app.on('window-all-closed', () => {

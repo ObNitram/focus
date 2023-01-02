@@ -2,7 +2,7 @@ process.env.DIST_ELECTRON = join(__dirname, '../../..')
 process.env.DIST = join(process.env.DIST_ELECTRON, '../dist')
 process.env.PUBLIC = app.isPackaged ? process.env.DIST : join(process.env.DIST_ELECTRON, '../public')
 
-import { app, BrowserWindow, dialog, IpcMain } from 'electron'
+import { app, BrowserWindow, dialog, IpcMain, shell} from 'electron'
 import { join } from 'path'
 import * as fs from './FileSystemModule'
 
@@ -10,19 +10,35 @@ const urlDev = process.env.VITE_DEV_SERVER_URL + '#/vault-manager'
 const urlProd = join('file://', process.env.DIST, 'index.html') + '#/vault-manager'
 const defaultPath = app.getPath('home') + '/Documents'
 
-function setupWindow(win: BrowserWindow) {
+let winVault: BrowserWindow | null = null
 
-  // resize window
-  win.setSize(1000, 420);
-  win.setResizable(false);
+async function createWindow() {
+  winVault = new BrowserWindow({
+    title: 'Main window',
+    icon: join(process.env.PUBLIC, 'favicon.svg'),
+    width: 1000,
+    height:420,
+    fullscreenable: true,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false
+    },
+  })
+  winVault.setResizable(false)
 
   if (process.env.VITE_DEV_SERVER_URL) { // electron-vite-vue#298
-    win.loadURL(urlDev)
+    winVault.loadURL(urlDev)
     // Open devTool if the app is not packaged
-    win.webContents.openDevTools()
+    winVault.webContents.openDevTools()
   } else {
-    win.loadURL(urlProd)
+    winVault.loadURL(urlProd)
   }
+
+  // Make all links open with the browser, not with the application
+  winVault.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith('https:')) shell.openExternal(url)
+    return { action: 'deny' }
+  })
 }
 
 function setupEvents(ipc: IpcMain, win: BrowserWindow) {
@@ -46,7 +62,7 @@ function setupEvents(ipc: IpcMain, win: BrowserWindow) {
       vaultPath = defaultPath
     }
 
-    const vault = fs.createFolder(vaultName, vaultPath)
+    const vault = fs.createFolder(vaultPath,vaultName)
     if (!vault) {
       return
     }
@@ -54,8 +70,8 @@ function setupEvents(ipc: IpcMain, win: BrowserWindow) {
   })
 }
 
-export function init(win: BrowserWindow, ipc: IpcMain) {
+export function init(ipc: IpcMain) {
 
-  setupWindow(win)
-  setupEvents(ipc, win)
+  createWindow()
+  setupEvents(ipc, winVault)
 }
