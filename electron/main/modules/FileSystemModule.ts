@@ -101,6 +101,8 @@ export function getFolderContent(folderPath: string, recursive: boolean = false)
         console.log("Error while reading folder: ", e)
         return content
     }
+    let mainFolderChildren = []
+
     for (const file of files) {
         let currIsDirectory = file.isDirectory()
 
@@ -110,7 +112,7 @@ export function getFolderContent(folderPath: string, recursive: boolean = false)
 
         const fileStats = statSync(join(folderPath, file.name))
 
-        content.push(new File(
+        mainFolderChildren.push(new File(
             file.name,
             currIsDirectory,
             fileStats.birthtimeMs,
@@ -119,5 +121,10 @@ export function getFolderContent(folderPath: string, recursive: boolean = false)
             join(folderPath, file.name)
         ))
     }
+
+    const fileStats = statSync(folderPath)
+    const folderName = folderPath.split('/').pop()
+
+    content.push(new File(folderName, true, fileStats.birthtimeMs, fileStats.mtimeMs, mainFolderChildren, folderPath))
     return content
 }

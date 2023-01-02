@@ -11,14 +11,17 @@ let currSortOrder: any = 'name-asc'
 
 export default function Sidebar(props: any) {
   const [files, setFiles] = React.useState<any>([])
-  const [folderName, setFolderName] = React.useState('MyVault')
+  const [folderName, setFolderName] = React.useState('HEY')
   const [collapsed, setCollapsed] = React.useState(true)
 
   function setupEvents() {
     ipcRenderer.on('folder-content', (event, theFiles) => {
-      setFiles(theFiles)
+      setFiles(theFiles[0].children)
       filesCopy = [...theFiles]
       changeSortOrderRecursive(filesCopy)
+
+      // Retrieve folder name
+      setFolderName(theFiles[0].name)
     })
     ipcRenderer.on('note-created', (event, note) => {
       filesCopy = [...filesCopy, note]
@@ -36,26 +39,17 @@ export default function Sidebar(props: any) {
     })
   }
 
-  function retrieveFolderName() {
-    if (props.dir) {
-      const path = props.dir.split('/')
-      const name = path[path.length - 1]
-      setFolderName(name)
-    }
-  }
-
-  function getFiles(dir: string) {
-    if (dir) ipcRenderer.send('get-folder-content', dir)
+  function getFiles() {
+    ipcRenderer.send('get-folder-content')
   }
 
   useEffect(() => {
-    retrieveFolderName()
-    getFiles(props.dir)
+    getFiles()
     ipcRenderer.removeAllListeners('folder-content')
     ipcRenderer.removeAllListeners('note-created')
     ipcRenderer.removeAllListeners('folder-created')
     setupEvents()
-  }, [props.folderName, props.dir])
+  }, [props.folderName])
 
   function handleCollapseAll(collapse: boolean) {
     setCollapsed(collapse)

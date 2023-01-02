@@ -71,25 +71,26 @@ async function createWindow() {
 }
 
 function setupEvents() {
-  ipcMain.on('get-folder-content', (event, arg) => {
-    const content = FileSystemModule.getFolderContent(arg, true)
+  ipcMain.on('get-folder-content', (event) => {
+    // TODO: Set vault path after getting saved value
+    const content = FileSystemModule.getFolderContent(app.getPath('documents')+'/myVault', true)
     event.reply('folder-content', content)
   })
 
-  ipcMain.on('create-note', (event, arg) => {
+  ipcMain.on('create-note', (event) => {
     // TODO: Set vault path after getting saved value
 
-    const note = FileSystemModule.createNote('/home/logan/Downloads')
+    const note = FileSystemModule.createNote(app.getPath('documents')+'/myVault')
 
     if (note) {
       event.reply('note-created', note)
     }
   })
 
-  ipcMain.on('create-folder', (event, arg) => {
+  ipcMain.on('create-folder', (event) => {
     // TODO: Set vault path after getting saved value
 
-    const folder = FileSystemModule.createFolder('/home/logan/Downloads', 'Untitled')
+    const folder = FileSystemModule.createFolder(app.getPath('documents')+'/myVault', 'Untitled')
 
     if (folder) {
       event.reply('folder-created', folder)
