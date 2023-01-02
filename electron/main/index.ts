@@ -94,6 +94,14 @@ function setupEvents() {
       event.reply('folder-created', folder)
     }
   })
+
+  ipcMain.on('delete-note-or-folder', (event, arg) => {
+    const deleted = FileSystemModule.deleteFileOrFolder(arg)
+
+    if (deleted) {
+      event.reply('note-or-folder-deleted', arg)
+    }
+  })
 }
 
 app.whenReady().then(() => {

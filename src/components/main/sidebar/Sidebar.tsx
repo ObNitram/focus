@@ -30,6 +30,10 @@ export default function Sidebar(props: any) {
       setFiles(filesCopy)
       changeSortOrderRecursive(filesCopy)
     })
+    ipcRenderer.on('note-or-folder-deleted', (event, path) => {
+      filesCopy = filesCopy.filter((file: any) => file.path !== path)
+      setFiles(filesCopy)
+    })
   }
 
   function retrieveFolderName() {

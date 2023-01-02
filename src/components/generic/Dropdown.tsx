@@ -6,12 +6,13 @@ import { BsCheckLg } from 'react-icons/bs'
 
 export interface DropdownItem {
     title: string,
-    selected: boolean,
+    selected?: boolean,
     key: string
 }
 
 export interface DropdownProps {
     items: DropdownItem[],
+    displaySelectionIndicator?: boolean,
     onItemSelect: (item: DropdownItem) => void,
     hidden: boolean
 }
@@ -28,6 +29,10 @@ export default function Dropdown(props: DropdownProps) {
         return () => {
             props.onItemSelect(item)
             setHidden(true)
+
+            if (!props.displaySelectionIndicator) {
+                return
+            }
 
             // Update the selected item
             const newItems = props.items.map((i: DropdownItem) => {

@@ -82,7 +82,7 @@ export default function TopBar(props: TopBarProps) {
             <button title='Create new note' onClick={handleCreateNote}><MdOutlineEditNote/></button>
             <button title='Create new folder' onClick={handleCreateFolder}><AiFillFolderAdd/></button>
             <button title='Change sort order' onClick={handleChangeSortOrder} className={changeSortOrderHidden ? '' : styles.selected}><TbSortDescending/>
-                <Dropdown items={sortOrderItems} hidden={changeSortOrderHidden} onItemSelect={props.onSortOrderChange}/>
+                <Dropdown items={sortOrderItems} hidden={changeSortOrderHidden} onItemSelect={props.onSortOrderChange} displaySelectionIndicator={true}/>
             </button>
             <button title={collapsed ? 'Expand all' : 'Collapse all'} onClick={handleCollapseAll}>{collapsed ? <VscExpandAll/> : <VscCollapseAll/>}</button>
         </div>

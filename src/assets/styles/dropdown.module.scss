@@ -2,8 +2,8 @@
 
 .dropdown {
     position: absolute;
-    top: 2rem;
-    right: 1rem;
+    top: 3rem;
+    z-index: 1;
 
     background-color: $top_menu_bar;
     border-radius: 0.5rem;

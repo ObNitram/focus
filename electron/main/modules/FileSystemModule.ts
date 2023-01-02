@@ -1,6 +1,6 @@
 import { join } from 'path'
 import { mkdirSync } from 'fs'
-import { Dirent, readdirSync, statSync, writeFileSync } from 'original-fs'
+import { Dirent, readdirSync, rmSync, statSync, unlinkSync, writeFileSync } from 'original-fs'
 
 class File {
     name: string
@@ -8,13 +8,15 @@ class File {
     createdTime: number
     modifiedTime: number
     children: File[]
+    path: string
 
-    constructor(name: string, isDirectory: boolean, createdTime: number, modifiedTime: number, children: File[]) {
+    constructor(name: string, isDirectory: boolean, createdTime: number, modifiedTime: number, children: File[], path: string) {
         this.name = name
         this.isDirectory = isDirectory
         this.createdTime = createdTime
         this.modifiedTime = modifiedTime
         this.children = children
+        this.path = path
     }
 }
 
@@ -54,7 +56,7 @@ export function createFolder(dir: string, folderName: string) {
         console.log("Error while creating folder: ", e)
     }
     console.log("Folder created: ", folderFullPath)
-    return new File(folderName, true, Date.now(), Date.now(), [])
+    return new File(folderName, true, Date.now(), Date.now(), [], folderFullPath)
 }
 
 export function createNote(dir: string) {
@@ -67,7 +69,25 @@ export function createNote(dir: string) {
         console.log("Error while creating note: ", e)
     }
     console.log("Note created: ", noteFullPath)
-    return new File(noteName, false, Date.now(), Date.now(), [])
+    return new File(noteName, false, Date.now(), Date.now(), [], noteFullPath)
+}
+
+export function deleteFileOrFolder(path: string): boolean {
+    try {
+        let stats = statSync(path)
+        if (stats.isDirectory()) {
+            rmSync(path, { recursive: true, force: true })
+        }
+        else {
+            unlinkSync(path)
+        }
+    }
+    catch (e) {
+        console.log("Error while deleting file or folder: ", e)
+        return false
+    }
+    console.log("File or folder deleted: ", path)
+    return true
 }
 
 export function getFolderContent(folderPath: string, recursive: boolean = false) {
@@ -95,7 +115,8 @@ export function getFolderContent(folderPath: string, recursive: boolean = false)
             currIsDirectory,
             fileStats.birthtimeMs,
             fileStats.mtimeMs,
-            currIsDirectory && recursive ? getFolderContent(join(folderPath, file.name), recursive) : []
+            currIsDirectory && recursive ? getFolderContent(join(folderPath, file.name), recursive) : [],
+            join(folderPath, file.name)
         ))
     }
     return content
