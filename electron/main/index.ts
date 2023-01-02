@@ -44,7 +44,7 @@ async function createWindow() {
     webPreferences: {
       preload,
       nodeIntegration: true,
-      contextIsolation: false
+      contextIsolation: false,
     },
   })
   win.maximize()

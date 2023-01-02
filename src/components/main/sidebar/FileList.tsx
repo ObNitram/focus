@@ -18,7 +18,7 @@ export default function FileList(props: any) {
     return (
         <ul className={styles.sidebar_list}>
             {files.map((item: any) => (
-                <FileListItem key={item.name} item={item} collapsed={collapsed} />
+                <FileListItem  key={item.path} item={item} collapsedAll={collapsed} renaming={false} />
             ))}
         </ul>
     )

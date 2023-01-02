@@ -44,7 +44,7 @@
 
                 font-weight: bold;
 
-                ul {
+                .sidebar_list_folder_children {
                     flex: none;
                     border-left: 1px solid $text-color;
                     margin-left: 10px;
@@ -52,7 +52,7 @@
 
                 &.sidebar_list_folder_expanded {
 
-                    ul {
+                    .children {
                         display: block;
                     }
 
@@ -64,7 +64,7 @@
 
                 &.sidebar_list_folder_collapsed {
 
-                    ul {
+                    .sidebar_list_folder_children {
                         display: none;
                     }
 

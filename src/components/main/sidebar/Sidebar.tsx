@@ -11,7 +11,7 @@ let currSortOrder: any = 'name-asc'
 
 export default function Sidebar(props: any) {
   const [files, setFiles] = React.useState<any>([])
-  const [folderName, setFolderName] = React.useState('HEY')
+  const [folderName, setFolderName] = React.useState('MyVault')
   const [collapsed, setCollapsed] = React.useState(true)
 
   function setupEvents() {
@@ -34,6 +34,7 @@ export default function Sidebar(props: any) {
       changeSortOrderRecursive(filesCopy)
     })
     ipcRenderer.on('note-or-folder-deleted', (event, path) => {
+      console.log('note-or-folder-deleted', path)
       filesCopy = filesCopy.filter((file: any) => file.path !== path)
       setFiles(filesCopy)
     })
