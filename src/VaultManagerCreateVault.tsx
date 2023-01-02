@@ -8,7 +8,9 @@ const { ipcRenderer } = window.require('electron')
 
 let theLocation: Function | null = null
 
-ipcRenderer.on('directory-chosen', (event, path) => {
+ipcRenderer.removeAllListeners('directory-chosen')
+
+ipcRenderer.on('directory-chosen', (event, path:string) => {
   if (path !== undefined) {
     if (path.length > 100) {
       path = path.substring(0, 100) + '...'
@@ -18,6 +20,10 @@ ipcRenderer.on('directory-chosen', (event, path) => {
       theLocation(path)
     }
   }
+})
+
+ipcRenderer.on('vault-created', (event, path:string) => {
+  ipcRenderer.send('open_main_window', path)
 })
 
 const VaultManagerCreateVault: React.FC = () => {

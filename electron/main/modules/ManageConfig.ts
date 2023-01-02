@@ -8,45 +8,43 @@ type vaultConfigFileNameType = {
     location:string;
 }
 
+let pathVault:string|null = null;
+
 export function initConfig(){
+    if(fs.existsSync(pathConfigFolder)) return true;
     try {
         fs.mkdirSync(pathConfigFolder)
-        return true
     } catch (error) {
         console.log(error)
         return false
     }
-}
-
-export function getPathVault(){
     console.log(pathConfigFolder+vaultConfigFileName)
     if(! fs.existsSync(pathConfigFolder+vaultConfigFileName)){
         fs.writeFileSync(pathConfigFolder+vaultConfigFileName, JSON.stringify({
             location: null
         }))
-        return null
+        return true
     }
     let data = fs.readFileSync(pathConfigFolder+vaultConfigFileName, 'utf8');
     if(data){
         try {
             let res:vaultConfigFileNameType = JSON.parse(data)
-            return res.location
+            pathVault = res.location
+            return true
         } catch (error) {
-            return null
+            return false
         }
     }else{
-        return null
+        return false
     }
-    // fs.readFile(pathConfigFolder+'/'+vaultConfigFileName, 'utf8', (err:Error, data:string) => {
-    //     if(err){
-    //         return null
-    //     }else{
-    //         try {
-    //             let res:vaultConfigFileNameType = JSON.parse(data)
-    //             return res.location
-    //         } catch (error) {
-    //             return null
-    //         }
-    //     }
-    // })
+}
+
+
+
+export function getPathVault(){
+    return pathVault
+}
+
+export function setPathVault(path:string){
+    pathVault = path
 }

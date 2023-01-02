@@ -9,6 +9,10 @@ function chooseDirectory() {
   ipcRenderer.send('choose-directory')
 }
 
+ipcRenderer.on('directory-chosen', (event, path:string) => {
+  ipcRenderer.send('open_main_window', path)
+})
+
 const VaultManager: React.FC = () => {
 
   return (
