@@ -27,18 +27,26 @@
         padding-left: 1rem;
 
         li {
-            margin: 0;
+            margin: 0.5rem;
             padding: 0.5rem;
             font-size: 1rem;
             color: $text-color;
             font-weight: normal;
             text-align: left;
-            cursor: pointer;
             border-radius: 0.5rem;
 
             display: flex;
             flex-direction: column;
             position: relative;
+
+            div {
+                border-radius: 0.5rem;
+            }
+
+            div:hover, &.sidebar_list_file:hover {
+                cursor: pointer;
+                background-color: $hover;
+            }
 
             &.sidebar_list_folder {
 
@@ -80,7 +88,6 @@
                 input {
                     background-color: transparent;
                     border: none;
-                    border-radius: 0.5rem;
                     color: $text-color;
                     font-size: 1rem;
                     font-weight: normal;
@@ -88,14 +95,14 @@
                     padding: 0.5rem;
                     text-align: left;
                     width: 100%;
+                    cursor: unset;
+
+                    &:not(:read-only) {
+                        cursor: text;
+                    }
 
                     &:focus {
                         outline: none;
-                    }
-
-                    &:hover {
-                        background-color: $top_menu_bar;
-                        cursor: pointer;
                     }
                 }
             }
@@ -119,11 +126,11 @@
             text-align: center;
 
             &:hover {
-                background-color: $top_menu_bar;
+                background-color: $hover;
             }
 
             &.selected {
-                background-color: $top_menu_bar;
+                background-color: $hover;
             }
         }
     }

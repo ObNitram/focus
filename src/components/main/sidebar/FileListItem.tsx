@@ -60,9 +60,11 @@ export default function FileListItem(this: any, props: FileListItemProps) {
     if (item.isDirectory) {
         return (
             <li className={`${styles.sidebar_list_folder} ${dirCollapsed && dirCollapsedAll ? styles.sidebar_list_folder_collapsed : styles.sidebar_list_folder_expanded}`} id={item.path}>
-                <p onClick={handleClickDirectory} className={styles.sidebar_list_folder_name} onContextMenu={(e) => {e.preventDefault(); setDropdownHidden(!dropdownHidden)}}>
-                    {item.name}
-                </p>
+                <div onClick={handleClickDirectory} onContextMenu={(e) => {e.preventDefault(); setDropdownHidden(!dropdownHidden)}}>
+                    <p className={styles.sidebar_list_folder_name}>
+                        {item.name}
+                    </p>
+                </div>
                 <Dropdown items={dropdownRightClickItems} onItemSelect={(dropdownItem: any) => {handleDropdownItemClick(dropdownItem, item.path)}} hidden={dropdownHidden} />
                 <ul className={styles.sidebar_list_folder_children}>
                     {item.children.map((item: any) => (
