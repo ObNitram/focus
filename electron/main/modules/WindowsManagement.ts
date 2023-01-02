@@ -122,3 +122,4 @@ export function closeVaultWindowAndOpenMain(){
   winVault.close();
   mainWindow = createMainWindow();
 }
+

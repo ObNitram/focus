@@ -2,35 +2,42 @@ import './assets/styles/index.scss'
 import styles from 'styles/vaultManager.module.scss'
 
 import { Link } from 'react-router-dom'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 const { ipcRenderer } = window.require('electron')
 
 let theLocation: Function | null = null
 
-ipcRenderer.removeAllListeners('directory-chosen')
 
-ipcRenderer.on('directory-chosen', (event, path:string) => {
-  if (path !== undefined) {
-    if (path.length > 100) {
-      path = path.substring(0, 100) + '...'
-    }
 
-    if (theLocation != null) {
-      theLocation(path)
-    }
-  }
-})
 
-ipcRenderer.on('vault-created', (event, path:string) => {
-  ipcRenderer.send('open_main_window', path)
-})
 
 const VaultManagerCreateVault: React.FC = () => {
 
   const [location, setLocation] = useState(null)
   const [cannotCreateVault, setCannotCreateVault] = useState(true)
   const [vaultName, setVaultName] = useState('')
+
+  useEffect(() => {
+    ipcRenderer.removeAllListeners('directory-chosen')
+    ipcRenderer.removeAllListeners('vault-created')
+
+    ipcRenderer.on('directory-chosen', (event, path: string) => {
+      if (path !== undefined) {
+        if (path.length > 100) {
+          path = path.substring(0, 100) + '...'
+        }
+
+        if (theLocation != null) {
+          theLocation(path)
+        }
+      }
+    })
+
+    ipcRenderer.on('vault-created', (event, path: string) => {
+      ipcRenderer.send('open_main_window', path)
+    })
+  }, [])
 
   theLocation = setLocation
 

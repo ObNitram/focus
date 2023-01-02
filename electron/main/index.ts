@@ -16,7 +16,6 @@ import { app, BrowserWindow, shell, ipcMain, ipcRenderer } from 'electron'
 import { release } from 'os'
 import { join } from 'path'
 
-import * as VaultManagement from './modules/VaultManagementModule'
 import * as FileSystemModule from './modules/FileSystemModule'
 import * as WindowsManagement from './modules/WindowsManagement'
 import { getPathVault, setPathVault ,initConfig } from './modules/ManageConfig'
@@ -77,6 +76,7 @@ function setupEvents() {
   })
 
   ipcMain.on('open_main_window', (event, path:string) => {
+    console.log('test')
     setPathVault(path)
     WindowsManagement.closeVaultWindowAndOpenMain()
   })
