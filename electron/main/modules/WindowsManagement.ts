@@ -3,7 +3,7 @@ process.env.DIST = join(process.env.DIST_ELECTRON, '../dist')
 process.env.PUBLIC = app.isPackaged ? process.env.DIST : join(process.env.DIST_ELECTRON, '../public')
 
 import { BrowserWindow, shell, ipcMain, dialog, app } from "electron"
-import { createFolder } from "./FileSystemModule"
+import { createFolder } from "./VaultManagementModule"
 import { join } from 'path'
 
 let mainWindow: BrowserWindow | null = null
@@ -20,7 +20,6 @@ const defaultPath = app.getPath('home') + '/Documents'
 
 
 export function createMainWindow() {
-  console.log("je passe main window create")
   mainWindow = new BrowserWindow({
     title: 'Main window',
     icon: join(process.env.PUBLIC, 'favicon.svg'),
@@ -83,7 +82,6 @@ export function createVaultWindow() {
     return { action: 'deny' }
   })
   addListenerVaultWindow();
-  console.log(winVault)
   return winVault
 }
 
@@ -95,12 +93,13 @@ function addListenerVaultWindow(){
       buttonLabel: 'Use as vault',
       properties: ['openDirectory'],
     })
-    event.reply('directory-chosen', filePaths[0])
+    if(filePaths.length != 0){
+      event.reply('directory-chosen', filePaths[0])
+    }
   })
 
 
   ipcMain.on('create-vault', async (event, vaultName: string, vaultPath: string) => {
-    console.log(vaultName + ' in ' + vaultPath)
     if (!vaultName) {
       return
     }
@@ -113,7 +112,6 @@ function addListenerVaultWindow(){
     if (!vault) {
       return
     }
-    console.log(vault)
     event.reply('vault-created', vault.path)
   })
 }

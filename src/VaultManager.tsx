@@ -11,7 +11,6 @@ function chooseDirectory() {
 }
 
 ipcRenderer.on('directory-chosen', (event, path:string) => {
-  console.log('choosen')
   ipcRenderer.send('open_main_window', path)
 })    
 

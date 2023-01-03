@@ -16,9 +16,10 @@ import { app, BrowserWindow, shell, ipcMain, ipcRenderer } from 'electron'
 import { release } from 'os'
 import { join } from 'path'
 
-import * as FileSystemModule from './modules/FileSystemModule'
+import * as VaultManagement from './modules/VaultManagementModule'
 import * as WindowsManagement from './modules/WindowsManagement'
-import { getPathVault, setPathVault ,initConfig } from './modules/ManageConfig'
+import * as printMessage from './modules/OutputModule'
+import { getPathVault, setPathVault ,initConfig, saveInSettingPathVault } from './modules/ManageConfig'
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration()
@@ -43,14 +44,14 @@ let mainWindow:BrowserWindow|null = null
 function setupEvents() {
   ipcMain.on('get-folder-content', (event) => {
     // TODO: Set vault path after getting saved value
-    const content = FileSystemModule.getFolderContent(getPathVault(), true)
+    const content = VaultManagement.getFolderContent(getPathVault(), true)
     event.reply('folder-content', content)
   })
 
   ipcMain.on('create-note', (event, pathVault:string|null = null) => {
     // TODO: Set vault path after getting saved value
 
-    const note = FileSystemModule.createNote(pathVault ? pathVault : getPathVault())
+    const note = VaultManagement.createNote(pathVault ? pathVault : getPathVault())
 
     if (note) {
       event.reply('note-created', note)
@@ -60,7 +61,7 @@ function setupEvents() {
   ipcMain.on('create-folder', (event, pathVault:string|null = null) => {
     // TODO: Set vault path after getting saved value
 
-    const folder = FileSystemModule.createFolder(pathVault ? pathVault : getPathVault(), 'Untitled')
+    const folder = VaultManagement.createFolder(pathVault ? pathVault : getPathVault(), 'Untitled')
 
     if (folder) {
       event.reply('folder-created', folder)
@@ -68,7 +69,7 @@ function setupEvents() {
   })
 
   ipcMain.on('delete-note-or-folder', (event, arg) => {
-    const deleted = FileSystemModule.deleteFileOrFolder(arg)
+    const deleted = VaultManagement.deleteFileOrFolder(arg)
 
     if (deleted) {
       event.reply('note-or-folder-deleted', arg)
@@ -76,25 +77,30 @@ function setupEvents() {
   })
 
   ipcMain.on('open_main_window', (event, path:string) => {
-    console.log('test')
-    setPathVault(path)
+    if(!saveInSettingPathVault(path)){
+      app.exit();
+    }
     WindowsManagement.closeVaultWindowAndOpenMain()
   })
 }
 
+printMessage.printLog('TEST')
 
 if(initConfig() == false){
-  console.log('ERROR WITH CONFIG OF THE APPLICATION.')
+  printMessage.printError('The configuration of settings is corrupted or a system error occured. Exiting...')
   app.exit();
 }
 
 app.whenReady().then(() => {
   setupEvents();
   pathVault = getPathVault()
-  console.log(pathVault)
   if(pathVault == null){
+    printMessage.printINFO('This is the first time of application launch or the config was reseted !')
+    printMessage.printINFO('Launch select vault location window...')
     WindowsManagement.createVaultWindow()
   }else{
+    printMessage.printINFO('A valid configuration is found, launching the main window...')
+    setPathVault(pathVault)
     mainWindow =  WindowsManagement.createMainWindow();
   }
 })

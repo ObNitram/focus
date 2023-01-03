@@ -1,17 +1,19 @@
-process.env.DIST_ELECTRON = join(__dirname, '../../..')
-process.env.DIST = join(process.env.DIST_ELECTRON, '../dist')
-process.env.PUBLIC = app.isPackaged ? process.env.DIST : join(process.env.DIST_ELECTRON, '../public')
+import * as FileSystemModule from './FileSystemModule'
 
-import { app, BrowserWindow, dialog, IpcMain, shell} from 'electron'
-import { join } from 'path'
-import * as fs from './FileSystemModule'
-
-const urlDev = process.env.VITE_DEV_SERVER_URL + '#/vault-manager'
-const urlProd = join('file://', process.env.DIST, 'index.html') + '#/vault-manager'
-
-
-
-function setupEvents(ipc: IpcMain, win: BrowserWindow) {
-  
+export function createFolder(dir: string, folderName: string) {
+    return FileSystemModule.createFolder(dir, folderName)
 }
 
+export function createNote(dir: string) {
+    return FileSystemModule.createNote(dir)
+}
+
+export function deleteFileOrFolder(path: string): boolean {
+    return FileSystemModule.deleteFileOrFolder(path)
+}
+
+export function getFolderContent(folderPath: string, recursive: boolean = false) {
+    return FileSystemModule.getFolderContent(folderPath, recursive)
+}
+
+export default FileSystemModule.File

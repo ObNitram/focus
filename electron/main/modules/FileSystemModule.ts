@@ -1,8 +1,9 @@
 import { join } from 'path'
 import { mkdirSync } from 'fs'
 import { Dirent, readdirSync, rmSync, statSync, unlinkSync, writeFileSync } from 'original-fs'
+import * as printMessage from './OutputModule'
 
-class File {
+export class File {
     name: string
     isDirectory: boolean
     createdTime: number
@@ -20,7 +21,7 @@ class File {
     }
 }
 
-function findAvailableName(dir: string, name: string) {
+export function findAvailableName(dir: string, name: string) {
     // if the note already exists, we append a number to the name
     let i = 0
     let fullPath
@@ -53,9 +54,9 @@ export function createFolder(dir: string, folderName: string) {
         mkdirSync(folderFullPath)
     }
     catch (e) {
-        console.log("Error while creating folder: ", e)
+        printMessage.printError("Error while creating folder: "+ e)
     }
-    console.log("Folder created: ", folderFullPath)
+    printMessage.printOK("Folder created: " + folderFullPath)
     return new File(folderName, true, Date.now(), Date.now(), [], folderFullPath)
 }
 
@@ -66,9 +67,9 @@ export function createNote(dir: string) {
     try {
         writeFileSync(noteFullPath, '')
     } catch (e) {
-        console.log("Error while creating note: ", e)
+        printMessage.printError("Error while creating note: " + e)
     }
-    console.log("Note created: ", noteFullPath)
+    printMessage.printOK("Note created: " + noteFullPath)
     return new File(noteName, false, Date.now(), Date.now(), [], noteFullPath)
 }
 
@@ -83,10 +84,10 @@ export function deleteFileOrFolder(path: string): boolean {
         }
     }
     catch (e) {
-        console.log("Error while deleting file or folder: ", e)
+        printMessage.printError("Error while deleting file or folder: "+ e)
         return false
     }
-    console.log("File or folder deleted: ", path)
+    printMessage.printError("File or folder deleted: "+ path)
     return true
 }
 
@@ -99,7 +100,7 @@ function getFolderContentRecursively(folderPath: string, recursive: boolean = fa
         files = readdirSync(folderPath, { withFileTypes: true })
     }
     catch (e) {
-        console.log("Error while reading folder: ", e)
+        printMessage.printError("Error while reading folder: " + e)
         return content
     }
 
