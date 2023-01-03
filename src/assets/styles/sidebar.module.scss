@@ -5,8 +5,8 @@
     width: 30%;
     height: 100%;
     position: fixed;
-    overflow-y: auto;
     overflow-x: hidden;
+    overflow-y: hidden;
 
     h2 {
         color: $text-color;
@@ -19,12 +19,48 @@
         text-align: left;
     }
 
+    .sidebar_header {
+        border-bottom: 1px solid $text-color;
+
+        h2 {
+            margin-bottom: 1rem;
+        }
+
+        .sidebar_topbar {
+            position: relative;
+
+            button {
+                background-color: $main-color;
+                border: none;
+                border-radius: 0.5rem;
+                color: $text-color;
+                cursor: pointer;
+                font-size: 2rem;
+                font-weight: bold;
+                margin: 0;
+                margin-top: 1rem;
+                padding: 0.25rem 0.5rem;
+                text-align: center;
+
+                &:hover {
+                    background-color: $hover;
+                }
+
+                &.selected {
+                    background-color: $hover;
+                }
+            }
+        }
+    }
+
     .sidebar_list {
         list-style: none;
         padding: 0;
         margin: 0;
+        height: 100%;
         margin-top: 1rem;
         padding-left: 1rem;
+        overflow-y: auto;
 
         li {
             margin: 0.5rem;
@@ -43,7 +79,8 @@
                 border-radius: 0.5rem;
             }
 
-            div:hover, &.sidebar_list_file:hover {
+            div:hover,
+            &.sidebar_list_file:hover {
                 cursor: pointer;
                 background-color: $hover;
             }
@@ -84,6 +121,7 @@
             }
 
             &.sidebar_list_file {
+
                 // make the input text look like a normal text
                 input {
                     background-color: transparent;
@@ -105,32 +143,6 @@
                         outline: none;
                     }
                 }
-            }
-        }
-    }
-
-    .sidebar_topbar {
-        position: relative;
-
-        button {
-            background-color: $main-color;
-            border: none;
-            border-radius: 0.5rem;
-            color: $text-color;
-            cursor: pointer;
-            font-size: 2rem;
-            font-weight: bold;
-            margin: 0;
-            margin-top: 1rem;
-            padding: 0.25rem 0.5rem;
-            text-align: center;
-
-            &:hover {
-                background-color: $hover;
-            }
-
-            &.selected {
-                background-color: $hover;
             }
         }
     }

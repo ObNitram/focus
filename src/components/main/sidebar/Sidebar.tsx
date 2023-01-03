@@ -133,9 +133,11 @@ export default function Sidebar(props: any) {
 
   return (
     <div className={styles.sidebar}>
-        <TopBar onCollapseAll={handleCollapseAll} onSortOrderChange={handleSortOrderChange}/>
+      <div className={styles.sidebar_header}>
+        <TopBar onCollapseAll={handleCollapseAll} onSortOrderChange={handleSortOrderChange} />
         <h2>{folderName}</h2>
-        <FileList collapsedAll={collapsedAll} files={files} folderToExpand={folderToExpand} />
+      </div>
+      <FileList collapsedAll={collapsedAll} files={files} folderToExpand={folderToExpand} />
     </div>
   )
 }
