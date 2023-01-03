@@ -18,7 +18,7 @@ import { join } from 'path'
 
 import * as VaultManagement from './modules/VaultManagementModule'
 import * as WindowsManagement from './modules/WindowsManagement'
-import { getPathVault, setPathVault ,initConfig } from './modules/ManageConfig'
+import { getPathVault, setPathVault ,initConfig, saveInSettingPathVault } from './modules/ManageConfig'
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration()
@@ -78,6 +78,11 @@ function setupEvents() {
   ipcMain.on('open_main_window', (event, path:string) => {
     console.log('test')
     setPathVault(path)
+    if(!saveInSettingPathVault){
+      console.log('ERROR WITH CONFIG OF THE APPLICATION.')
+      app.exit();
+    }
+    saveInSettingPathVault(path)
     WindowsManagement.closeVaultWindowAndOpenMain()
   })
 }
@@ -91,7 +96,7 @@ if(initConfig() == false){
 app.whenReady().then(() => {
   setupEvents();
   pathVault = getPathVault()
-  console.log(pathVault)
+  console.log("Path vault in start of app : " + pathVault)
   if(pathVault == null){
     WindowsManagement.createVaultWindow()
   }else{
