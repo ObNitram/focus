@@ -87,7 +87,7 @@ export function deleteFileOrFolder(path: string): boolean {
         printMessage.printError("Error while deleting file or folder: "+ e)
         return false
     }
-    printMessage.printError("File or folder deleted: "+ path)
+    printMessage.printOK("File or folder deleted: "+ path)
     return true
 }
 
