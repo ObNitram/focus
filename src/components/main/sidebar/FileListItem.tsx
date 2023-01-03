@@ -14,7 +14,7 @@ export interface FileListItemProps {
 export default function FileListItem(this: any, props: FileListItemProps) {
     const [item, setItem] = React.useState(props.item);
     const [folderToExpand, setFolderToExpand] = React.useState<string|null>(null);
-    const [dirCollapsed, setDirCollapsed] = React.useState(true);
+    const [dirCollapsed, setDirCollapsed] = React.useState<boolean|null>(true);
     const [dirCollapsedAll, setDirCollapsedAll] = React.useState<boolean|null>(null);
     const [renaming, setRenaming] = React.useState(false);
     const [dropdownHidden, setDropdownHidden] = React.useState(true);
@@ -78,7 +78,6 @@ export default function FileListItem(this: any, props: FileListItemProps) {
 
     useEffect(() => {
         if (props.folderToExpand !== null) {
-            setDirCollapsedAll(null);
             setFolderToExpand(props.folderToExpand);
 
             if (props.folderToExpand === item.path) {
@@ -86,8 +85,8 @@ export default function FileListItem(this: any, props: FileListItemProps) {
             }
         }
         else if (props.collapsedAll !== null) {
-            setFolderToExpand(null);
             setDirCollapsedAll(props.collapsedAll);
+            setDirCollapsed(props.collapsedAll);
         }
 
         setItem(props.item);
@@ -98,7 +97,7 @@ export default function FileListItem(this: any, props: FileListItemProps) {
 
     if (item.isDirectory) {
         return (
-            <li className={`${styles.sidebar_list_folder} ${dirCollapsed === true || dirCollapsedAll === true ? styles.sidebar_list_folder_collapsed : styles.sidebar_list_folder_expanded}`} id={item.path}>
+            <li className={`${styles.sidebar_list_folder} ${dirCollapsed === false || dirCollapsedAll === false ? styles.sidebar_list_folder_expanded : styles.sidebar_list_folder_collapsed}`} id={item.path}>
                 <div onClick={handleClickDirectory} onContextMenu={(e) => {e.preventDefault(); setDropdownHidden(!dropdownHidden)}}>
                     <p className={styles.sidebar_list_folder_name}>
                         {item.name}
