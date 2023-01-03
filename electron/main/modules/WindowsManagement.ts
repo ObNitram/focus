@@ -20,7 +20,6 @@ const defaultPath = app.getPath('home') + '/Documents'
 
 
 export function createMainWindow() {
-  console.log("je passe main window create")
   mainWindow = new BrowserWindow({
     title: 'Main window',
     icon: join(process.env.PUBLIC, 'favicon.svg'),
@@ -94,8 +93,6 @@ function addListenerVaultWindow(){
       buttonLabel: 'Use as vault',
       properties: ['openDirectory'],
     })
-    console.log("type of file path : " + typeof filePaths)
-    console.log("Content of file path : " + filePaths)
     if(filePaths.length != 0){
       event.reply('directory-chosen', filePaths[0])
     }
