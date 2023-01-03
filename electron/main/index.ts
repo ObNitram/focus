@@ -47,20 +47,20 @@ function setupEvents() {
     event.reply('folder-content', content)
   })
 
-  ipcMain.on('create-note', (event) => {
+  ipcMain.on('create-note', (event, pathVault:string|null = null) => {
     // TODO: Set vault path after getting saved value
 
-    const note = FileSystemModule.createNote(getPathVault())
+    const note = FileSystemModule.createNote(pathVault ? pathVault : getPathVault())
 
     if (note) {
       event.reply('note-created', note)
     }
   })
 
-  ipcMain.on('create-folder', (event) => {
+  ipcMain.on('create-folder', (event, pathVault:string|null = null) => {
     // TODO: Set vault path after getting saved value
 
-    const folder = FileSystemModule.createFolder(getPathVault(), 'Untitled')
+    const folder = FileSystemModule.createFolder(pathVault ? pathVault : getPathVault(), 'Untitled')
 
     if (folder) {
       event.reply('folder-created', folder)

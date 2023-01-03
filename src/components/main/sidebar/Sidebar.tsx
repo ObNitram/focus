@@ -9,10 +9,14 @@ const { ipcRenderer } = window.require('electron')
 let filesCopy: any = []
 let currSortOrder: any = 'name-asc'
 
+let mainFolderPath: string = ''
+
 export default function Sidebar(props: any) {
   const [files, setFiles] = React.useState<any>([])
   const [folderName, setFolderName] = React.useState('MyVault')
-  const [collapsed, setCollapsed] = React.useState(true)
+  const [collapsedAll, setCollapsedAll] = React.useState(true)
+
+  const [folderToCollapseOrExpand, setFolderToCollapseOrExpand] = React.useState<string | null>(null)
 
   function setupEvents() {
     ipcRenderer.on('folder-content', (event, theFiles) => {
@@ -22,16 +26,13 @@ export default function Sidebar(props: any) {
 
       // Retrieve folder name
       setFolderName(theFiles[0].name)
+      mainFolderPath = theFiles[0].path
     })
     ipcRenderer.on('note-created', (event, note) => {
-      filesCopy = [...filesCopy, note]
-      changeSortOrderRecursive(filesCopy)
-      setFiles(filesCopy)
+      addNewNoteOrFolderInRightPlace(note)
     })
     ipcRenderer.on('folder-created', (event, folder) => {
-      filesCopy = [...filesCopy, folder]
-      changeSortOrderRecursive(filesCopy)
-      setFiles(filesCopy)
+      addNewNoteOrFolderInRightPlace(folder)
     })
     ipcRenderer.on('note-or-folder-deleted', (event, path) => {
       filesCopy = filterDeletedNoteOrFolderRecursive(filesCopy, path)
@@ -47,6 +48,32 @@ export default function Sidebar(props: any) {
     ipcRenderer.removeAllListeners('note-or-folder-deleted')
     setupEvents()
   }, [props.folderName])
+
+  function addNewNoteOrFolderInRightPlace(newNoteOrFolder: any) {
+    let pathParts = newNoteOrFolder.path.split(mainFolderPath + '/')[1].split('/')
+    let parentPath = mainFolderPath + '/' + pathParts.shift()
+
+    let folderWhereToInsert = filesCopy
+
+    while (parentPath.length > 0) {
+      let folderWhereToInsertTemp = [...folderWhereToInsert]
+      folderWhereToInsertTemp = folderWhereToInsertTemp.find((file: any) => file.path === parentPath)
+
+      if (folderWhereToInsertTemp) {
+        folderWhereToInsert = folderWhereToInsertTemp.children
+        parentPath = parentPath + '/' + pathParts.shift()
+      }
+      else {
+        break
+      }
+    }
+
+    folderWhereToInsert.push(newNoteOrFolder)
+    changeSortOrderRecursive(filesCopy)
+    setFiles([...filesCopy])
+
+    setFolderToCollapseOrExpand(newNoteOrFolder.path.split('/').slice(0, newNoteOrFolder.path.split('/').length - 1).join('/'))
+  }
 
   function filterDeletedNoteOrFolderRecursive(theFiles: any, path: string) {
     let filesCopy = [...theFiles]
@@ -64,8 +91,8 @@ export default function Sidebar(props: any) {
     ipcRenderer.send('get-folder-content')
   }
 
-  function handleCollapseAll(collapse: boolean) {
-    setCollapsed(collapse)
+  function handleCollapseAll(collapseAll: boolean) {
+    setCollapsedAll(collapseAll)
   }
 
   function changeSortOrderRecursive(files: any) {
@@ -107,7 +134,7 @@ export default function Sidebar(props: any) {
     <div className={styles.sidebar}>
         <TopBar onCollapseAll={handleCollapseAll} onSortOrderChange={handleSortOrderChange}/>
         <h2>{folderName}</h2>
-        <FileList collapsed={collapsed} files={files}/>
+        <FileList collapsedAll={collapsedAll} files={files} collapse={false} folderToCollapseOrExpand={folderToCollapseOrExpand} />
     </div>
   )
 }

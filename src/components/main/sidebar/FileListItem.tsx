@@ -6,6 +6,7 @@ import Dropdown from '../../generic/Dropdown'
 
 export interface FileListItemProps {
     item: any;
+    collapse: boolean|null;
     collapsedAll: boolean;
     renaming: boolean;
 }
@@ -17,7 +18,7 @@ export default function FileListItem(this: any, props: FileListItemProps) {
     const [renaming, setRenaming] = React.useState(false);
     const [dropdownHidden, setDropdownHidden] = React.useState(true);
 
-    const dropdownRightClickItems = [
+    const dropdownRightClickCommonItems = [
         {
             title: 'Rename',
             selected: false,
@@ -30,18 +31,46 @@ export default function FileListItem(this: any, props: FileListItemProps) {
         }
     ]
 
+    const dropdownRightClickFolderItems = [...dropdownRightClickCommonItems,
+    {
+        title: 'Create note',
+        selected: false,
+        key: 'create-note'
+    },
+    {
+        title: 'Create folder',
+        selected: false,
+        key: 'create-folder'
+    }]
+
     function handleClickDirectory() {
         setDirCollapsed(!dirCollapsed)
         setDropdownHidden(true)
     }
 
-    function handleDropdownItemClick(item: any, fileOrFolderPath: string) {
+    function handleDropdownItemClickCommon(item: any, fileOrFolderPath: string): boolean {
         setDropdownHidden(true)
         if (item.key === 'rename') {
             setRenaming(true);
+            return true;
         }
-        else if (item.key === 'delete') {
+        if (item.key === 'delete') {
             ipcRenderer.send('delete-note-or-folder', fileOrFolderPath)
+            return true;
+        }
+
+        return false;
+    }
+
+    function handleDropdownItemClickFolder(item: any, fileOrFolderPath: string) {
+        if (handleDropdownItemClickCommon(item, fileOrFolderPath)) {
+            return;
+        }
+        if (item.key === 'create-note') {
+            ipcRenderer.send('create-note', fileOrFolderPath)
+        }
+        else if (item.key === 'create-folder') {
+            ipcRenderer.send('create-folder', fileOrFolderPath)
         }
     }
 
@@ -51,9 +80,13 @@ export default function FileListItem(this: any, props: FileListItemProps) {
             setDirCollapsed(true);
         }
 
+        if (props.collapse !== null) {
+            setDirCollapsed(props.collapse);
+        }
+
         setItem(props.item);
         setRenaming(false)
-    }, [props.item, props.collapsedAll])
+    }, [props.item, props.collapsedAll, props.collapse]);
 
     if (!item) return null;
 
@@ -65,10 +98,10 @@ export default function FileListItem(this: any, props: FileListItemProps) {
                         {item.name}
                     </p>
                 </div>
-                <Dropdown items={dropdownRightClickItems} onItemSelect={(dropdownItem: any) => {handleDropdownItemClick(dropdownItem, item.path)}} hidden={dropdownHidden} />
+                <Dropdown items={dropdownRightClickFolderItems} onItemSelect={(dropdownItem: any) => {handleDropdownItemClickFolder(dropdownItem, item.path)}} hidden={dropdownHidden} />
                 <ul className={styles.sidebar_list_folder_children}>
                     {item.children.map((item: any) => (
-                        <FileListItem key={item.name} item={item} collapsedAll={dirCollapsedAll} renaming={false} />
+                        <FileListItem key={item.name} item={item} collapsedAll={dirCollapsedAll} renaming={false} collapse={null} />
                     ))}
                 </ul>
             </li>
@@ -78,7 +111,7 @@ export default function FileListItem(this: any, props: FileListItemProps) {
     else {
         return (
             <li className={styles.sidebar_list_file} id={item.path} onContextMenu={(e) => {e.preventDefault(); setDropdownHidden(!dropdownHidden)}}>
-                <Dropdown items={dropdownRightClickItems} onItemSelect={(dropdownItem: any) => {handleDropdownItemClick(dropdownItem, item.path)}} hidden={dropdownHidden} />
+                <Dropdown items={dropdownRightClickCommonItems} onItemSelect={(dropdownItem: any) => {handleDropdownItemClickCommon(dropdownItem, item.path)}} hidden={dropdownHidden} />
                 <input type="text" value={item.name} readOnly={!renaming} onChange={(e) => setItem({ ...item, name: e.target.value })} />
             </li>
         )
