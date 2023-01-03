@@ -6,8 +6,8 @@ import Dropdown from '../../generic/Dropdown'
 
 export interface FileListItemProps {
     item: any;
-    folderToExpand: string|null;
-    collapsedAll: boolean|null;
+    folderToExpand: string|null; // this is the path of the folder to expand (used when creating a new note or folder)
+    collapsedAll: boolean|null;  // this is used when collapsing/expanding all folders
     renaming: boolean;
 }
 
