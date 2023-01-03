@@ -12,3 +12,7 @@ export function printOK(msg:string){
 export function printINFO(msg:string){
     console.log(colors.blue('[INFO] '+ msg))
 }
+
+export function printLog(msg:string){
+    if(process.env.VITE_DEV_SERVER_URL) console.log(colors.yellow('[LOG] '+ msg))
+}

@@ -84,6 +84,7 @@ function setupEvents() {
   })
 }
 
+printMessage.printLog('TEST')
 
 if(initConfig() == false){
   printMessage.printError('The configuration of settings is corrupted or a system error occured. Exiting...')
