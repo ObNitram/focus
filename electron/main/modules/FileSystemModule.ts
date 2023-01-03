@@ -105,12 +105,16 @@ function getFolderContentRecursively(folderPath: string, recursive: boolean = fa
     }
 
     for (const file of files) {
-        let currIsDirectory = file.isDirectory()
-
-        if (!currIsDirectory && !file.name.endsWith('.md')) {
+        if (file.name.startsWith('.')) { // ignore hidden files and folders
             continue
         }
 
+        let currIsDirectory = file.isDirectory()
+        if (!currIsDirectory) {
+            if (!file.name.endsWith('.md')) {
+                continue
+            }
+        }
         const fileStats = statSync(join(folderPath, file.name))
 
         content.push(new File(
