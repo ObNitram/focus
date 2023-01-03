@@ -83,7 +83,6 @@ export function createVaultWindow() {
     return { action: 'deny' }
   })
   addListenerVaultWindow();
-  console.log(winVault)
   return winVault
 }
 
@@ -104,7 +103,6 @@ function addListenerVaultWindow(){
 
 
   ipcMain.on('create-vault', async (event, vaultName: string, vaultPath: string) => {
-    console.log(vaultName + ' in ' + vaultPath)
     if (!vaultName) {
       return
     }
@@ -117,7 +115,6 @@ function addListenerVaultWindow(){
     if (!vault) {
       return
     }
-    console.log(vault)
     event.reply('vault-created', vault.path)
   })
 }

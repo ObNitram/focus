@@ -20,12 +20,11 @@ export function initConfig(){
             outPut.printOK('Setting folder created !')
         } catch (error) {
             outPut.printError('Failed to create the folder. Aborting.')
-            console.log(error)
             return false
         }
     }
     if(! fs.existsSync(pathConfigFolder+vaultConfigFileName)){
-        outPut.printINFO('Config file '+ pathConfigFolder+vaultConfigFileName + 'not found !')
+        outPut.printINFO('Config file '+ pathConfigFolder+vaultConfigFileName + ' not found !')
         try{
             outPut.printINFO('Try to create ' + pathConfigFolder+vaultConfigFileName+ '...')
             fs.writeFileSync(pathConfigFolder+vaultConfigFileName, JSON.stringify({
@@ -51,8 +50,7 @@ export function initConfig(){
             pathVault = res.location
             outPut.printOK('Congig is OK!')
             return true
-        } catch (error) {
-            console.log(error)
+        } catch (error:any) {
             outPut.printError('Failed to get setting. Aborting...')
             return false
         }
@@ -73,14 +71,24 @@ export function setPathVault(path:string){
 }
 
 export function saveInSettingPathVault(path:string):boolean{
-    if(initConfig() == false) return false
-    if(! fs.existsSync(path)) return false
+    outPut.printINFO("Try to save user's vault path...")
+    if(initConfig() == false){
+        outPut.printError('An error occur, the config is corrupted. User\'s path not saved!')
+        return false
+    }
+    if(! fs.existsSync(path)){
+        outPut.printError('An error occur, The require path doesn\'t exist !')
+        return false
+    }
     try{
         let contentSettingFile:vaultConfigFileNameType = JSON.parse(fs.readFileSync(pathConfigFolder+vaultConfigFileName, 'utf8'))
         contentSettingFile.location = path
         fs.writeFileSync(pathConfigFolder+vaultConfigFileName, JSON.stringify(contentSettingFile))
     }catch(error){
+        outPut.printError('An error occured while trying to save the path in file system.')
         return false
     }
+    setPathVault(path)
+    outPut.printOK('Path is saved !')
     return true
 }
