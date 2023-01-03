@@ -90,9 +90,10 @@ export function deleteFileOrFolder(path: string): boolean {
     return true
 }
 
-export function getFolderContent(folderPath: string, recursive: boolean = false) {
-    let content = []
+function getFolderContentRecursively(folderPath: string, recursive: boolean = false) {
     let files: Dirent[]
+    let content = []
+
 
     try {
         files = readdirSync(folderPath, { withFileTypes: true })
@@ -101,7 +102,6 @@ export function getFolderContent(folderPath: string, recursive: boolean = false)
         console.log("Error while reading folder: ", e)
         return content
     }
-    let mainFolderChildren = []
 
     for (const file of files) {
         let currIsDirectory = file.isDirectory()
@@ -112,15 +112,22 @@ export function getFolderContent(folderPath: string, recursive: boolean = false)
 
         const fileStats = statSync(join(folderPath, file.name))
 
-        mainFolderChildren.push(new File(
+        content.push(new File(
             file.name,
             currIsDirectory,
             fileStats.birthtimeMs,
             fileStats.mtimeMs,
-            currIsDirectory && recursive ? getFolderContent(join(folderPath, file.name), recursive) : [],
+            currIsDirectory && recursive ? getFolderContentRecursively(join(folderPath, file.name), recursive) : [],
             join(folderPath, file.name)
         ))
     }
+
+    return content
+}
+
+export function getFolderContent(folderPath: string, recursive: boolean = false) {
+    let content = []
+    let mainFolderChildren = getFolderContentRecursively(folderPath, recursive)
 
     const fileStats = statSync(folderPath)
     const folderName = folderPath.split('/').pop()

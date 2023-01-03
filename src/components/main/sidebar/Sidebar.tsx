@@ -11,36 +11,32 @@ let currSortOrder: any = 'name-asc'
 
 export default function Sidebar(props: any) {
   const [files, setFiles] = React.useState<any>([])
-  const [folderName, setFolderName] = React.useState('HEY')
+  const [folderName, setFolderName] = React.useState('MyVault')
   const [collapsed, setCollapsed] = React.useState(true)
 
   function setupEvents() {
     ipcRenderer.on('folder-content', (event, theFiles) => {
-      setFiles(theFiles[0].children)
-      filesCopy = [...theFiles]
-      changeSortOrderRecursive(filesCopy)
+      changeSortOrderRecursive(theFiles[0].children)
+      filesCopy = theFiles[0].children
+      setFiles(filesCopy)
 
       // Retrieve folder name
       setFolderName(theFiles[0].name)
     })
     ipcRenderer.on('note-created', (event, note) => {
       filesCopy = [...filesCopy, note]
-      setFiles(filesCopy)
       changeSortOrderRecursive(filesCopy)
+      setFiles(filesCopy)
     })
     ipcRenderer.on('folder-created', (event, folder) => {
       filesCopy = [...filesCopy, folder]
-      setFiles(filesCopy)
       changeSortOrderRecursive(filesCopy)
+      setFiles(filesCopy)
     })
     ipcRenderer.on('note-or-folder-deleted', (event, path) => {
-      filesCopy = filesCopy.filter((file: any) => file.path !== path)
+      filesCopy = filterDeletedNoteOrFolderRecursive(filesCopy, path)
       setFiles(filesCopy)
     })
-  }
-
-  function getFiles() {
-    ipcRenderer.send('get-folder-content')
   }
 
   useEffect(() => {
@@ -48,12 +44,28 @@ export default function Sidebar(props: any) {
     ipcRenderer.removeAllListeners('folder-content')
     ipcRenderer.removeAllListeners('note-created')
     ipcRenderer.removeAllListeners('folder-created')
+    ipcRenderer.removeAllListeners('note-or-folder-deleted')
     setupEvents()
   }, [props.folderName])
 
+  function filterDeletedNoteOrFolderRecursive(theFiles: any, path: string) {
+    let filesCopy = [...theFiles]
+    filesCopy.forEach((file: any, index: number) => {
+      if (file.path === path) {
+        filesCopy.splice(index, 1)
+      } else if (file.isDirectory) {
+        file.children = filterDeletedNoteOrFolderRecursive(file.children, path)
+      }
+    })
+    return filesCopy
+  }
+
+  function getFiles() {
+    ipcRenderer.send('get-folder-content')
+  }
+
   function handleCollapseAll(collapse: boolean) {
     setCollapsed(collapse)
-    filesCopy = [...files]
   }
 
   function changeSortOrderRecursive(files: any) {
@@ -65,16 +77,16 @@ export default function Sidebar(props: any) {
         files.sort((a: any, b: any) => b.name.localeCompare(a.name))
         break
       case 'modified-desc':
-        files.sort((a: any, b: any) => b.modified.localeCompare(a.modified))
+        files.sort((a: any, b: any) => b.modifiedTime - a.modifiedTime)
         break
       case 'modified-asc':
-        files.sort((a: any, b: any) => a.modified.localeCompare(b.modified))
+        files.sort((a: any, b: any) => a.modifiedTime - b.modifiedTime)
         break
       case 'created-desc':
-        files.sort((a: any, b: any) => b.created.localeCompare(a.created))
+        files.sort((a: any, b: any) => b.createdTime - a.createdTime)
         break
       case 'created-asc':
-        files.sort((a: any, b: any) => a.created.localeCompare(b.created))
+        files.sort((a: any, b: any) => a.createdTime - b.createdTime)
         break
     }
     files.forEach((file: any) => {
