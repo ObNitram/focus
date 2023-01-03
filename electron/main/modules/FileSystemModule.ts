@@ -31,10 +31,10 @@ export function findAvailableName(dir: string, name: string) {
         while (true) {
             if (i > 0) {
                 if (name.endsWith('.md')) {
-                    modifiedName = `${name.slice(0, -3)} (${i}).md`
+                    modifiedName = `${name.slice(0, -3)}(${i}).md`
                 }
                 else {
-                    modifiedName = `${name} (${i})`
+                    modifiedName = `${name}(${i})`
                 }
             }
             fullPath = join(dir, modifiedName)
