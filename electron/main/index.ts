@@ -15,6 +15,7 @@ process.env.PUBLIC = app.isPackaged ? process.env.DIST : join(process.env.DIST_E
 import { app, BrowserWindow, shell, ipcMain, ipcRenderer } from 'electron'
 import { release } from 'os'
 import { join } from 'path'
+import chokidar from 'chokidar'
 
 import * as VaultManagement from './modules/VaultManagementModule'
 import * as WindowsManagement from './modules/WindowsManagement'
@@ -40,12 +41,34 @@ const urlProd = join('file://', process.env.DIST, 'index.html')
 let pathVault:string|null = null
 let mainWindow:BrowserWindow|null = null
 
+let watcher:chokidar.FSWatcher|null = null
 
 function setupEvents() {
   ipcMain.on('get-folder-content', (event) => {
     // TODO: Set vault path after getting saved value
     const content = VaultManagement.getFolderContent(getPathVault(), true)
     event.reply('folder-content', content)
+    watcher = chokidar.watch(getPathVault(), {
+      ignored: /(^|[\/\\])\../, // ignore dotfiles
+      persistent: false,
+      ignoreInitial: true
+    })
+    watcher.on('add', (path) => {
+      console.log('add ' + path)
+      event.reply('folder-content', VaultManagement.getFolderContent(getPathVault(), true))
+    }).on('addDir', (path) => {
+      console.log('addDir ' + path)
+      event.reply('folder-content', VaultManagement.getFolderContent(getPathVault(), true))
+    }).on('change', (path) => {
+      console.log('change ' + path)
+      event.reply('folder-content', VaultManagement.getFolderContent(getPathVault(), true))
+    }).on('unlink', (path) => {
+      console.log('remove ' + path)
+      event.reply('folder-content', VaultManagement.getFolderContent(getPathVault(), true))
+    }).on('unlinkDir', (path) => {
+      console.log('removeDir ' + path)
+      event.reply('folder-content', VaultManagement.getFolderContent(getPathVault(), true))
+    })
   })
 
   ipcMain.on('create-note', (event, pathVault:string|null = null) => {
@@ -104,7 +127,6 @@ app.whenReady().then(() => {
     mainWindow =  WindowsManagement.createMainWindow();
   }
 })
-
 
 
 app.on('window-all-closed', () => {
