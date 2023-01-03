@@ -12,12 +12,13 @@ process.env.DIST_ELECTRON = join(__dirname, '../..')
 process.env.DIST = join(process.env.DIST_ELECTRON, '../dist')
 process.env.PUBLIC = app.isPackaged ? process.env.DIST : join(process.env.DIST_ELECTRON, '../public')
 
-import { app, BrowserWindow, shell, ipcMain } from 'electron'
+import { app, BrowserWindow, shell, ipcMain, ipcRenderer } from 'electron'
 import { release } from 'os'
 import { join } from 'path'
 
-import * as VaultManagement from './modules/VaultManagementModule'
 import * as FileSystemModule from './modules/FileSystemModule'
+import * as WindowsManagement from './modules/WindowsManagement'
+import { getPathVault, setPathVault ,initConfig } from './modules/ManageConfig'
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration()
@@ -30,56 +31,26 @@ if (!app.requestSingleInstanceLock()) {
   process.exit(0)
 }
 
-let win: BrowserWindow | null = null
 // Here, you can also use other preload
 const preload = join(__dirname, '../preload/index.js')
 const urlDev = process.env.VITE_DEV_SERVER_URL
 const urlProd = join('file://', process.env.DIST, 'index.html')
 
-async function createWindow() {
-  win = new BrowserWindow({
-    title: 'Main window',
-    icon: join(process.env.PUBLIC, 'favicon.svg'),
-    fullscreenable: true,
-    webPreferences: {
-      preload,
-      nodeIntegration: true,
-      contextIsolation: false,
-    },
-  })
-  win.maximize()
+let pathVault:string|null = null
+let mainWindow:BrowserWindow|null = null
 
-  if (process.env.VITE_DEV_SERVER_URL) { // electron-vite-vue#298
-    win.loadURL(urlDev)
-    // Open devTool if the app is not packaged
-    win.webContents.openDevTools()
-  } else {
-    win.loadURL(urlProd)
-  }
-
-  // Test actively push message to the Electron-Renderer
-  win.webContents.on('did-finish-load', () => {
-    win?.webContents.send('main-process-message', new Date().toLocaleString())
-  })
-
-  // Make all links open with the browser, not with the application
-  win.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith('https:')) shell.openExternal(url)
-    return { action: 'deny' }
-  })
-}
 
 function setupEvents() {
   ipcMain.on('get-folder-content', (event) => {
     // TODO: Set vault path after getting saved value
-    const content = FileSystemModule.getFolderContent(app.getPath('documents')+'/myVault', true)
+    const content = FileSystemModule.getFolderContent(getPathVault(), true)
     event.reply('folder-content', content)
   })
 
   ipcMain.on('create-note', (event) => {
     // TODO: Set vault path after getting saved value
 
-    const note = FileSystemModule.createNote(app.getPath('documents')+'/myVault')
+    const note = FileSystemModule.createNote(getPathVault())
 
     if (note) {
       event.reply('note-created', note)
@@ -89,7 +60,7 @@ function setupEvents() {
   ipcMain.on('create-folder', (event) => {
     // TODO: Set vault path after getting saved value
 
-    const folder = FileSystemModule.createFolder(app.getPath('documents')+'/myVault', 'Untitled')
+    const folder = FileSystemModule.createFolder(getPathVault(), 'Untitled')
 
     if (folder) {
       event.reply('folder-created', folder)
@@ -103,24 +74,43 @@ function setupEvents() {
       event.reply('note-or-folder-deleted', arg)
     }
   })
+
+  ipcMain.on('open_main_window', (event, path:string) => {
+    console.log('test')
+    setPathVault(path)
+    WindowsManagement.closeVaultWindowAndOpenMain()
+  })
+}
+
+
+if(initConfig() == false){
+  console.log('ERROR WITH CONFIG OF THE APPLICATION.')
+  app.exit();
 }
 
 app.whenReady().then(() => {
   setupEvents();
-  createWindow();
-  //VaultManagement.init(win, ipcMain);
+  pathVault = getPathVault()
+  console.log(pathVault)
+  if(pathVault == null){
+    WindowsManagement.createVaultWindow()
+  }else{
+    mainWindow =  WindowsManagement.createMainWindow();
+  }
 })
 
+
+
 app.on('window-all-closed', () => {
-  win = null
+  mainWindow = null
   if (process.platform !== 'darwin') app.quit()
 })
 
 app.on('second-instance', () => {
-  if (win) {
+  if (mainWindow) {
     // Focus on the main window if the user tried to open another
-    if (win.isMinimized()) win.restore()
-    win.focus()
+    if (mainWindow.isMinimized()) mainWindow.restore()
+    mainWindow.focus()
   }
 })
 
@@ -129,7 +119,7 @@ app.on('activate', () => {
   if (allWindows.length) {
     allWindows[0].focus()
   } else {
-    createWindow()
+    mainWindow = WindowsManagement.createMainWindow()
   }
 })
 
