@@ -3,6 +3,7 @@
 .sidebar {
     background-color: $main-color;
     width: 30%;
+    max-width: 250px;
     height: 100%;
     position: fixed;
     overflow-y: auto;
