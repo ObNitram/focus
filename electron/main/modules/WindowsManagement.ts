@@ -3,7 +3,7 @@ process.env.DIST = join(process.env.DIST_ELECTRON, '../dist')
 process.env.PUBLIC = app.isPackaged ? process.env.DIST : join(process.env.DIST_ELECTRON, '../public')
 
 import { BrowserWindow, shell, ipcMain, dialog, app } from "electron"
-import { createFolder } from "./FileSystemModule"
+import { createFolder } from "./VaultManagementModule"
 import { join } from 'path'
 
 let mainWindow: BrowserWindow | null = null

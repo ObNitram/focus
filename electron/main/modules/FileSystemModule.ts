@@ -2,7 +2,7 @@ import { join } from 'path'
 import { mkdirSync } from 'fs'
 import { Dirent, readdirSync, rmSync, statSync, unlinkSync, writeFileSync } from 'original-fs'
 
-class File {
+export class File {
     name: string
     isDirectory: boolean
     createdTime: number
@@ -20,7 +20,7 @@ class File {
     }
 }
 
-function findAvailableName(dir: string, name: string) {
+export function findAvailableName(dir: string, name: string) {
     // if the note already exists, we append a number to the name
     let i = 0
     let fullPath

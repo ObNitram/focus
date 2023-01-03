@@ -16,7 +16,7 @@ import { app, BrowserWindow, shell, ipcMain, ipcRenderer } from 'electron'
 import { release } from 'os'
 import { join } from 'path'
 
-import * as FileSystemModule from './modules/FileSystemModule'
+import * as VaultManagement from './modules/VaultManagementModule'
 import * as WindowsManagement from './modules/WindowsManagement'
 import { getPathVault, setPathVault ,initConfig } from './modules/ManageConfig'
 
@@ -43,14 +43,14 @@ let mainWindow:BrowserWindow|null = null
 function setupEvents() {
   ipcMain.on('get-folder-content', (event) => {
     // TODO: Set vault path after getting saved value
-    const content = FileSystemModule.getFolderContent(getPathVault(), true)
+    const content = VaultManagement.getFolderContent(getPathVault(), true)
     event.reply('folder-content', content)
   })
 
   ipcMain.on('create-note', (event) => {
     // TODO: Set vault path after getting saved value
 
-    const note = FileSystemModule.createNote(getPathVault())
+    const note = VaultManagement.createNote(getPathVault())
 
     if (note) {
       event.reply('note-created', note)
@@ -60,7 +60,7 @@ function setupEvents() {
   ipcMain.on('create-folder', (event) => {
     // TODO: Set vault path after getting saved value
 
-    const folder = FileSystemModule.createFolder(getPathVault(), 'Untitled')
+    const folder = VaultManagement.createFolder(getPathVault(), 'Untitled')
 
     if (folder) {
       event.reply('folder-created', folder)
@@ -68,7 +68,7 @@ function setupEvents() {
   })
 
   ipcMain.on('delete-note-or-folder', (event, arg) => {
-    const deleted = FileSystemModule.deleteFileOrFolder(arg)
+    const deleted = VaultManagement.deleteFileOrFolder(arg)
 
     if (deleted) {
       event.reply('note-or-folder-deleted', arg)
