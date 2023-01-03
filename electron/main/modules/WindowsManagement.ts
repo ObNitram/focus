@@ -95,7 +95,11 @@ function addListenerVaultWindow(){
       buttonLabel: 'Use as vault',
       properties: ['openDirectory'],
     })
-    event.reply('directory-chosen', filePaths[0])
+    console.log("type of file path : " + typeof filePaths)
+    console.log("Content of file path : " + filePaths)
+    if(filePaths.length != 0){
+      event.reply('directory-chosen', filePaths[0])
+    }
   })
 
 
