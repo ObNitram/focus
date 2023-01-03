@@ -14,9 +14,9 @@ let mainFolderPath: string = ''
 export default function Sidebar(props: any) {
   const [files, setFiles] = React.useState<any>([])
   const [folderName, setFolderName] = React.useState('MyVault')
-  const [collapsedAll, setCollapsedAll] = React.useState(true)
+  const [collapsedAll, setCollapsedAll] = React.useState<boolean | null>(null)
 
-  const [folderToCollapseOrExpand, setFolderToCollapseOrExpand] = React.useState<string | null>(null)
+  const [folderToExpand, setFolderToExpand] = React.useState<string | null>(null)
 
   function setupEvents() {
     ipcRenderer.on('folder-content', (event, theFiles) => {
@@ -72,7 +72,8 @@ export default function Sidebar(props: any) {
     changeSortOrderRecursive(filesCopy)
     setFiles([...filesCopy])
 
-    setFolderToCollapseOrExpand(newNoteOrFolder.path.split('/').slice(0, newNoteOrFolder.path.split('/').length - 1).join('/'))
+    setCollapsedAll(null)
+    setFolderToExpand(newNoteOrFolder.path.split('/').slice(0, newNoteOrFolder.path.split('/').length - 1).join('/'))
   }
 
   function filterDeletedNoteOrFolderRecursive(theFiles: any, path: string) {
@@ -134,7 +135,7 @@ export default function Sidebar(props: any) {
     <div className={styles.sidebar}>
         <TopBar onCollapseAll={handleCollapseAll} onSortOrderChange={handleSortOrderChange}/>
         <h2>{folderName}</h2>
-        <FileList collapsedAll={collapsedAll} files={files} collapse={false} folderToCollapseOrExpand={folderToCollapseOrExpand} />
+        <FileList collapsedAll={collapsedAll} files={files} folderToExpand={folderToExpand} />
     </div>
   )
 }

@@ -6,15 +6,16 @@ import Dropdown from '../../generic/Dropdown'
 
 export interface FileListItemProps {
     item: any;
-    collapse: boolean|null;
-    collapsedAll: boolean;
+    folderToExpand: string|null;
+    collapsedAll: boolean|null;
     renaming: boolean;
 }
 
 export default function FileListItem(this: any, props: FileListItemProps) {
     const [item, setItem] = React.useState(props.item);
+    const [folderToExpand, setFolderToExpand] = React.useState<string|null>(null);
     const [dirCollapsed, setDirCollapsed] = React.useState(true);
-    const [dirCollapsedAll, setDirCollapsedAll] = React.useState(true);
+    const [dirCollapsedAll, setDirCollapsedAll] = React.useState<boolean|null>(null);
     const [renaming, setRenaming] = React.useState(false);
     const [dropdownHidden, setDropdownHidden] = React.useState(true);
 
@@ -45,6 +46,7 @@ export default function FileListItem(this: any, props: FileListItemProps) {
 
     function handleClickDirectory() {
         setDirCollapsed(!dirCollapsed)
+        setDirCollapsedAll(null)
         setDropdownHidden(true)
     }
 
@@ -75,24 +77,28 @@ export default function FileListItem(this: any, props: FileListItemProps) {
     }
 
     useEffect(() => {
-        setDirCollapsedAll(props.collapsedAll);
-        if (props.collapsedAll) {
-            setDirCollapsed(true);
-        }
+        if (props.folderToExpand !== null) {
+            setDirCollapsedAll(null);
+            setFolderToExpand(props.folderToExpand);
 
-        if (props.collapse !== null) {
-            setDirCollapsed(props.collapse);
+            if (props.folderToExpand === item.path) {
+                setDirCollapsed(false);
+            }
+        }
+        else if (props.collapsedAll !== null) {
+            setFolderToExpand(null);
+            setDirCollapsedAll(props.collapsedAll);
         }
 
         setItem(props.item);
         setRenaming(false)
-    }, [props.item, props.collapsedAll, props.collapse]);
+    }, [props.item, props.collapsedAll, props.folderToExpand]);
 
     if (!item) return null;
 
     if (item.isDirectory) {
         return (
-            <li className={`${styles.sidebar_list_folder} ${dirCollapsed && dirCollapsedAll ? styles.sidebar_list_folder_collapsed : styles.sidebar_list_folder_expanded}`} id={item.path}>
+            <li className={`${styles.sidebar_list_folder} ${dirCollapsed === true || dirCollapsedAll === true ? styles.sidebar_list_folder_collapsed : styles.sidebar_list_folder_expanded}`} id={item.path}>
                 <div onClick={handleClickDirectory} onContextMenu={(e) => {e.preventDefault(); setDropdownHidden(!dropdownHidden)}}>
                     <p className={styles.sidebar_list_folder_name}>
                         {item.name}
@@ -101,7 +107,7 @@ export default function FileListItem(this: any, props: FileListItemProps) {
                 <Dropdown items={dropdownRightClickFolderItems} onItemSelect={(dropdownItem: any) => {handleDropdownItemClickFolder(dropdownItem, item.path)}} hidden={dropdownHidden} />
                 <ul className={styles.sidebar_list_folder_children}>
                     {item.children.map((item: any) => (
-                        <FileListItem key={item.name} item={item} collapsedAll={dirCollapsedAll} renaming={false} collapse={null} />
+                        <FileListItem key={item.name} item={item} collapsedAll={dirCollapsedAll} renaming={false} folderToExpand={folderToExpand} />
                     ))}
                 </ul>
             </li>
