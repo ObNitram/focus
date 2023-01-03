@@ -18,6 +18,7 @@ import { join } from 'path'
 
 import * as VaultManagement from './modules/VaultManagementModule'
 import * as WindowsManagement from './modules/WindowsManagement'
+import * as printMessage from './modules/OutputModule'
 import { getPathVault, setPathVault ,initConfig, saveInSettingPathVault } from './modules/ManageConfig'
 
 // Disable GPU Acceleration for Windows 7
@@ -76,30 +77,29 @@ function setupEvents() {
   })
 
   ipcMain.on('open_main_window', (event, path:string) => {
-    console.log('test')
-    setPathVault(path)
-    if(!saveInSettingPathVault){
-      console.log('ERROR WITH CONFIG OF THE APPLICATION.')
+    if(!saveInSettingPathVault(path)){
       app.exit();
     }
-    saveInSettingPathVault(path)
     WindowsManagement.closeVaultWindowAndOpenMain()
   })
 }
 
 
 if(initConfig() == false){
-  console.log('ERROR WITH CONFIG OF THE APPLICATION.')
+  printMessage.printError('The configuration of settings is corrupted or a system error occured. Exiting...')
   app.exit();
 }
 
 app.whenReady().then(() => {
   setupEvents();
   pathVault = getPathVault()
-  console.log("Path vault in start of app : " + pathVault)
   if(pathVault == null){
+    printMessage.printINFO('This is the first time of application launch or the config was reseted !')
+    printMessage.printINFO('Launch select vault location window...')
     WindowsManagement.createVaultWindow()
   }else{
+    printMessage.printINFO('A valid configuration is found, launching the main window...')
+    setPathVault(pathVault)
     mainWindow =  WindowsManagement.createMainWindow();
   }
 })
