@@ -89,6 +89,9 @@ export default function FileListItem(this: any, props: FileListItemProps) {
             setDirCollapsed(props.collapsedAll);
         }
 
+        if (!props.item.isDirectory && props.item.name.endsWith('.md')) {
+            props.item.name = props.item.name.slice(0, -3) // hide the .md extension
+        }
         setItem(props.item);
         setRenaming(false)
     }, [props.item, props.collapsedAll, props.folderToExpand]);
@@ -106,7 +109,7 @@ export default function FileListItem(this: any, props: FileListItemProps) {
                 <Dropdown items={dropdownRightClickFolderItems} onItemSelect={(dropdownItem: any) => {handleDropdownItemClickFolder(dropdownItem, item.path)}} hidden={dropdownHidden} />
                 <ul className={styles.sidebar_list_folder_children}>
                     {item.children.map((item: any) => (
-                        <FileListItem key={item.name} item={item} collapsedAll={dirCollapsedAll} renaming={false} folderToExpand={folderToExpand} />
+                        <FileListItem key={item.path} item={item} collapsedAll={dirCollapsedAll} renaming={false} folderToExpand={folderToExpand} />
                     ))}
                 </ul>
             </li>
