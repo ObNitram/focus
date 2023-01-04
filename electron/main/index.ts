@@ -54,35 +54,53 @@ function setupEvents() {
       ignoreInitial: true
     })
     watcher.on('add', (path) => {
-      console.log('add ' + path)
+      printMessage.printLog('add ' + path)
       event.reply('folder-content', VaultManagement.getFolderContent(getPathVault(), true))
     }).on('addDir', (path) => {
-      console.log('addDir ' + path)
+      printMessage.printLog('addDir ' + path)
       event.reply('folder-content', VaultManagement.getFolderContent(getPathVault(), true))
     }).on('change', (path) => {
-      console.log('change ' + path)
+      printMessage.printLog('change ' + path)
       event.reply('folder-content', VaultManagement.getFolderContent(getPathVault(), true))
     }).on('unlink', (path) => {
-      console.log('remove ' + path)
+      printMessage.printLog('remove ' + path)
       event.reply('folder-content', VaultManagement.getFolderContent(getPathVault(), true))
     }).on('unlinkDir', (path) => {
-      console.log('removeDir ' + path)
+      printMessage.printLog('removeDir ' + path)
       event.reply('folder-content', VaultManagement.getFolderContent(getPathVault(), true))
     })
   })
 
   ipcMain.on('create-note', (event, pathVault:string|null = null) => {
     // TODO: Set vault path after getting saved value
+    printMessage.printINFO('Request to add note !')
     const note = VaultManagement.createNote(pathVault ? pathVault : getPathVault())
+    if(note){
+      printMessage.printOK('Note added')
+    }else{
+      printMessage.printError('Note not added')
+    }
   })
 
   ipcMain.on('create-folder', (event, pathVault:string|null = null) => {
     // TODO: Set vault path after getting saved value
+    printMessage.printINFO('Request to add folder !')
     const folder = VaultManagement.createFolder(pathVault ? pathVault : getPathVault(), 'Untitled')
+    if(folder){
+      printMessage.printOK('Folder added')
+    }else{
+      printMessage.printError('Folder not added')
+    }
   })
 
   ipcMain.on('delete-note-or-folder', (event, arg) => {
+    printMessage.printINFO('Request to remove : '+  arg)
     const deleted = VaultManagement.deleteFileOrFolder(arg)
+    if(deleted){
+      printMessage.printOK(arg + ' deleted !')
+    }else{
+      printMessage.printError(arg + ' not deleted !')
+    }
   })
 
   ipcMain.on('open_main_window', (event, path:string) => {
