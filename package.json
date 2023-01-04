@@ -16,8 +16,10 @@
   },
   "dependencies": {
     "@lexical/react": "^0.6.0",
+    "chokidar": "^3.5.3",
     "colors": "^1.4.0",
     "lexical": "^0.6.0",
+    "original-fs": "^1.2.0",
     "react-icons": "^4.7.1",
     "react-router-dom": "^6.5.0"
   },

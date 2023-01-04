@@ -15,6 +15,7 @@ process.env.PUBLIC = app.isPackaged ? process.env.DIST : join(process.env.DIST_E
 import { app, BrowserWindow, shell, ipcMain, ipcRenderer } from 'electron'
 import { release } from 'os'
 import { join } from 'path'
+import chokidar from 'chokidar'
 
 import * as VaultManagement from './modules/VaultManagementModule'
 import * as WindowsManagement from './modules/WindowsManagement'
@@ -40,39 +41,65 @@ const urlProd = join('file://', process.env.DIST, 'index.html')
 let pathVault:string|null = null
 let mainWindow:BrowserWindow|null = null
 
+let watcher:chokidar.FSWatcher|null = null
 
 function setupEvents() {
   ipcMain.on('get-folder-content', (event) => {
     // TODO: Set vault path after getting saved value
     const content = VaultManagement.getFolderContent(getPathVault(), true)
     event.reply('folder-content', content)
+    watcher = chokidar.watch(getPathVault(), {
+      ignored: /(^|[\/\\])\../, // ignore dotfiles
+      persistent: false,
+      ignoreInitial: true
+    })
+    watcher.on('add', (path) => {
+      printMessage.printLog('add ' + path)
+      event.reply('folder-content', VaultManagement.getFolderContent(getPathVault(), true))
+    }).on('addDir', (path) => {
+      printMessage.printLog('addDir ' + path)
+      event.reply('folder-content', VaultManagement.getFolderContent(getPathVault(), true))
+    }).on('change', (path) => {
+      printMessage.printLog('change ' + path)
+      event.reply('folder-content', VaultManagement.getFolderContent(getPathVault(), true))
+    }).on('unlink', (path) => {
+      printMessage.printLog('remove ' + path)
+      event.reply('folder-content', VaultManagement.getFolderContent(getPathVault(), true))
+    }).on('unlinkDir', (path) => {
+      printMessage.printLog('removeDir ' + path)
+      event.reply('folder-content', VaultManagement.getFolderContent(getPathVault(), true))
+    })
   })
 
   ipcMain.on('create-note', (event, pathVault:string|null = null) => {
     // TODO: Set vault path after getting saved value
-
+    printMessage.printINFO('Request to add note !')
     const note = VaultManagement.createNote(pathVault ? pathVault : getPathVault())
-
-    if (note) {
-      event.reply('note-created', note)
+    if(note){
+      printMessage.printOK('Note added')
+    }else{
+      printMessage.printError('Note not added')
     }
   })
 
   ipcMain.on('create-folder', (event, pathVault:string|null = null) => {
     // TODO: Set vault path after getting saved value
-
+    printMessage.printINFO('Request to add folder !')
     const folder = VaultManagement.createFolder(pathVault ? pathVault : getPathVault(), 'Untitled')
-
-    if (folder) {
-      event.reply('folder-created', folder)
+    if(folder){
+      printMessage.printOK('Folder added')
+    }else{
+      printMessage.printError('Folder not added')
     }
   })
 
   ipcMain.on('delete-note-or-folder', (event, arg) => {
+    printMessage.printINFO('Request to remove : '+  arg)
     const deleted = VaultManagement.deleteFileOrFolder(arg)
-
-    if (deleted) {
-      event.reply('note-or-folder-deleted', arg)
+    if(deleted){
+      printMessage.printOK(arg + ' deleted !')
+    }else{
+      printMessage.printError(arg + ' not deleted !')
     }
   })
 
@@ -104,7 +131,6 @@ app.whenReady().then(() => {
     mainWindow =  WindowsManagement.createMainWindow();
   }
 })
-
 
 
 app.on('window-all-closed', () => {
