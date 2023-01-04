@@ -1,6 +1,6 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useRef } from "react"
 
-import styles from 'styles/dropdown.module.scss'
+import styles from 'styles/components/generic/dropdown.module.scss'
 
 import { BsCheckLg } from 'react-icons/bs'
 
@@ -21,9 +21,20 @@ export default function Dropdown(props: DropdownProps) {
     const [hidden, setHidden] = React.useState(true)
     const [items, setItems] = React.useState(props.items)
 
+    const dropdown = useRef<HTMLUListElement>(null)
+
     useEffect(() => {
+        document.removeEventListener('mousedown', handleClickOutside)
+
         setHidden(props.hidden)
+        document.addEventListener('mousedown', handleClickOutside)
     }, [props.hidden])
+
+    const handleClickOutside = (event: MouseEvent) => {
+        if (dropdown.current && !dropdown.current.contains(event.target as Node)) {
+            setHidden(true)
+        }
+    }
 
     const handleDropdownItemClick = (item: DropdownItem) => {
         return () => {
@@ -53,7 +64,7 @@ export default function Dropdown(props: DropdownProps) {
     }
 
     return (
-        <ul className={`${styles.dropdown} ${hidden ? styles.hidden : ''}`}>
+        <ul className={`${styles.dropdown} ${hidden ? styles.hidden : ''}`} ref={dropdown}>
             {items.map((item: DropdownItem) => (
                 <li key={item.key} onClick={handleDropdownItemClick(item)}>{item.title}{item.selected ? <BsCheckLg/> : ''}</li>
             ))}

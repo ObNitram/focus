@@ -103,6 +103,22 @@ function setupEvents() {
     }
   })
 
+  ipcMain.on('rename-note-or-folder', (event, path: string, newName: string) => {
+    printMessage.printINFO('Request to rename : '+  path)
+
+    const renamed = VaultManagement.renameFileOrFolder(path, newName)
+    if(renamed){
+      printMessage.printOK(path + ' renamed!')
+    }else{
+      printMessage.printError(path + ' not renamed!')
+    }
+  })
+
+  ipcMain.on('show-in-explorer', (event, path: string) => {
+    printMessage.printINFO('Request to show in explorer : '+  path)
+    VaultManagement.showInExplorer(path)
+  })
+
   ipcMain.on('open_main_window', (event, path:string) => {
     if(!saveInSettingPathVault(path)){
       app.exit();

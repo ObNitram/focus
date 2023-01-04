@@ -1,7 +1,8 @@
 import { join } from 'path'
 import { mkdirSync } from 'fs'
-import { Dirent, readdirSync, rmSync, statSync, unlinkSync, writeFileSync, existsSync } from 'original-fs'
+import { Dirent, readdirSync, rmSync, statSync, unlinkSync, writeFileSync, existsSync, renameSync } from 'original-fs'
 import * as printMessage from './OutputModule'
+import { shell } from 'electron'
 
 export class File {
     name: string
@@ -31,10 +32,10 @@ export function findAvailableName(dir: string, name: string) {
         while (true) {
             if (i > 0) {
                 if (name.endsWith('.md')) {
-                    modifiedName = `${name.slice(0, -3)} (${i}).md`
+                    modifiedName = `${name.slice(0, -3)}(${i}).md`
                 }
                 else {
-                    modifiedName = `${name} (${i})`
+                    modifiedName = `${name}(${i})`
                 }
             }
             fullPath = join(dir, modifiedName)
@@ -94,6 +95,33 @@ export function deleteFileOrFolder(path: string): boolean {
     return true
 }
 
+export function renameFileOrFolder(oldPath: string, newPath: string): boolean {
+    try {
+        let stats = statSync(oldPath)
+
+        if (stats.isDirectory()) {
+            if (!newPath.endsWith('/')) {
+                newPath += '/'
+            }
+        }
+        else {
+            if (newPath.endsWith('/')) {
+                newPath = newPath.slice(0, -1)
+            }
+            if (!newPath.endsWith('.md')) {
+                newPath += '.md'
+            }
+        }
+        renameSync(oldPath, newPath)
+    }
+    catch (e) {
+        printMessage.printError("Error while renaming file or folder: "+ e)
+        return false
+    }
+    printMessage.printOK("File or folder renamed: "+ oldPath + " -> " + newPath)
+    return true
+}
+
 function getFolderContentRecursively(folderPath: string, recursive: boolean = false) {
     let files: Dirent[]
     let content = []
@@ -108,12 +136,16 @@ function getFolderContentRecursively(folderPath: string, recursive: boolean = fa
     }
 
     for (const file of files) {
-        let currIsDirectory = file.isDirectory()
-
-        if (!currIsDirectory && !file.name.endsWith('.md')) {
+        if (file.name.startsWith('.')) { // ignore hidden files and folders
             continue
         }
 
+        let currIsDirectory = file.isDirectory()
+        if (!currIsDirectory) {
+            if (!file.name.endsWith('.md')) {
+                continue
+            }
+        }
         const fileStats = statSync(join(folderPath, file.name))
 
         content.push(new File(
@@ -138,4 +170,8 @@ export function getFolderContent(folderPath: string, recursive: boolean = false)
 
     content.push(new File(folderName, true, fileStats.birthtimeMs, fileStats.mtimeMs, mainFolderChildren, folderPath))
     return content
+}
+
+export function showInExplorer(folderPath: string) {
+    shell.showItemInFolder(folderPath)
 }

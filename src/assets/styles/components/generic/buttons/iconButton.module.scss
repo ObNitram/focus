@@ -1,0 +1,23 @@
+@import '../../../variables.scss';
+
+button {
+    background-color: $main-color;
+    border: none;
+    border-radius: 0.5rem;
+    color: $text-color;
+    cursor: pointer;
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0;
+    margin-top: 1rem;
+    padding: 0.25rem 0.5rem;
+    text-align: center;
+
+    &:hover {
+        background-color: $hover;
+    }
+
+    &.selected {
+        background-color: $hover;
+    }
+}

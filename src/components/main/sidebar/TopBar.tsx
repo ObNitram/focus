@@ -1,4 +1,4 @@
-import styles from 'styles/sidebar.module.scss'
+import styles from 'styles/components/main/sidebar.module.scss'
 
 import { useState } from 'react'
 
@@ -8,6 +8,7 @@ import { TbSortDescending } from 'react-icons/tb'
 import { VscCollapseAll, VscExpandAll } from 'react-icons/vsc'
 
 import Dropdown, { DropdownItem } from '../../generic/Dropdown'
+import IconButton from '../../generic/buttons/IconButton'
 
 const { ipcRenderer } = window.require('electron')
 
@@ -79,11 +80,11 @@ export default function TopBar(props: TopBarProps) {
 
     return (
         <div className={styles.sidebar_topbar}>
-            <button title='Create new note' onClick={handleCreateNote}><MdOutlineEditNote/></button>
-            <button title='Create new folder' onClick={handleCreateFolder}><AiFillFolderAdd/></button>
-            <button title='Change sort order' onClick={handleChangeSortOrder} className={changeSortOrderHidden ? '' : styles.selected}><TbSortDescending/>
+            <IconButton title='Create new note' onClick={handleCreateNote} icon={<MdOutlineEditNote/>}/>
+            <IconButton title='Create new folder' onClick={handleCreateFolder} icon={<AiFillFolderAdd/>}/>
+            <IconButton title='Change sort order' onClick={handleChangeSortOrder} icon={<TbSortDescending/>}>
                 <Dropdown items={sortOrderItems} hidden={changeSortOrderHidden} onItemSelect={props.onSortOrderChange} displaySelectionIndicator={true}/>
-            </button>
+            </IconButton>
             <button title={collapsed ? 'Expand all' : 'Collapse all'} onClick={handleCollapseAll}>{collapsed ? <VscExpandAll/> : <VscCollapseAll/>}</button>
         </div>
     )

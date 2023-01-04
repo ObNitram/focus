@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import styles from 'styles/sidebar.module.scss'
+import styles from 'styles/components/main/sidebar.module.scss'
 
 import FileList from "./FileList"
 import TopBar from "./TopBar"
@@ -123,9 +123,11 @@ export default function Sidebar(props: any) {
 
   return (
     <div className={styles.sidebar}>
-        <TopBar onCollapseAll={handleCollapseAll} onSortOrderChange={handleSortOrderChange}/>
+      <div className={styles.sidebar_header}>
+        <TopBar onCollapseAll={handleCollapseAll} onSortOrderChange={handleSortOrderChange} />
         <h2>{folderName}</h2>
-        <FileList collapsedAll={collapsedAll} files={files} folderToExpand={folderToExpand} />
+      </div>
+      <FileList collapsedAll={collapsedAll} files={files} folderToExpand={folderToExpand} />
     </div>
   )
 }
