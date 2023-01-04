@@ -73,30 +73,16 @@ function setupEvents() {
 
   ipcMain.on('create-note', (event, pathVault:string|null = null) => {
     // TODO: Set vault path after getting saved value
-
     const note = VaultManagement.createNote(pathVault ? pathVault : getPathVault())
-
-    if (note) {
-      event.reply('note-created', note)
-    }
   })
 
   ipcMain.on('create-folder', (event, pathVault:string|null = null) => {
     // TODO: Set vault path after getting saved value
-
     const folder = VaultManagement.createFolder(pathVault ? pathVault : getPathVault(), 'Untitled')
-
-    if (folder) {
-      event.reply('folder-created', folder)
-    }
   })
 
   ipcMain.on('delete-note-or-folder', (event, arg) => {
     const deleted = VaultManagement.deleteFileOrFolder(arg)
-
-    if (deleted) {
-      event.reply('note-or-folder-deleted', arg)
-    }
   })
 
   ipcMain.on('open_main_window', (event, path:string) => {
