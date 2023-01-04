@@ -1,6 +1,6 @@
 import { join } from 'path'
 import { mkdirSync } from 'fs'
-import { Dirent, readdirSync, rmSync, statSync, unlinkSync, writeFileSync } from 'original-fs'
+import { Dirent, readdirSync, rmSync, statSync, unlinkSync, writeFileSync, existsSync } from 'original-fs'
 import * as printMessage from './OutputModule'
 
 export class File {
@@ -77,7 +77,10 @@ export function deleteFileOrFolder(path: string): boolean {
     try {
         let stats = statSync(path)
         if (stats.isDirectory()) {
-            rmSync(path, { recursive: true, force: true })
+            rmSync(path, { recursive: true })
+            if(existsSync(path)){
+                throw new Error("Impossible to delete element. Please check permission.")
+            }
         }
         else {
             unlinkSync(path)
