@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react"
 
-import styles from 'styles/dropdown.module.scss'
+import styles from 'styles/components/generic/dropdown.module.scss'
 
 import { BsCheckLg } from 'react-icons/bs'
 
