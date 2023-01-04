@@ -14,8 +14,7 @@ export interface DropdownProps {
     items: DropdownItem[],
     displaySelectionIndicator?: boolean,
     onItemSelect: (item: DropdownItem) => void,
-    hidden: boolean,
-    onHiddenChange?: (hidden: boolean) => void
+    hidden: boolean
 }
 
 export default function Dropdown(props: DropdownProps) {
@@ -26,6 +25,7 @@ export default function Dropdown(props: DropdownProps) {
 
     useEffect(() => {
         document.removeEventListener('mousedown', handleClickOutside)
+
         setHidden(props.hidden)
         document.addEventListener('mousedown', handleClickOutside)
     }, [props.hidden])
@@ -33,9 +33,6 @@ export default function Dropdown(props: DropdownProps) {
     const handleClickOutside = (event: MouseEvent) => {
         if (dropdown.current && !dropdown.current.contains(event.target as Node)) {
             setHidden(true)
-            if (props.onHiddenChange) {
-                props.onHiddenChange(true)
-            }
         }
     }
 

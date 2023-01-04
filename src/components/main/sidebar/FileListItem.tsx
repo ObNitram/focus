@@ -76,10 +76,6 @@ export default function FileListItem(this: any, props: FileListItemProps) {
         }
     }
 
-    function handleDropdownHiddenChange(hidden: boolean) {
-        setDropdownHidden(hidden)
-    }
-
     useEffect(() => {
         if (props.folderToExpand !== null) {
             setFolderToExpand(props.folderToExpand);
@@ -110,7 +106,7 @@ export default function FileListItem(this: any, props: FileListItemProps) {
                         {item.name}
                     </p>
                 </div>
-                <Dropdown items={dropdownRightClickFolderItems} onItemSelect={(dropdownItem: any) => {handleDropdownItemClickFolder(dropdownItem, item.path)}} hidden={dropdownHidden} onHiddenChange={handleDropdownHiddenChange} />
+                <Dropdown items={dropdownRightClickFolderItems} onItemSelect={(dropdownItem: any) => {handleDropdownItemClickFolder(dropdownItem, item.path)}} hidden={dropdownHidden} />
                 <ul className={styles.sidebar_list_folder_children}>
                     {item.children.map((item: any) => (
                         <FileListItem key={item.path} item={item} collapsedAll={dirCollapsedAll} renaming={false} folderToExpand={folderToExpand} />
@@ -123,7 +119,7 @@ export default function FileListItem(this: any, props: FileListItemProps) {
     else {
         return (
             <li className={styles.sidebar_list_file} id={item.path} onContextMenu={(e) => {setDropdownHidden(!dropdownHidden)}}>
-                <Dropdown items={dropdownRightClickCommonItems} onItemSelect={(dropdownItem: any) => {handleDropdownItemClickCommon(dropdownItem, item.path)}} hidden={dropdownHidden} onHiddenChange={handleDropdownHiddenChange} />
+                <Dropdown items={dropdownRightClickCommonItems} onItemSelect={(dropdownItem: any) => {handleDropdownItemClickCommon(dropdownItem, item.path)}} hidden={dropdownHidden} />
                 <input type="text" value={item.name} readOnly={!renaming} onChange={(e) => setItem({ ...item, name: e.target.value })} />
             </li>
         )
