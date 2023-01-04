@@ -1,4 +1,4 @@
-import styles from 'styles/sidebar.module.scss'
+import styles from 'styles/components/main/sidebar.module.scss'
 
 import { useState } from 'react'
 

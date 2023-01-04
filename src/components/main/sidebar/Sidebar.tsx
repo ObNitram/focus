@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import styles from 'styles/sidebar.module.scss'
+import styles from 'styles/components/main/sidebar.module.scss'
 
 import FileList from "./FileList"
 import TopBar from "./TopBar"
