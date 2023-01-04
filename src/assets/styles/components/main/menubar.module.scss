@@ -1,4 +1,4 @@
-@import './variables.scss';
+@import '../../variables.scss';
 
 .menubar{
     height: $height_menubar;
@@ -8,4 +8,6 @@
     top: 0;
     left: 0;
     background-color: $top_menu_bar;
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
 }
