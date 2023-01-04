@@ -12,7 +12,7 @@ process.env.DIST_ELECTRON = join(__dirname, '../..')
 process.env.DIST = join(process.env.DIST_ELECTRON, '../dist')
 process.env.PUBLIC = app.isPackaged ? process.env.DIST : join(process.env.DIST_ELECTRON, '../public')
 
-import { app, BrowserWindow, shell, ipcMain, ipcRenderer } from 'electron'
+import { app, BrowserWindow, shell, ipcMain } from 'electron'
 import { release } from 'os'
 import { join } from 'path'
 import chokidar from 'chokidar'
@@ -125,9 +125,24 @@ function setupEvents() {
     }
     WindowsManagement.closeVaultWindowAndOpenMain()
   })
+
+  ipcMain.on('closeApp', () => {
+    printMessage.printLog('Close application is asked')
+    closeApp();
+  })
+
+  ipcMain.on('maximizeWindow', (event) => {
+    printMessage.printLog('Maximize application is asked')
+    BrowserWindow.getFocusedWindow().maximize()
+  })
+
+  ipcMain.on('hideWindow', (event) => {
+    printMessage.printLog('hide application is asked')
+    BrowserWindow.getFocusedWindow().minimize()
+  })
 }
 
-printMessage.printLog('TEST')
+
 
 if(initConfig() == false){
   printMessage.printError('The configuration of settings is corrupted or a system error occured. Exiting...')
@@ -147,6 +162,10 @@ app.whenReady().then(() => {
     mainWindow =  WindowsManagement.createMainWindow();
   }
 })
+
+function closeApp(){
+  app.quit()
+}
 
 
 app.on('window-all-closed', () => {

@@ -85,7 +85,7 @@ export default function TopBar(props: TopBarProps) {
             <IconButton title='Change sort order' onClick={handleChangeSortOrder} icon={<TbSortDescending/>}>
                 <Dropdown items={sortOrderItems} hidden={changeSortOrderHidden} onItemSelect={props.onSortOrderChange} displaySelectionIndicator={true}/>
             </IconButton>
-            <button title={collapsed ? 'Expand all' : 'Collapse all'} onClick={handleCollapseAll}>{collapsed ? <VscExpandAll/> : <VscCollapseAll/>}</button>
+            <IconButton title={collapsed ? 'Expand all' : 'Collapse all'} onClick={handleCollapseAll} icon={collapsed ? <VscExpandAll/> : <VscCollapseAll/>}></IconButton>
         </div>
     )
 }
