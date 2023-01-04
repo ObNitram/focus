@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useRef } from "react"
 
 import styles from 'styles/dropdown.module.scss'
 
@@ -14,16 +14,30 @@ export interface DropdownProps {
     items: DropdownItem[],
     displaySelectionIndicator?: boolean,
     onItemSelect: (item: DropdownItem) => void,
-    hidden: boolean
+    hidden: boolean,
+    onHiddenChange?: (hidden: boolean) => void
 }
 
 export default function Dropdown(props: DropdownProps) {
     const [hidden, setHidden] = React.useState(true)
     const [items, setItems] = React.useState(props.items)
 
+    const dropdown = useRef<HTMLUListElement>(null)
+
     useEffect(() => {
+        document.removeEventListener('mousedown', handleClickOutside)
         setHidden(props.hidden)
+        document.addEventListener('mousedown', handleClickOutside)
     }, [props.hidden])
+
+    const handleClickOutside = (event: MouseEvent) => {
+        if (dropdown.current && !dropdown.current.contains(event.target as Node)) {
+            setHidden(true)
+            if (props.onHiddenChange) {
+                props.onHiddenChange(true)
+            }
+        }
+    }
 
     const handleDropdownItemClick = (item: DropdownItem) => {
         return () => {
@@ -53,7 +67,7 @@ export default function Dropdown(props: DropdownProps) {
     }
 
     return (
-        <ul className={`${styles.dropdown} ${hidden ? styles.hidden : ''}`}>
+        <ul className={`${styles.dropdown} ${hidden ? styles.hidden : ''}`} ref={dropdown}>
             {items.map((item: DropdownItem) => (
                 <li key={item.key} onClick={handleDropdownItemClick(item)}>{item.title}{item.selected ? <BsCheckLg/> : ''}</li>
             ))}

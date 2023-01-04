@@ -76,6 +76,10 @@ export default function FileListItem(this: any, props: FileListItemProps) {
         }
     }
 
+    function handleDropdownHiddenChange(hidden: boolean) {
+        setDropdownHidden(hidden)
+    }
+
     useEffect(() => {
         if (props.folderToExpand !== null) {
             setFolderToExpand(props.folderToExpand);
@@ -101,12 +105,12 @@ export default function FileListItem(this: any, props: FileListItemProps) {
     if (item.isDirectory) {
         return (
             <li className={`${styles.sidebar_list_folder} ${dirCollapsed === false || dirCollapsedAll === false ? styles.sidebar_list_folder_expanded : styles.sidebar_list_folder_collapsed}`} id={item.path}>
-                <div onClick={handleClickDirectory} onContextMenu={(e) => {e.preventDefault(); setDropdownHidden(!dropdownHidden)}}>
+                <div onClick={handleClickDirectory} onContextMenu={(e) => {setDropdownHidden(!dropdownHidden)}}>
                     <p className={styles.sidebar_list_folder_name}>
                         {item.name}
                     </p>
                 </div>
-                <Dropdown items={dropdownRightClickFolderItems} onItemSelect={(dropdownItem: any) => {handleDropdownItemClickFolder(dropdownItem, item.path)}} hidden={dropdownHidden} />
+                <Dropdown items={dropdownRightClickFolderItems} onItemSelect={(dropdownItem: any) => {handleDropdownItemClickFolder(dropdownItem, item.path)}} hidden={dropdownHidden} onHiddenChange={handleDropdownHiddenChange} />
                 <ul className={styles.sidebar_list_folder_children}>
                     {item.children.map((item: any) => (
                         <FileListItem key={item.path} item={item} collapsedAll={dirCollapsedAll} renaming={false} folderToExpand={folderToExpand} />
@@ -118,8 +122,8 @@ export default function FileListItem(this: any, props: FileListItemProps) {
 
     else {
         return (
-            <li className={styles.sidebar_list_file} id={item.path} onContextMenu={(e) => {e.preventDefault(); setDropdownHidden(!dropdownHidden)}}>
-                <Dropdown items={dropdownRightClickCommonItems} onItemSelect={(dropdownItem: any) => {handleDropdownItemClickCommon(dropdownItem, item.path)}} hidden={dropdownHidden} />
+            <li className={styles.sidebar_list_file} id={item.path} onContextMenu={(e) => {setDropdownHidden(!dropdownHidden)}}>
+                <Dropdown items={dropdownRightClickCommonItems} onItemSelect={(dropdownItem: any) => {handleDropdownItemClickCommon(dropdownItem, item.path)}} hidden={dropdownHidden} onHiddenChange={handleDropdownHiddenChange} />
                 <input type="text" value={item.name} readOnly={!renaming} onChange={(e) => setItem({ ...item, name: e.target.value })} />
             </li>
         )
