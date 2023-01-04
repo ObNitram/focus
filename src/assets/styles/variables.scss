@@ -8,3 +8,9 @@ $button_color: #8400ff;
 $disabled_button_color: #e2e2e270;
 
 $dropdown_background_color: #363636;
+
+//MENU BAR
+$height_menubar: 40px;
+
+//SIDE_BAR
+$heigt_sidebar: calc(100% - $height_menubar);

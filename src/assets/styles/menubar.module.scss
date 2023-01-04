@@ -1,0 +1,11 @@
+@import './variables.scss';
+
+.menubar{
+    height: $height_menubar;
+    background-color: red;
+    width: 100vw;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: $top_menu_bar;
+}

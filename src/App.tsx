@@ -4,6 +4,7 @@ import styles from 'styles/app.module.scss'
 
 import Editor from "./components/editor/Editor"
 import Sidebar from "./components/main/sidebar/Sidebar"
+import MenuBar from './components/main/menubar/MenuBar'
 
 const App: React.FC = () => {
 
@@ -11,6 +12,7 @@ const App: React.FC = () => {
 
   return (
     <div className={styles.app}>
+      <MenuBar/>
       <Sidebar />
 
       {/* <h1>Text editor</h1>
