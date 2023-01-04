@@ -1,6 +1,6 @@
 import { join } from 'path'
 import { mkdirSync } from 'fs'
-import { Dirent, readdirSync, rmSync, statSync, unlinkSync, writeFileSync, existsSync } from 'original-fs'
+import { Dirent, readdirSync, rmSync, statSync, unlinkSync, writeFileSync, existsSync, renameSync } from 'original-fs'
 import * as printMessage from './OutputModule'
 
 export class File {
@@ -91,6 +91,33 @@ export function deleteFileOrFolder(path: string): boolean {
         return false
     }
     printMessage.printOK("File or folder deleted: "+ path)
+    return true
+}
+
+export function renameFileOrFolder(oldPath: string, newPath: string): boolean {
+    try {
+        let stats = statSync(oldPath)
+
+        if (stats.isDirectory()) {
+            if (!newPath.endsWith('/')) {
+                newPath += '/'
+            }
+        }
+        else {
+            if (newPath.endsWith('/')) {
+                newPath = newPath.slice(0, -1)
+            }
+            if (!newPath.endsWith('.md')) {
+                newPath += '.md'
+            }
+        }
+        renameSync(oldPath, newPath)
+    }
+    catch (e) {
+        printMessage.printError("Error while renaming file or folder: "+ e)
+        return false
+    }
+    printMessage.printOK("File or folder renamed: "+ oldPath + " -> " + newPath)
     return true
 }
 
