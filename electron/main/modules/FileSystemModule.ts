@@ -2,6 +2,7 @@ import { join } from 'path'
 import { mkdirSync } from 'fs'
 import { Dirent, readdirSync, rmSync, statSync, unlinkSync, writeFileSync, existsSync, renameSync } from 'original-fs'
 import * as printMessage from './OutputModule'
+import { shell } from 'electron'
 
 export class File {
     name: string
@@ -169,4 +170,8 @@ export function getFolderContent(folderPath: string, recursive: boolean = false)
 
     content.push(new File(folderName, true, fileStats.birthtimeMs, fileStats.mtimeMs, mainFolderChildren, folderPath))
     return content
+}
+
+export function showInExplorer(folderPath: string) {
+    shell.showItemInFolder(folderPath)
 }

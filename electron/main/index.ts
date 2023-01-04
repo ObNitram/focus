@@ -114,6 +114,11 @@ function setupEvents() {
     }
   })
 
+  ipcMain.on('show-in-explorer', (event, path: string) => {
+    printMessage.printINFO('Request to show in explorer : '+  path)
+    VaultManagement.showInExplorer(path)
+  })
+
   ipcMain.on('open_main_window', (event, path:string) => {
     if(!saveInSettingPathVault(path)){
       app.exit();

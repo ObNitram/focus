@@ -21,4 +21,8 @@ export function getFolderContent(folderPath: string, recursive: boolean = false)
     return FileSystemModule.getFolderContent(folderPath, recursive)
 }
 
+export function showInExplorer(folderPath: string) {
+    return FileSystemModule.showInExplorer(folderPath)
+}
+
 export default FileSystemModule.File

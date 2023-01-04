@@ -31,20 +31,26 @@ export default function FileListItem(this: any, props: FileListItemProps) {
             title: 'Delete',
             selected: false,
             key: 'delete'
+        },
+        {
+            title: 'Show in Explorer',
+            selected: false,
+            key: 'show-in-explorer'
         }
     ]
 
     const dropdownRightClickFolderItems = [...dropdownRightClickCommonItems,
-    {
-        title: 'Create note',
-        selected: false,
-        key: 'create-note'
-    },
-    {
-        title: 'Create folder',
-        selected: false,
-        key: 'create-folder'
-    }]
+        {
+            title: 'Create note',
+            selected: false,
+            key: 'create-note'
+        },
+        {
+            title: 'Create folder',
+            selected: false,
+            key: 'create-folder'
+        }
+    ]
 
     useEffect(() => {
         if (props.folderToExpand !== null) {
@@ -114,8 +120,12 @@ export default function FileListItem(this: any, props: FileListItemProps) {
             }
             return true;
         }
-        if (item.key === 'delete') {
+        else if (item.key === 'delete') {
             ipcRenderer.send('delete-note-or-folder', fileOrFolderPath)
+            return true;
+        }
+        else if (item.key === 'show-in-explorer') {
+            ipcRenderer.send('show-in-explorer', fileOrFolderPath)
             return true;
         }
 
