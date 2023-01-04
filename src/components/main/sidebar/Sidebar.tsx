@@ -28,16 +28,6 @@ export default function Sidebar(props: any) {
       setFolderName(theFiles[0].name)
       mainFolderPath = theFiles[0].path
     })
-    ipcRenderer.on('note-created', (event, note) => {
-      addNewNoteOrFolderInRightPlace(note)
-    })
-    ipcRenderer.on('folder-created', (event, folder) => {
-      addNewNoteOrFolderInRightPlace(folder)
-    })
-    ipcRenderer.on('note-or-folder-deleted', (event, path) => {
-      filesCopy = filterDeletedNoteOrFolderRecursive(filesCopy, path)
-      setFiles(filesCopy)
-    })
   }
 
   useEffect(() => {
