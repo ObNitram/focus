@@ -24,14 +24,14 @@ export function createMainWindow() {
     title: 'Main window',
     icon: join(process.env.PUBLIC, 'favicon.svg'),
     fullscreenable: true,
+    frame: false,
     webPreferences: {
       preload,
       nodeIntegration: true,
-      contextIsolation: false
+      contextIsolation: false,
     },
   })
   mainWindow.maximize()
-
   if (process.env.VITE_DEV_SERVER_URL) { // electron-vite-vue#298
     mainWindow.loadURL(urlDev)
     // Open devTool if the app is not packaged

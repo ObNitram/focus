@@ -1,0 +1,38 @@
+@import '../../variables.scss';
+
+.menubar{
+    height: $height_menubar;
+    background-color: red;
+    width: 100vw;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: $top_menu_bar;
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
+
+    .window_button_contenair{
+        position: absolute;
+        right: 10px;
+        top:0;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        // width: 100px;
+        // background-color: lightblue;
+        gap: 10px;
+        color: $text-color;
+
+        .icons{
+            -webkit-user-select: unset;
+            -webkit-app-region: no-drag;
+            &:hover{
+                transform: scale(1.2);
+            }
+        }
+            
+        
+
+    }
+}
