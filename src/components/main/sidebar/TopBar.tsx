@@ -1,6 +1,6 @@
 import styles from 'styles/components/main/sidebar.module.scss'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { MdOutlineEditNote } from 'react-icons/md'
 import { AiFillFolderAdd } from 'react-icons/ai'
@@ -54,6 +54,12 @@ export default function TopBar(props: TopBarProps) {
     const [collapsed, setCollapsed] = useState(true)
     const [changeSortOrderHidden, setChangeSortOrderHidden] = useState(true)
 
+    const changeSortOrderButtonRef = useRef<HTMLButtonElement>(null)
+
+    useEffect(() => {
+        document.addEventListener('click', clickOutside)
+    }, [])
+
     function collapseOrExpandAll(collapse: boolean = !collapsed) {
         setCollapsed(collapse)
         props.onCollapseAll(collapse)
@@ -78,11 +84,17 @@ export default function TopBar(props: TopBarProps) {
         ipcRenderer.send('create-folder')
     }
 
+    const clickOutside = (e: MouseEvent) => {
+        if (changeSortOrderButtonRef.current && !changeSortOrderButtonRef.current.contains(e.target as Node)) {
+            setChangeSortOrderHidden(true)
+        }
+    }
+
     return (
         <div className={styles.sidebar_topbar}>
             <IconButton title='Create new note' onClick={handleCreateNote} icon={<MdOutlineEditNote/>}/>
             <IconButton title='Create new folder' onClick={handleCreateFolder} icon={<AiFillFolderAdd/>}/>
-            <IconButton title='Change sort order' onClick={handleChangeSortOrder} icon={<TbSortDescending/>}>
+            <IconButton title='Change sort order' onClick={handleChangeSortOrder} icon={<TbSortDescending/>} ref={changeSortOrderButtonRef}>
                 <Dropdown items={sortOrderItems} hidden={changeSortOrderHidden} onItemSelect={props.onSortOrderChange} displaySelectionIndicator={true}/>
             </IconButton>
             <button title={collapsed ? 'Expand all' : 'Collapse all'} onClick={handleCollapseAll}>{collapsed ? <VscExpandAll/> : <VscCollapseAll/>}</button>

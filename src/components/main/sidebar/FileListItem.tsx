@@ -69,19 +69,32 @@ export default function FileListItem(this: any, props: FileListItemProps) {
             props.item.name = props.item.name.slice(0, -3) // hide the .md extension
         }
         setItem(props.item);
-        setRenaming(false)
+        setRenaming(false);
+
+
+        // Event listeners
+        document.removeEventListener('click', handleClickOutside);
+        document.removeEventListener('keydown', handleEnterKeyPressed);
+
+        document.addEventListener('click', handleClickOutside);
+        document.addEventListener('keydown', handleEnterKeyPressed);
     }, [props.item, props.collapsedAll, props.folderToExpand]);
 
     const handleClickOutside = (event: MouseEvent) => {
-        const isItemRenaming = refItem.current && refItem.current.contains(document.activeElement);
+        const itemInclick = !refItem.current || refItem.current.contains(event.target as Node);
+        if (itemInclick) {
+            return;
+        }
+        setDropdownHidden(true);
 
-        if (isItemRenaming && refItem.current && !refItem.current.contains(event.target as Node)) {
+        const isItemRenaming = refItem.current && refItem.current.querySelector('input')?.readOnly === false;
+        if (isItemRenaming) {
             doRenaming();
         }
     };
 
     const handleEnterKeyPressed = (event: KeyboardEvent) => {
-        const isItemRenaming = refItem.current && refItem.current.contains(document.activeElement);
+        const isItemRenaming = refItem.current && refItem.current.contains(event.target as Node);
 
         if (isItemRenaming && event.key === 'Enter') {
             doRenaming();
@@ -91,9 +104,6 @@ export default function FileListItem(this: any, props: FileListItemProps) {
     function doRenaming() {
         setRenaming(false);
         ipcRenderer.send('rename-note-or-folder', item.path, refItem.current?.querySelector('input')?.value)
-
-        document.removeEventListener('click', handleClickOutside);
-        document.removeEventListener('keydown', handleEnterKeyPressed);
     }
 
     function handleClickDirectory() {
@@ -106,9 +116,6 @@ export default function FileListItem(this: any, props: FileListItemProps) {
         setDropdownHidden(true)
         if (item.key === 'rename') {
             setRenaming(true);
-
-            document.addEventListener('click', handleClickOutside);
-            document.addEventListener('keydown', handleEnterKeyPressed);
 
             // Focus on the input and select the text
             if (refItem.current) {

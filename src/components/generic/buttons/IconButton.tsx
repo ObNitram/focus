@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 
 import styles from 'styles/components/generic/buttons/iconButton.module.scss'
 
@@ -9,11 +9,15 @@ export interface IconButtonProps {
     children?: React.ReactNode;
 }
 
-export default function IconButton(props: IconButtonProps) {
+const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>((props, ref) => {
+
+
     return (
-        <button className={styles.icon_button} title={props.title} onClick={props.onClick}>
+        <button className={styles.icon_button} title={props.title} onClick={props.onClick} ref={ref}>
             {props.icon}
             {props.children}
         </button>
     )
-}
+})
+
+export default IconButton
