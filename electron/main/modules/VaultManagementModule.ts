@@ -25,4 +25,8 @@ export function showInExplorer(folderPath: string) {
     return FileSystemModule.showInExplorer(folderPath)
 }
 
+export function getNoteOrFolderInfo(path: string) {
+    return FileSystemModule.getFileOrFolderInfo(path)
+}
+
 export default FileSystemModule.File

@@ -175,3 +175,8 @@ export function getFolderContent(folderPath: string, recursive: boolean = false)
 export function showInExplorer(folderPath: string) {
     shell.showItemInFolder(folderPath)
 }
+
+export function getFileOrFolderInfo(path: string): File {
+    let stats = statSync(path)
+    return new File(path.split('/').pop(), stats.isDirectory(), stats.birthtimeMs, stats.mtimeMs, stats.isDirectory() ? [...getFolderContentRecursively(path, true)] : [], path)
+}

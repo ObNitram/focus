@@ -28,6 +28,20 @@ export default function Sidebar(props: any) {
       setFolderName(theFiles[0].name)
       mainFolderPath = theFiles[0].path
     })
+
+    ipcRenderer.on('note-created', (event, note) => {
+      addNewNoteOrFolderInRightPlace(note)
+    })
+    ipcRenderer.on('folder-created', (event, folder) => {
+      addNewNoteOrFolderInRightPlace(folder)
+    })
+    ipcRenderer.on('note-or-folder-deleted', (event, path) => {
+      filesCopy = filterDeletedNoteOrFolderRecursive(filesCopy, path)
+      setFiles(filesCopy)
+    })
+    ipcRenderer.on('note-updated', (event, note) => {
+      modifyNoteOrFolder(note)
+    })
   }
 
   useEffect(() => {
@@ -36,29 +50,47 @@ export default function Sidebar(props: any) {
     ipcRenderer.removeAllListeners('note-created')
     ipcRenderer.removeAllListeners('folder-created')
     ipcRenderer.removeAllListeners('note-or-folder-deleted')
+    ipcRenderer.removeAllListeners('note-updated')
     setupEvents()
   }, [props.folderName])
 
+  function getParentFolder(path: string) {
+    let folderPath = path.split('/').slice(0, path.split('/').length - 1).join('/')
+    if (folderPath === mainFolderPath) {
+      return filesCopy
+    }
+    let folderContainingNoteOrFolder = filesCopy.find((file: any) => file.path === folderPath)
+    if (!folderContainingNoteOrFolder) {
+      return;
+    }
+
+    if (folderContainingNoteOrFolder.isDirectory) {
+      return folderContainingNoteOrFolder.children
+    }
+    return null;
+  }
+
+  function modifyNoteOrFolder(noteOrFolder: any) {
+    let folderContainingNoteOrFolder = getParentFolder(noteOrFolder.path)
+    if (!folderContainingNoteOrFolder) {
+      return;
+    }
+
+    let noteOrFolderIndex = folderContainingNoteOrFolder.findIndex((file: any) => file.path === noteOrFolder.path)
+    folderContainingNoteOrFolder[noteOrFolderIndex] = { ...noteOrFolder }
+
+    changeSortOrderRecursive(filesCopy)
+    setFiles([...filesCopy])
+  }
+
   function addNewNoteOrFolderInRightPlace(newNoteOrFolder: any) {
-    let pathParts = newNoteOrFolder.path.split(mainFolderPath + '/')[1].split('/')
-    let parentPath = mainFolderPath + '/' + pathParts.shift()
-
-    let folderWhereToInsert = filesCopy
-
-    while (parentPath.length > 0) {
-      let folderWhereToInsertTemp = [...folderWhereToInsert]
-      folderWhereToInsertTemp = folderWhereToInsertTemp.find((file: any) => file.path === parentPath)
-
-      if (folderWhereToInsertTemp) {
-        folderWhereToInsert = folderWhereToInsertTemp.children
-        parentPath = parentPath + '/' + pathParts.shift()
-      }
-      else {
-        break
-      }
+    let folderWhereToInsert = getParentFolder(newNoteOrFolder.path)
+    if (!folderWhereToInsert) {
+      return;
     }
 
     folderWhereToInsert.push(newNoteOrFolder)
+
     changeSortOrderRecursive(filesCopy)
     setFiles([...filesCopy])
 
