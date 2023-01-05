@@ -94,7 +94,7 @@ export default function FileListItem(this: any, props: FileListItemProps) {
     };
 
     const handleEnterKeyPressed = (event: KeyboardEvent) => {
-        const isItemRenaming = refItem.current && refItem.current.contains(event.target as Node);
+        const isItemRenaming = refItem.current && refItem.current.querySelector('input')?.readOnly === false;
 
         if (isItemRenaming && event.key === 'Enter') {
             doRenaming();
