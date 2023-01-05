@@ -73,19 +73,23 @@ export default function FileListItem(this: any, props: FileListItemProps) {
 
 
         // Event listeners
-        document.removeEventListener('click', handleClickOutside);
-        document.removeEventListener('keydown', handleEnterKeyPressed);
-
         document.addEventListener('click', handleClickOutside);
         document.addEventListener('keydown', handleEnterKeyPressed);
-    }, [props.item, props.collapsedAll, props.folderToExpand]);
+        document.addEventListener('contextmenu', handleRightClick);
+
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+            document.removeEventListener('keydown', handleEnterKeyPressed);
+            document.removeEventListener('contextmenu', handleRightClick);
+        }
+    }, [props.item, props.collapsedAll, props.folderToExpand, dropdownHidden])
 
     const handleClickOutside = (event: MouseEvent) => {
-        const itemInclick = !refItem.current || refItem.current.contains(event.target as Node);
+        setDropdownHidden(true);
+        const itemInclick = refItem.current && refItem.current.contains(event.target as Node);
         if (itemInclick) {
             return;
         }
-        setDropdownHidden(true);
 
         const isItemRenaming = refItem.current && refItem.current.querySelector('input')?.readOnly === false;
         if (isItemRenaming) {
@@ -98,6 +102,16 @@ export default function FileListItem(this: any, props: FileListItemProps) {
 
         if (isItemRenaming && event.key === 'Enter') {
             doRenaming();
+        }
+    }
+
+    const handleRightClick = (event: MouseEvent) => {
+        const itemInclick = refItem.current && refItem.current.contains(event.target as Node);
+        if (itemInclick) {
+            setDropdownHidden(!dropdownHidden);
+        }
+        else {
+            setDropdownHidden(true);
         }
     }
 
@@ -156,7 +170,7 @@ export default function FileListItem(this: any, props: FileListItemProps) {
     if (item.isDirectory) {
         return (
             <li className={`${styles.sidebar_list_folder} ${dirCollapsed === false || dirCollapsedAll === false ? styles.sidebar_list_folder_expanded : styles.sidebar_list_folder_collapsed}`} id={item.path} ref={refItem}>
-                <div onClick={handleClickDirectory} onContextMenu={(e) => { setDropdownHidden(!dropdownHidden) }}>
+                <div onClick={handleClickDirectory}>
                     <span className={styles.sidebar_list_folder_name}>
                         <input type="text" value={item.name} readOnly={!renaming} onChange={(e) => setItem({ ...item, name: e.target.value })} />
                     </span>
@@ -173,7 +187,7 @@ export default function FileListItem(this: any, props: FileListItemProps) {
 
     else {
         return (
-            <li className={styles.sidebar_list_file} id={item.path} onContextMenu={(e) => { setDropdownHidden(!dropdownHidden) }} ref={refItem}>
+            <li className={styles.sidebar_list_file} id={item.path} ref={refItem}>
                 <Dropdown items={dropdownRightClickCommonItems} onItemSelect={(dropdownItem: any) => { handleDropdownItemClickCommon(dropdownItem, item.path) }} hidden={dropdownHidden} />
                 <input type="text" value={item.name} readOnly={!renaming} onChange={(e) => setItem({ ...item, name: e.target.value })} />
             </li>
