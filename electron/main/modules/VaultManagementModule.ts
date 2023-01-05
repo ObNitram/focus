@@ -1,5 +1,15 @@
 import * as FileSystemModule from './FileSystemModule'
 
+let pathVault:string|null = null;
+
+export function getPathVault(){
+    return pathVault
+}
+
+export function setPath(path:string){
+    pathVault = path
+}
+
 export function createFolder(dir: string, folderName: string) {
     return FileSystemModule.createFolder(dir, folderName)
 }
@@ -17,8 +27,8 @@ export function renameFileOrFolder(oldPath: string, newName: string): boolean {
     return FileSystemModule.renameFileOrFolder(oldPath, newPath)
 }
 
-export function getFolderContent(folderPath: string, recursive: boolean = false) {
-    return FileSystemModule.getFolderContent(folderPath, recursive)
+export function getVaultContent() {
+    return FileSystemModule.getFolderContent(pathVault, true)
 }
 
 export function showInExplorer(folderPath: string) {

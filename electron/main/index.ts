@@ -20,7 +20,7 @@ import chokidar from 'chokidar'
 import * as VaultManagement from './modules/VaultManagementModule'
 import * as WindowsManagement from './modules/WindowsManagement'
 import * as printMessage from './modules/OutputModule'
-import { getPathVault, setPathVault ,initConfig, saveInSettingPathVault } from './modules/ManageConfig'
+import { initConfig, saveInSettingPathVault } from './modules/ManageConfig'
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration()
@@ -46,35 +46,35 @@ let watcher:chokidar.FSWatcher|null = null
 function setupEvents() {
   ipcMain.on('get-folder-content', (event) => {
     // TODO: Set vault path after getting saved value
-    const content = VaultManagement.getFolderContent(getPathVault(), true)
+    const content = VaultManagement.getVaultContent()
     event.reply('folder-content', content)
-    watcher = chokidar.watch(getPathVault(), {
+    watcher = chokidar.watch(VaultManagement.getPathVault(), {
       ignored: /(^|[\/\\])\../, // ignore dotfiles
       persistent: false,
       ignoreInitial: true
     })
     watcher.on('add', (path) => {
       printMessage.printLog('add ' + path)
-      event.reply('folder-content', VaultManagement.getFolderContent(getPathVault(), true))
+      event.reply('folder-content', VaultManagement.getVaultContent())
     }).on('addDir', (path) => {
       printMessage.printLog('addDir ' + path)
-      event.reply('folder-content', VaultManagement.getFolderContent(getPathVault(), true))
+      event.reply('folder-content', VaultManagement.getVaultContent())
     }).on('change', (path) => {
       printMessage.printLog('change ' + path)
-      event.reply('folder-content', VaultManagement.getFolderContent(getPathVault(), true))
+      event.reply('folder-content', VaultManagement.getVaultContent())
     }).on('unlink', (path) => {
       printMessage.printLog('remove ' + path)
-      event.reply('folder-content', VaultManagement.getFolderContent(getPathVault(), true))
+      event.reply('folder-content', VaultManagement.getVaultContent())
     }).on('unlinkDir', (path) => {
       printMessage.printLog('removeDir ' + path)
-      event.reply('folder-content', VaultManagement.getFolderContent(getPathVault(), true))
+      event.reply('folder-content', VaultManagement.getVaultContent())
     })
   })
 
   ipcMain.on('create-note', (event, pathVault:string|null = null) => {
     // TODO: Set vault path after getting saved value
     printMessage.printINFO('Request to add note !')
-    const note = VaultManagement.createNote(pathVault ? pathVault : getPathVault())
+    const note = VaultManagement.createNote(pathVault ? pathVault : VaultManagement.getPathVault())
     if(note){
       printMessage.printOK('Note added')
     }else{
@@ -85,7 +85,7 @@ function setupEvents() {
   ipcMain.on('create-folder', (event, pathVault:string|null = null) => {
     // TODO: Set vault path after getting saved value
     printMessage.printINFO('Request to add folder !')
-    const folder = VaultManagement.createFolder(pathVault ? pathVault : getPathVault(), 'Untitled')
+    const folder = VaultManagement.createFolder(pathVault ? pathVault : VaultManagement.getPathVault(), 'Untitled')
     if(folder){
       printMessage.printOK('Folder added')
     }else{
@@ -151,14 +151,15 @@ if(initConfig() == false){
 
 app.whenReady().then(() => {
   setupEvents();
-  pathVault = getPathVault()
+  pathVault = VaultManagement.getPathVault()
+  printMessage.printLog('Path found is ' + pathVault)
   if(pathVault == null){
     printMessage.printINFO('This is the first time of application launch or the config was reseted !')
     printMessage.printINFO('Launch select vault location window...')
     WindowsManagement.createVaultWindow()
   }else{
     printMessage.printINFO('A valid configuration is found, launching the main window...')
-    setPathVault(pathVault)
+    VaultManagement.setPath(pathVault)
     mainWindow =  WindowsManagement.createMainWindow();
   }
 })
