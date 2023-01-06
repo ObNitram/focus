@@ -8,8 +8,6 @@ import * as FileListLogic from './FileListLogic'
 
 const { ipcRenderer } = window.require('electron')
 
-let filesCopy: any = []
-
 let mainFolderPath: string = ''
 
 export default function Sidebar(props: any) {
@@ -20,49 +18,50 @@ export default function Sidebar(props: any) {
   const [folderToExpand, setFolderToExpand] = React.useState<string | null>(null)
 
   function setupEvents() {
-    ipcRenderer.on('folder-content', (event, theFiles) => {
-      FileListLogic.changeSortOrderRecursive(theFiles[0].children)
-      filesCopy = theFiles[0].children
-      setFiles(filesCopy)
+    ipcRenderer.on('folder-content', (event, folderContent) => {
+      FileListLogic.changeSortOrderRecursive(folderContent.children)
+      setFiles(folderContent.children)
 
       // Retrieve folder name
-      setFolderName(theFiles[0].name)
-      mainFolderPath = theFiles[0].path
+      setFolderName(folderContent.name)
+      mainFolderPath = folderContent.path
     })
 
     ipcRenderer.on('note-created', (event, note) => {
-      filesCopy = FileListLogic.addNewNoteOrFolderInRightPlace(note, filesCopy, mainFolderPath)
-      setFiles(filesCopy)
+      setFiles(FileListLogic.addNoteOrFolder(note, files, mainFolderPath))
 
       setCollapsedAll(null)
       setFolderToExpand(note.path.split('/').slice(0, note.path.split('/').length - 1).join('/'))
     })
     ipcRenderer.on('folder-created', (event, folder) => {
-      filesCopy = FileListLogic.addNewNoteOrFolderInRightPlace(folder, filesCopy, mainFolderPath)
-      setFiles(filesCopy)
+      setFiles(FileListLogic.addNoteOrFolder(folder, files, mainFolderPath))
 
       setCollapsedAll(null)
       setFolderToExpand(folder.path.split('/').slice(0, folder.path.split('/').length - 1).join('/'))
     })
     ipcRenderer.on('note-or-folder-deleted', (event, path) => {
-      filesCopy = FileListLogic.filterDeletedNoteOrFolderRecursive(filesCopy, path)
-      setFiles(filesCopy)
+      setFiles(FileListLogic.deleteNoteOrFolder(files, path))
     })
     ipcRenderer.on('note-updated', (event, note) => {
-      filesCopy = FileListLogic.modifyNoteOrFolder(note, filesCopy, mainFolderPath)
-      setFiles(filesCopy)
+      setFiles(FileListLogic.modifyNoteOrFolder(note, files, mainFolderPath))
     })
   }
 
   useEffect(() => {
-    getListOfFilesAndFolders()
-    ipcRenderer.removeAllListeners('folder-content')
-    ipcRenderer.removeAllListeners('note-created')
-    ipcRenderer.removeAllListeners('folder-created')
-    ipcRenderer.removeAllListeners('note-or-folder-deleted')
-    ipcRenderer.removeAllListeners('note-updated')
     setupEvents()
-  }, [props.folderName])
+
+    return () => {
+      ipcRenderer.removeAllListeners('folder-content')
+      ipcRenderer.removeAllListeners('note-created')
+      ipcRenderer.removeAllListeners('folder-created')
+      ipcRenderer.removeAllListeners('note-or-folder-deleted')
+      ipcRenderer.removeAllListeners('note-updated')
+    }
+  }, [props.folderName, files])
+
+  useEffect(() => {
+    getListOfFilesAndFolders()
+  }, [])
 
   function getListOfFilesAndFolders() {
     ipcRenderer.send('get-folder-content')

@@ -45,9 +45,10 @@ let watcher: chokidar.FSWatcher | null = null
 
 function setupEvents() {
   ipcMain.on('get-folder-content', (event) => {
-    // TODO: Set vault path after getting saved value
-    const content = VaultManagement.getFolderContent(getPathVault(), true)
-    event.reply('folder-content', content)
+    printMessage.printINFO('Request to get folder content !')
+    VaultManagement.getFolderContent(getPathVault()).then((content) => {
+      event.reply('folder-content', content)
+    })
   })
 
   watcher = chokidar.watch(getPathVault(), {
@@ -57,16 +58,22 @@ function setupEvents() {
   })
 
   watcher.on('add', (path) => {
-    printMessage.printLog('add ' + path)
-    mainWindow?.webContents.send('note-created', VaultManagement.getNoteOrFolderInfo(path))
+    VaultManagement.getNoteOrFolderInfo(path).then((note) => {
+      printMessage.printLog('add ' + path)
+      mainWindow?.webContents.send('note-created', note)
+    })
   })
   watcher.on('addDir', (path) => {
-    printMessage.printLog('addDir ' + path)
-    mainWindow?.webContents.send('folder-created', VaultManagement.getNoteOrFolderInfo(path))
+    VaultManagement.getNoteOrFolderInfo(path).then((folder) => {
+      printMessage.printLog('addDir ' + path)
+      mainWindow?.webContents.send('note-created', folder)
+    })
   })
   watcher.on('change', (path) => {
-    printMessage.printLog('change ' + path)
-    mainWindow?.webContents.send('note-updated', VaultManagement.getNoteOrFolderInfo(path))
+    VaultManagement.getNoteOrFolderInfo(path).then((note) => {
+      printMessage.printLog('change ' + path)
+      mainWindow?.webContents.send('note-updated', note)
+    })
   })
   watcher.on('unlink', (path) => {
     printMessage.printLog('remove ' + path)
@@ -79,46 +86,48 @@ function setupEvents() {
 
 
   ipcMain.on('create-note', (event, pathVault: string | null = null) => {
-    // TODO: Set vault path after getting saved value
     printMessage.printINFO('Request to add note !')
-    const note = VaultManagement.createNote(pathVault ? pathVault : getPathVault())
-    if (note) {
-      printMessage.printOK('Note added')
-    } else {
-      printMessage.printError('Note not added')
-    }
+    VaultManagement.createNote(pathVault ? pathVault : getPathVault()).then((note) => {
+      if (note) {
+        printMessage.printOK('Note added')
+      } else {
+        printMessage.printError('Note not added')
+      }
+    })
   })
 
   ipcMain.on('create-folder', (event, pathVault: string | null = null) => {
-    // TODO: Set vault path after getting saved value
     printMessage.printINFO('Request to add folder !')
-    const folder = VaultManagement.createFolder(pathVault ? pathVault : getPathVault(), 'Untitled')
-    if (folder) {
-      printMessage.printOK('Folder added')
-    } else {
-      printMessage.printError('Folder not added')
-    }
+    VaultManagement.createFolder(pathVault ? pathVault : getPathVault(), 'Untitled').then((folder) => {
+      if (folder) {
+        printMessage.printOK('Folder added')
+      } else {
+        printMessage.printError('Folder not added')
+      }
+    })
   })
 
   ipcMain.on('delete-note-or-folder', (event, arg) => {
     printMessage.printINFO('Request to remove : ' + arg)
-    const deleted = VaultManagement.deleteFileOrFolder(arg)
-    if (deleted) {
-      printMessage.printOK(arg + ' deleted !')
-    } else {
-      printMessage.printError(arg + ' not deleted !')
-    }
+    VaultManagement.deleteFileOrFolder(arg).then((deleted) => {
+      if (deleted) {
+        printMessage.printOK(arg + ' removed!')
+      } else {
+        printMessage.printError(arg + ' not removed!')
+      }
+    })
   })
 
   ipcMain.on('rename-note-or-folder', (event, path: string, newName: string) => {
     printMessage.printINFO('Request to rename : ' + path)
 
-    const renamed = VaultManagement.renameFileOrFolder(path, newName)
-    if (renamed) {
-      printMessage.printOK(path + ' renamed!')
-    } else {
-      printMessage.printError(path + ' not renamed!')
-    }
+    VaultManagement.renameFileOrFolder(path, newName).then((renamed) => {
+      if (renamed) {
+        printMessage.printOK(path + ' renamed!')
+      } else {
+        printMessage.printError(path + ' not renamed!')
+      }
+    })
   })
 
   ipcMain.on('show-in-explorer', (event, path: string) => {

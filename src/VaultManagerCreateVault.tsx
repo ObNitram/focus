@@ -8,10 +8,6 @@ const { ipcRenderer } = window.require('electron')
 
 let theLocation: Function | null = null
 
-
-
-
-
 const VaultManagerCreateVault: React.FC = () => {
 
   const [location, setLocation] = useState(null)
@@ -37,6 +33,11 @@ const VaultManagerCreateVault: React.FC = () => {
     ipcRenderer.on('vault-created', (event, path: string) => {
       ipcRenderer.send('open_main_window', path)
     })
+
+    return () => {
+      ipcRenderer.removeAllListeners('directory-chosen')
+      ipcRenderer.removeAllListeners('vault-created')
+    }
   }, [])
 
   theLocation = setLocation

@@ -2,7 +2,6 @@ import './assets/styles/index.scss'
 import styles from 'styles/vaultManager.module.scss'
 
 import { Link } from 'react-router-dom'
-import { useEffect } from 'react'
 
 const { ipcRenderer } = window.require('electron')
 
@@ -12,14 +11,10 @@ function chooseDirectory() {
 
 ipcRenderer.on('directory-chosen', (event, path:string) => {
   ipcRenderer.send('open_main_window', path)
-})    
+})
 
 const VaultManager: React.FC = () => {
-  
-  useEffect(() => {
-    
-  }, [])
-  
+
   return (
     <div className={styles.vaultManager}>
 

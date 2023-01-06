@@ -1,8 +1,7 @@
-import { join } from 'path'
-import { mkdirSync } from 'fs'
-import { Dirent, readdirSync, rmSync, statSync, unlinkSync, writeFileSync, existsSync, renameSync } from 'original-fs'
-import * as printMessage from './OutputModule'
 import { shell } from 'electron'
+import { mkdir, readdir, rename, rm, stat, writeFile } from 'original-fs'
+import { join } from 'path'
+import * as printMessage from './OutputModule'
 
 export class File {
     name: string
@@ -22,161 +21,200 @@ export class File {
     }
 }
 
-export function findAvailableName(dir: string, name: string) {
-    // if the note already exists, we append a number to the name
-    let i = 0
-    let fullPath
-    let modifiedName = name
+export function findAvailableName(dir: string, name: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+        readdir(dir, (err, files) => {
+            if (err) {
+                printMessage.printError("Error while reading folder: " + err)
+                reject(err)
+            }
 
-    try {
-        while (true) {
-            if (i > 0) {
-                if (name.endsWith('.md')) {
-                    modifiedName = `${name.slice(0, -3)}(${i}).md`
+            let i = 1
+            let newName = name
+            while (files.includes(newName)) {
+                newName = name + ' (' + i + ')'
+                i++
+            }
+
+            resolve(newName)
+        })
+    })
+}
+
+function getFolderContentInner(folderPath: string, recursive: boolean = false): Promise<File[]> {
+    return new Promise((resolve, reject) => {
+        readdir(folderPath, (err, files) => {
+            if (err) {
+                printMessage.printError("Error while reading folder: " + err)
+                reject([])
+            }
+
+            let promises: Promise<File>[] = []
+            files.forEach((file) => {
+                let filePath = join(folderPath, file)
+                promises.push(getFileOrFolderInfo(filePath))
+            })
+
+            Promise.all(promises).then((files) => {
+                if (recursive) {
+                    let promises: Promise<File[]>[] = []
+                    files.forEach((file) => {
+                        if (file.isDirectory) {
+                            promises.push(getFolderContentInner(file.path, true))
+                        }
+                    })
+
+                    Promise.all(promises).then((subFolders) => {
+                        subFolders.forEach((subFolder) => {
+                            files = files.concat(subFolder)
+                        })
+                        resolve(files)
+                    })
+                } else {
+                    resolve(files)
                 }
-                else {
-                    modifiedName = `${name}(${i})`
-                }
-            }
-            fullPath = join(dir, modifiedName)
-            statSync(fullPath)
-            i++
-        }
-    } catch (e) {
-        return modifiedName
-    }
+            })
+        })
+    })
 }
 
-export function createFolder(dir: string, folderName: string) {
-    folderName = findAvailableName(dir, folderName)
-    let folderFullPath = join(dir, folderName)
-
-    try {
-        mkdirSync(folderFullPath)
-    }
-    catch (e) {
-        printMessage.printError("Error while creating folder: "+ e)
-    }
-    printMessage.printOK("Folder created: " + folderFullPath)
-    return new File(folderName, true, Date.now(), Date.now(), [], folderFullPath)
+/**
+ * Get recursively the content of a folder (the root folder is included)
+ * @param folderPath The path of the folder to get the content of
+ * @param recursive If true, the function will get the content of the subfolders
+ * @returns A promise that resolves to an array of File objects
+ */
+export function getFolderContent(folderPath: string, recursive: boolean = false): Promise<File> {
+    return new Promise((resolve) => {
+        getFileOrFolderInfo(folderPath).then((folder) => {
+            getFolderContentInner(folderPath, recursive).then((children) => {
+                folder.children = children
+                resolve(folder)
+            })
+        })
+    })
 }
 
-export function createNote(dir: string) {
-    let noteName = findAvailableName(dir, 'Untitled.md')
-    let noteFullPath = join(dir, noteName)
-
-    try {
-        writeFileSync(noteFullPath, '')
-    } catch (e) {
-        printMessage.printError("Error while creating note: " + e)
-    }
-    printMessage.printOK("Note created: " + noteFullPath)
-    return new File(noteName, false, Date.now(), Date.now(), [], noteFullPath)
-}
-
-export function deleteFileOrFolder(path: string): boolean {
-    try {
-        let stats = statSync(path)
-        if (stats.isDirectory()) {
-            rmSync(path, { recursive: true })
-            if(existsSync(path)){
-                throw new Error("Impossible to delete element. Please check permission.")
-            }
-        }
-        else {
-            unlinkSync(path)
-        }
-    }
-    catch (e) {
-        printMessage.printError("Error while deleting file or folder: "+ e)
-        return false
-    }
-    printMessage.printOK("File or folder deleted: "+ path)
-    return true
-}
-
-export function renameFileOrFolder(oldPath: string, newPath: string): boolean {
-    try {
-        let stats = statSync(oldPath)
-
-        if (stats.isDirectory()) {
-            if (!newPath.endsWith('/')) {
-                newPath += '/'
-            }
-        }
-        else {
-            if (newPath.endsWith('/')) {
-                newPath = newPath.slice(0, -1)
-            }
-            if (!newPath.endsWith('.md')) {
-                newPath += '.md'
-            }
-        }
-        renameSync(oldPath, newPath)
-    }
-    catch (e) {
-        printMessage.printError("Error while renaming file or folder: "+ e)
-        return false
-    }
-    printMessage.printOK("File or folder renamed: "+ oldPath + " -> " + newPath)
-    return true
-}
-
-function getFolderContentRecursively(folderPath: string, recursive: boolean = false) {
-    let files: Dirent[]
-    let content = []
-
-
-    try {
-        files = readdirSync(folderPath, { withFileTypes: true })
-    }
-    catch (e) {
-        printMessage.printError("Error while reading folder: " + e)
-        return content
-    }
-
-    for (const file of files) {
-        if (file.name.startsWith('.')) { // ignore hidden files and folders
-            continue
-        }
-
-        let currIsDirectory = file.isDirectory()
-        if (!currIsDirectory) {
-            if (!file.name.endsWith('.md')) {
-                continue
-            }
-        }
-        const fileStats = statSync(join(folderPath, file.name))
-
-        content.push(new File(
-            file.name,
-            currIsDirectory,
-            fileStats.birthtimeMs,
-            fileStats.mtimeMs,
-            currIsDirectory && recursive ? getFolderContentRecursively(join(folderPath, file.name), recursive) : [],
-            join(folderPath, file.name)
-        ))
-    }
-
-    return content
-}
-
-export function getFolderContent(folderPath: string, recursive: boolean = false) {
-    let content = []
-    let mainFolderChildren = getFolderContentRecursively(folderPath, recursive)
-
-    const fileStats = statSync(folderPath)
-    const folderName = folderPath.split('/').pop()
-
-    content.push(new File(folderName, true, fileStats.birthtimeMs, fileStats.mtimeMs, mainFolderChildren, folderPath))
-    return content
-}
 
 export function showInExplorer(folderPath: string) {
     shell.showItemInFolder(folderPath)
 }
 
-export function getFileOrFolderInfo(path: string): File {
-    let stats = statSync(path)
-    return new File(path.split('/').pop(), stats.isDirectory(), stats.birthtimeMs, stats.mtimeMs, stats.isDirectory() ? [...getFolderContentRecursively(path, true)] : [], path)
+export function getFileOrFolderInfo(path: string): Promise<File> {
+    return new Promise((resolve, reject) => {
+        stat(path, (err, stats) => {
+            if (err) {
+                printMessage.printError("Error while getting file or folder info: " + err)
+                reject(null)
+            }
+
+            let name = path.split('/').pop()
+            let isDirectory = stats.isDirectory()
+
+            if (isDirectory) {
+                getFolderContentInner(path).then((children) => {
+                    resolve(new File(name, isDirectory, stats.birthtimeMs, stats.mtimeMs, children, path))
+                })
+            }
+            resolve(new File(name, isDirectory, stats.birthtimeMs, stats.mtimeMs, [], path))
+        })
+    })
+}
+
+export function deleteFileOrFolder(path: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+        rm(path, { recursive: true }, (err) => {
+            if (err) {
+                printMessage.printError("Error while deleting file or folder: " + err)
+                reject(false)
+            }
+            printMessage.printOK("File or folder deleted: " + path)
+            resolve(true)
+        })
+    })
+}
+
+export function createNote(dir: string): Promise<File> {
+    return new Promise((resolve, reject) => {
+        findAvailableName(dir, 'New Note.md')
+            .then((noteName) => {
+                let noteFullPath = join(dir, noteName)
+
+                try {
+                    writeFile(noteFullPath, '', (err) => {
+                        if (err) {
+                            printMessage.printError("Error while creating note: " + err)
+                            reject(null)
+                        }
+                        printMessage.printOK("Note created: " + noteFullPath)
+                        resolve(new File(noteName, false, Date.now(), Date.now(), [], noteFullPath))
+                    })
+                } catch (e) {
+                    printMessage.printError("Error while creating note: " + e)
+                    reject(null)
+                }
+            })
+    })
+}
+
+export function createFolder(dir: string, folderName: string): Promise<File> {
+    return new Promise((resolve, reject) => {
+        findAvailableName(dir, folderName)
+            .then((folderName) => {
+                let folderFullPath = join(dir, folderName)
+
+                try {
+                    mkdir(folderFullPath, (err) => {
+                        if (err) {
+                            printMessage.printError("Error while creating folder: " + err)
+                            reject(null)
+                        }
+                        printMessage.printOK("Folder created: " + folderFullPath)
+                        resolve(new File(folderName, true, Date.now(), Date.now(), [], folderFullPath))
+                    })
+                } catch (e) {
+                    printMessage.printError("Error while creating folder: " + e)
+                    reject(null)
+                }
+            })
+    })
+}
+
+export function renameFileOrFolder(oldPath: string, newPath: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+        try {
+            stat(oldPath, (err, stats) => {
+                if (err) {
+                    printMessage.printError("Error while renaming file or folder: " + err)
+                    reject(false)
+                }
+
+                if (stats.isDirectory()) {
+                    if (!newPath.endsWith('/')) {
+                        newPath += '/'
+                    }
+                }
+                else {
+                    if (newPath.endsWith('/')) {
+                        newPath = newPath.slice(0, -1)
+                    }
+                    if (!newPath.endsWith('.md')) {
+                        newPath += '.md'
+                    }
+                }
+                rename(oldPath, newPath, (err) => {
+                    if (err) {
+                        printMessage.printError("Error while renaming file or folder: " + err)
+                        reject(false)
+                    }
+                    printMessage.printOK("File or folder renamed: " + oldPath + " -> " + newPath)
+                    resolve(true)
+                })
+            })
+        }
+        catch (e) {
+            printMessage.printError("Error while renaming file or folder: " + e)
+            reject(false)
+        }
+    })
 }

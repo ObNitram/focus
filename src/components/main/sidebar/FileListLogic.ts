@@ -75,13 +75,14 @@ function getParentFolder(path: string, files: any, mainFolderPath: string) {
  * @param mainFolderPath  the path of the main folder
  * @returns               the tree of files and folders with the new note or folder added
  */
-export function addNewNoteOrFolderInRightPlace(newNoteOrFolder: any, files: any, mainFolderPath: string) {
-    let folderWhereToInsert = getParentFolder(newNoteOrFolder.path, files, mainFolderPath)
-    if (!folderWhereToInsert) {
-        return;
+export function addNoteOrFolder(newNoteOrFolder: any, files: any, mainFolderPath: string) {
+    if (!mainFolderPath || files.length === 0) {
+        files.push(newNoteOrFolder)
+        return files
     }
-    folderWhereToInsert.push(newNoteOrFolder)
 
+    let folderWhereToInsert = getParentFolder(newNoteOrFolder.path, files, mainFolderPath)
+    folderWhereToInsert.push(newNoteOrFolder)
     changeSortOrderRecursive(files)
     return files
 }
@@ -114,13 +115,13 @@ export function modifyNoteOrFolder(noteOrFolder: any, files: any, mainFolderPath
  * @param path     the path of the note or folder to delete
  * @returns        the tree of files and folders with the note or folder deleted
  */
-export function filterDeletedNoteOrFolderRecursive(theFiles: any, path: string) {
+export function deleteNoteOrFolder(theFiles: any, path: string) {
     let filesCopy = [...theFiles]
     filesCopy.forEach((file: any, index: number) => {
         if (file.path === path) {
             filesCopy.splice(index, 1)
         } else if (file.isDirectory) {
-            file.children = filterDeletedNoteOrFolderRecursive(file.children, path)
+            file.children = deleteNoteOrFolder(file.children, path)
         }
     })
     return filesCopy
