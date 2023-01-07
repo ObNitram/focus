@@ -46,7 +46,7 @@ let watcher: chokidar.FSWatcher | null = null
 function setupEvents() {
   ipcMain.on('get-folder-content', (event) => {
     printMessage.printINFO('Request to get folder content !')
-    VaultManagement.getFolderContent(getPathVault()).then((content) => {
+    VaultManagement.getFolderContent(getPathVault(), true).then((content) => {
       event.reply('folder-content', content)
     })
   })

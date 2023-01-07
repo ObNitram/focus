@@ -19,7 +19,7 @@ export default function FileListItem(this: any, props: FileListItemProps) {
     const [renaming, setRenaming] = React.useState(false);
     const [dropdownHidden, setDropdownHidden] = React.useState(true);
 
-    const refItem = useRef<HTMLLIElement>(null);
+    const refItem = useRef<HTMLDivElement>(null);
 
     const dropdownRightClickCommonItems = [
         {
@@ -40,16 +40,16 @@ export default function FileListItem(this: any, props: FileListItemProps) {
     ]
 
     const dropdownRightClickFolderItems = [...dropdownRightClickCommonItems,
-        {
-            title: 'Create note',
-            selected: false,
-            key: 'create-note'
-        },
-        {
-            title: 'Create folder',
-            selected: false,
-            key: 'create-folder'
-        }
+    {
+        title: 'Create note',
+        selected: false,
+        key: 'create-note'
+    },
+    {
+        title: 'Create folder',
+        selected: false,
+        key: 'create-folder'
+    }
     ]
 
     useEffect(() => {
@@ -69,7 +69,6 @@ export default function FileListItem(this: any, props: FileListItemProps) {
             props.item.name = props.item.name.slice(0, -3) // hide the .md extension
         }
         setItem(props.item);
-        setRenaming(false);
 
 
         // Event listeners
@@ -169,8 +168,8 @@ export default function FileListItem(this: any, props: FileListItemProps) {
 
     if (item.isDirectory) {
         return (
-            <li className={`${styles.sidebar_list_folder} ${dirCollapsed === false || dirCollapsedAll === false ? styles.sidebar_list_folder_expanded : styles.sidebar_list_folder_collapsed}`} id={item.path} ref={refItem}>
-                <div onClick={handleClickDirectory}>
+            <li className={`${styles.sidebar_list_folder} ${dirCollapsed === false || dirCollapsedAll === false ? styles.sidebar_list_folder_expanded : styles.sidebar_list_folder_collapsed}`}>
+                <div onClick={handleClickDirectory} ref={refItem}>
                     <span className={styles.sidebar_list_folder_name}>
                         <input type="text" value={item.name} readOnly={!renaming} onChange={(e) => setItem({ ...item, name: e.target.value })} />
                     </span>
@@ -187,9 +186,11 @@ export default function FileListItem(this: any, props: FileListItemProps) {
 
     else {
         return (
-            <li className={styles.sidebar_list_file} id={item.path} ref={refItem}>
-                <Dropdown items={dropdownRightClickCommonItems} onItemSelect={(dropdownItem: any) => { handleDropdownItemClickCommon(dropdownItem, item.path) }} hidden={dropdownHidden} />
-                <input type="text" value={item.name} readOnly={!renaming} onChange={(e) => setItem({ ...item, name: e.target.value })} />
+            <li className={styles.sidebar_list_file}>
+                <div ref={refItem}>
+                    <Dropdown items={dropdownRightClickCommonItems} onItemSelect={(dropdownItem: any) => { handleDropdownItemClickCommon(dropdownItem, item.path) }} hidden={dropdownHidden} />
+                    <input type="text" value={item.name} readOnly={!renaming} onChange={(e) => setItem({ ...item, name: e.target.value })} />
+                </div>
             </li>
         )
     }

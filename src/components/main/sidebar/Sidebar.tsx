@@ -20,7 +20,7 @@ export default function Sidebar(props: any) {
   function setupEvents() {
     ipcRenderer.on('folder-content', (event, folderContent) => {
       FileListLogic.changeSortOrderRecursive(folderContent.children)
-      setFiles(folderContent.children)
+      setFiles([...folderContent.children])
 
       // Retrieve folder name
       setFolderName(folderContent.name)
@@ -28,22 +28,22 @@ export default function Sidebar(props: any) {
     })
 
     ipcRenderer.on('note-created', (event, note) => {
-      setFiles(FileListLogic.addNoteOrFolder(note, files, mainFolderPath))
+      setFiles([...FileListLogic.addNoteOrFolder(note, files)])
 
       setCollapsedAll(null)
       setFolderToExpand(note.path.split('/').slice(0, note.path.split('/').length - 1).join('/'))
     })
     ipcRenderer.on('folder-created', (event, folder) => {
-      setFiles(FileListLogic.addNoteOrFolder(folder, files, mainFolderPath))
+      setFiles([...FileListLogic.addNoteOrFolder(folder, files)])
 
       setCollapsedAll(null)
       setFolderToExpand(folder.path.split('/').slice(0, folder.path.split('/').length - 1).join('/'))
     })
     ipcRenderer.on('note-or-folder-deleted', (event, path) => {
-      setFiles(FileListLogic.deleteNoteOrFolder(files, path))
+      setFiles([...FileListLogic.deleteNoteOrFolder(files, path)])
     })
     ipcRenderer.on('note-updated', (event, note) => {
-      setFiles(FileListLogic.modifyNoteOrFolder(note, files, mainFolderPath))
+      setFiles([...FileListLogic.modifyNoteOrFolder(note, files)])
     })
   }
 

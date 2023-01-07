@@ -48,23 +48,24 @@ export function changeSortOrderRecursive(files: any, sortOrder: SORT_ORDER = cur
  * Get the parent folder of a note or folder
  * @param path           the path of the note or folder
  * @param files          the tree of files and folders
- * @param mainFolderPath the path of the main folder
  * @returns              the parent folder of the note or folder
  */
-function getParentFolder(path: string, files: any, mainFolderPath: string) {
-    let folderPath = path.split('/').slice(0, path.split('/').length - 1).join('/')
-    if (folderPath === mainFolderPath) {
-        return files;
-    }
-    let folderContainingNoteOrFolder = files.find((file: any) => file.path === folderPath)
-    if (!folderContainingNoteOrFolder) {
-        return;
-    }
+function getParentFolder(path: string, files: any): any|null {
+    let parentFolder: File|null = null
+    let parentFolderPath: string = path.substring(0, path.lastIndexOf('/'))
 
-    if (folderContainingNoteOrFolder.isDirectory) {
-        return folderContainingNoteOrFolder.children
-    }
-    return null;
+    files.forEach((file: any) => {
+        if (file.path === parentFolderPath) {
+            parentFolder = file
+        }
+        else if (file.isDirectory) {
+            let folder = getParentFolder(path, file.children)
+            if (folder) {
+                parentFolder = folder
+            }
+        }
+    })
+    return parentFolder
 }
 
 
@@ -72,17 +73,22 @@ function getParentFolder(path: string, files: any, mainFolderPath: string) {
  * Add a new note or folder in the right place in the tree of files and folders
  * @param newNoteOrFolder the new note or folder to add
  * @param files           the tree of files and folders
- * @param mainFolderPath  the path of the main folder
  * @returns               the tree of files and folders with the new note or folder added
  */
-export function addNoteOrFolder(newNoteOrFolder: any, files: any, mainFolderPath: string) {
-    if (!mainFolderPath || files.length === 0) {
+export function addNoteOrFolder(newNoteOrFolder: any, files: any) {
+    if (files.length === 0) {
         files.push(newNoteOrFolder)
         return files
     }
 
-    let folderWhereToInsert = getParentFolder(newNoteOrFolder.path, files, mainFolderPath)
-    folderWhereToInsert.push(newNoteOrFolder)
+    let folderWhereToInsert = getParentFolder(newNoteOrFolder.path, files)
+    if (!folderWhereToInsert) {
+        files.push(newNoteOrFolder)
+        changeSortOrderRecursive(files)
+        return files
+    }
+
+    folderWhereToInsert.children.push(newNoteOrFolder)
     changeSortOrderRecursive(files)
     return files
 }
@@ -92,11 +98,10 @@ export function addNoteOrFolder(newNoteOrFolder: any, files: any, mainFolderPath
  * Modify a note or folder in the tree of files and folders
  * @param noteOrFolder   the note or folder to modify
  * @param files          the tree of files and folders
- * @param mainFolderPath the path of the main folder
  * @returns              the tree of files and folders with the note or folder modified
  */
-export function modifyNoteOrFolder(noteOrFolder: any, files: any, mainFolderPath: string) {
-    let folderContainingNoteOrFolder = getParentFolder(noteOrFolder.path, files, mainFolderPath)
+export function modifyNoteOrFolder(noteOrFolder: any, files: any) {
+    let folderContainingNoteOrFolder = getParentFolder(noteOrFolder.path, files)
     if (!folderContainingNoteOrFolder) {
         return;
     }

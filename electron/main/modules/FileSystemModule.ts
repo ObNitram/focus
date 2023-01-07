@@ -1,5 +1,5 @@
 import { shell } from 'electron'
-import { mkdir, readdir, rename, rm, stat, writeFile } from 'original-fs'
+import { Dirent, mkdir, readdir, rename, rm, stat, writeFile } from 'original-fs'
 import { join } from 'path'
 import * as printMessage from './OutputModule'
 
@@ -31,48 +31,69 @@ export function findAvailableName(dir: string, name: string): Promise<string> {
 
             let i = 1
             let newName = name
-            while (files.includes(newName)) {
-                newName = name + ' (' + i + ')'
-                i++
-            }
-
-            resolve(newName)
+            stat(join(dir, newName), (err, stats) => {
+                if (err) {
+                    resolve(newName)
+                } else {
+                    while (files.includes(newName)) {
+                        if (stats.isDirectory()) {
+                            newName = name + " (" + i + ")"
+                        } else {
+                            let extension = name.split('.').pop()
+                            newName = name.replace('.' + extension, " (" + i + ")." + extension)
+                        }
+                        i++
+                    }
+                    resolve(newName)
+                }
+            })
         })
     })
 }
 
 function getFolderContentInner(folderPath: string, recursive: boolean = false): Promise<File[]> {
-    return new Promise((resolve, reject) => {
-        readdir(folderPath, (err, files) => {
+    return new Promise((resolve) => {
+        readdir(folderPath, { withFileTypes: true }, (err, files) => {
+
             if (err) {
                 printMessage.printError("Error while reading folder: " + err)
-                reject([])
+                resolve([])
             }
 
-            let promises: Promise<File>[] = []
-            files.forEach((file) => {
-                let filePath = join(folderPath, file)
-                promises.push(getFileOrFolderInfo(filePath))
-            })
+            let Promises: Promise<File>[] = []
 
-            Promise.all(promises).then((files) => {
-                if (recursive) {
-                    let promises: Promise<File[]>[] = []
-                    files.forEach((file) => {
-                        if (file.isDirectory) {
-                            promises.push(getFolderContentInner(file.path, true))
+            for (const file of files) {
+                if (file.name.startsWith('.')) {
+                    continue
+                }
+
+                let currIsDirectory = file.isDirectory()
+                if (!currIsDirectory && !file.name.endsWith('.md')) {
+                    continue
+                }
+
+                let promise = new Promise<File>((resolve, reject) => {
+                    stat(join(folderPath, file.name), (err, stats) => {
+                        if (err) {
+                            printMessage.printError("Error while getting file or folder info: " + err)
+                            reject(err)
+                        }
+
+                        if (currIsDirectory && recursive) {
+                            getFolderContentInner(join(folderPath, file.name), true).then((children) => {
+                                resolve(new File(file.name, currIsDirectory, stats.birthtimeMs, stats.mtimeMs, children, join(folderPath, file.name)))
+                            })
+                        }
+                        else {
+                            resolve(new File(file.name, currIsDirectory, stats.birthtimeMs, stats.mtimeMs, [], join(folderPath, file.name)))
                         }
                     })
+                })
+                Promises.push(promise)
+            }
 
-                    Promise.all(promises).then((subFolders) => {
-                        subFolders.forEach((subFolder) => {
-                            files = files.concat(subFolder)
-                        })
-                        resolve(files)
-                    })
-                } else {
-                    resolve(files)
-                }
+            Promise.all(Promises).then((files) => {
+                resolve(files)
             })
         })
     })
@@ -86,10 +107,14 @@ function getFolderContentInner(folderPath: string, recursive: boolean = false): 
  */
 export function getFolderContent(folderPath: string, recursive: boolean = false): Promise<File> {
     return new Promise((resolve) => {
-        getFileOrFolderInfo(folderPath).then((folder) => {
+        stat(folderPath, (err, stats) => {
+            if (err) {
+                printMessage.printError("Error while getting file or folder info: " + err)
+                resolve(null)
+            }
+
             getFolderContentInner(folderPath, recursive).then((children) => {
-                folder.children = children
-                resolve(folder)
+                resolve(new File(folderPath.split('/').pop(), true, stats.birthtimeMs, stats.mtimeMs, children, folderPath))
             })
         })
     })
