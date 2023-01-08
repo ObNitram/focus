@@ -1,5 +1,5 @@
 import { shell } from 'electron'
-import { Dirent, mkdir, readdir, rename, rm, stat, writeFile } from 'original-fs'
+import { mkdir, readdir, rename, rm, stat, writeFile } from 'original-fs'
 import { join } from 'path'
 import * as printMessage from './OutputModule'
 
@@ -22,6 +22,9 @@ export class File {
 }
 
 export function findAvailableName(dir: string, name: string): Promise<string> {
+    console.log("findAvailableName")
+    console.log(dir)
+    console.log(name)
     return new Promise((resolve, reject) => {
         readdir(dir, (err, files) => {
             if (err) {
@@ -227,13 +230,20 @@ export function renameFileOrFolder(oldPath: string, newPath: string): Promise<bo
                         newPath += '.md'
                     }
                 }
-                rename(oldPath, newPath, (err) => {
-                    if (err) {
-                        printMessage.printError("Error while renaming file or folder: " + err)
-                        reject(false)
-                    }
-                    printMessage.printOK("File or folder renamed: " + oldPath + " -> " + newPath)
-                    resolve(true)
+                let parts = newPath.split('/')
+                let name = parts[parts.length - 2]
+                let dir = newPath.slice(0, -name.length-1)
+
+                findAvailableName(dir, name).then((availableName) => {
+                    newPath = join(dir, availableName)
+                    rename(oldPath, newPath, (err) => {
+                        if (err) {
+                            printMessage.printError("Error while renaming file or folder: " + err)
+                            reject(false)
+                        }
+                        printMessage.printOK("File or folder renamed: " + oldPath + " -> " + newPath)
+                        resolve(true)
+                    })
                 })
             })
         }
