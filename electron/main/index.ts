@@ -122,6 +122,9 @@ function setupEvents() {
         printMessage.printError('Note not added')
       }
     })
+    .catch((err) => {
+      printMessage.printError(err)
+    })
   })
 
   ipcMain.on('create-folder', (event, pathVault: string | null = null) => {
@@ -134,6 +137,9 @@ function setupEvents() {
       } else {
         printMessage.printError('Folder not added')
       }
+    })
+    .catch((err) => {
+      printMessage.printError(err)
     })
   })
 
@@ -148,6 +154,9 @@ function setupEvents() {
         printMessage.printError(arg + ' not removed!')
       }
     })
+    .catch((err) => {
+      printMessage.printError(err)
+    })
   })
 
   ipcMain.on('rename-note-or-folder', (event, path: string, newName: string) => {
@@ -160,6 +169,9 @@ function setupEvents() {
       } else {
         printMessage.printError(path + ' not renamed!')
       }
+    })
+    .catch((err) => {
+      printMessage.printError(err)
     })
   })
 

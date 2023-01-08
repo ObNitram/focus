@@ -28,8 +28,7 @@ export function findAvailableName(dir: string, name: string): Promise<string> {
     return new Promise((resolve, reject) => {
         readdir(dir, (err, files) => {
             if (err) {
-                printMessage.printError("Error while reading folder: " + err)
-                reject(err)
+                reject("Error while reading folder: " + err)
             }
 
             let i = 1
@@ -78,8 +77,7 @@ function getFolderContentInner(folderPath: string, recursive: boolean = false): 
                 let promise = new Promise<File>((resolve, reject) => {
                     stat(join(folderPath, file.name), (err, stats) => {
                         if (err) {
-                            printMessage.printError("Error while getting file or folder info: " + err)
-                            reject(err)
+                            reject("Error while getting file or folder info: " + err)
                         }
 
                         if (currIsDirectory && recursive) {
@@ -132,8 +130,7 @@ export function getFileOrFolderInfo(path: string): Promise<File> {
     return new Promise((resolve, reject) => {
         stat(path, (err, stats) => {
             if (err) {
-                printMessage.printError("Error while getting file or folder info: " + err)
-                reject(null)
+                reject("Error while getting file or folder info: " + err)
             }
 
             let name = path.split('/').pop()
@@ -153,8 +150,7 @@ export function deleteFileOrFolder(path: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
         rm(path, { recursive: true }, (err) => {
             if (err) {
-                printMessage.printError("Error while deleting file or folder: " + err)
-                reject(false)
+                reject("Error while deleting file or folder: " + err)
             }
             printMessage.printOK("File or folder deleted: " + path)
             resolve(true)
@@ -171,15 +167,13 @@ export function createNote(dir: string): Promise<File> {
                 try {
                     writeFile(noteFullPath, '', (err) => {
                         if (err) {
-                            printMessage.printError("Error while creating note: " + err)
-                            reject(null)
+                            reject("Error while creating note: " + err)
                         }
                         printMessage.printOK("Note created: " + noteFullPath)
                         resolve(new File(noteName, false, Date.now(), Date.now(), [], noteFullPath))
                     })
                 } catch (e) {
-                    printMessage.printError("Error while creating note: " + e)
-                    reject(null)
+                    reject("Error while creating note: " + e)
                 }
             })
     })
@@ -194,15 +188,13 @@ export function createFolder(dir: string, folderName: string): Promise<File> {
                 try {
                     mkdir(folderFullPath, (err) => {
                         if (err) {
-                            printMessage.printError("Error while creating folder: " + err)
-                            reject(null)
+                            reject("Error while creating folder: " + err)
                         }
                         printMessage.printOK("Folder created: " + folderFullPath)
                         resolve(new File(folderName, true, Date.now(), Date.now(), [], folderFullPath))
                     })
                 } catch (e) {
-                    printMessage.printError("Error while creating folder: " + e)
-                    reject(null)
+                    reject("Error while creating folder: " + e)
                 }
             })
     })
@@ -213,8 +205,7 @@ export function renameFileOrFolder(oldPath: string, newPath: string): Promise<bo
         try {
             stat(oldPath, (err, stats) => {
                 if (err) {
-                    printMessage.printError("Error while renaming file or folder: " + err)
-                    reject(false)
+                    reject("Error while getting file or folder info: " + err)
                 }
 
                 if (stats.isDirectory()) {
@@ -238,8 +229,7 @@ export function renameFileOrFolder(oldPath: string, newPath: string): Promise<bo
                     newPath = join(dir, availableName)
                     rename(oldPath, newPath, (err) => {
                         if (err) {
-                            printMessage.printError("Error while renaming file or folder: " + err)
-                            reject(false)
+                            reject("Error while renaming file or folder: " + err)
                         }
                         printMessage.printOK("File or folder renamed: " + oldPath + " -> " + newPath)
                         resolve(true)
@@ -248,8 +238,7 @@ export function renameFileOrFolder(oldPath: string, newPath: string): Promise<bo
             })
         }
         catch (e) {
-            printMessage.printError("Error while renaming file or folder: " + e)
-            reject(false)
+            reject("Error while renaming file or folder: " + e)
         }
     })
 }
