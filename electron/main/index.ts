@@ -43,7 +43,7 @@ let mainWindow: BrowserWindow | null = null
 
 let watcher: chokidar.FSWatcher | null = null
 
-let modificationsInVaultFromApp = false
+let modificationsInVaultFromApp: number = 0
 let modificationsInVaultFromOutsideTimer: NodeJS.Timeout | null = null
 
 function sendVaultContent() {
@@ -65,8 +65,8 @@ function setupEvents() {
   })
 
   watcher.on('all', (event, path) => {
-    if (modificationsInVaultFromApp) {
-      modificationsInVaultFromApp = false
+    if (modificationsInVaultFromApp > 0) {
+      modificationsInVaultFromApp--
 
       switch (event) {
         case 'add':
@@ -113,7 +113,7 @@ function setupEvents() {
 
   ipcMain.on('create-note', (event, pathVault: string | null = null) => {
     printMessage.printINFO('Request to add note !')
-    modificationsInVaultFromApp = true
+    modificationsInVaultFromApp++
 
     VaultManagement.createNote(pathVault ? pathVault : getPathVault()).then((note) => {
       if (note) {
@@ -126,7 +126,7 @@ function setupEvents() {
 
   ipcMain.on('create-folder', (event, pathVault: string | null = null) => {
     printMessage.printINFO('Request to add folder !')
-    modificationsInVaultFromApp = true
+    modificationsInVaultFromApp++
 
     VaultManagement.createFolder(pathVault ? pathVault : getPathVault(), 'Untitled').then((folder) => {
       if (folder) {
@@ -139,7 +139,7 @@ function setupEvents() {
 
   ipcMain.on('delete-note-or-folder', (event, arg) => {
     printMessage.printINFO('Request to remove : ' + arg)
-    modificationsInVaultFromApp = true
+    modificationsInVaultFromApp++
 
     VaultManagement.deleteFileOrFolder(arg).then((deleted) => {
       if (deleted) {
@@ -152,7 +152,7 @@ function setupEvents() {
 
   ipcMain.on('rename-note-or-folder', (event, path: string, newName: string) => {
     printMessage.printINFO('Request to rename : ' + path)
-    modificationsInVaultFromApp = true
+    modificationsInVaultFromApp += 2
 
     VaultManagement.renameFileOrFolder(path, newName).then((renamed) => {
       if (renamed) {

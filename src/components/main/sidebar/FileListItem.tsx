@@ -173,8 +173,8 @@ export default function FileListItem(this: any, props: FileListItemProps) {
                     <span className={styles.sidebar_list_folder_name}>
                         <input type="text" value={item.name} readOnly={!renaming} onChange={(e) => setItem({ ...item, name: e.target.value })} />
                     </span>
+                    <Dropdown items={dropdownRightClickFolderItems} onItemSelect={(dropdownItem: any) => { handleDropdownItemClickFolder(dropdownItem, item.path) }} hidden={dropdownHidden} />
                 </div>
-                <Dropdown items={dropdownRightClickFolderItems} onItemSelect={(dropdownItem: any) => { handleDropdownItemClickFolder(dropdownItem, item.path) }} hidden={dropdownHidden} />
                 <ul className={styles.sidebar_list_folder_children}>
                     {item.children.map((item: any) => (
                         <FileListItem key={item.path} item={item} collapsedAll={dirCollapsedAll} renaming={false} folderToExpand={folderToExpand} />
