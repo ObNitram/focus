@@ -82,7 +82,7 @@ function setupEvents() {
           })
           break
         case 'change':
-          VaultManagement.getNoteOrFolderInfo(path).then((note) => {
+          VaultManagement.getNoteOrFolderInfo(path, true).then((note) => {
             printMessage.printLog('change ' + path)
             mainWindow?.webContents.send('note-updated', note)
           })
@@ -122,9 +122,9 @@ function setupEvents() {
         printMessage.printError('Note not added')
       }
     })
-    .catch((err) => {
-      printMessage.printError(err)
-    })
+      .catch((err) => {
+        printMessage.printError(err)
+      })
   })
 
   ipcMain.on('create-folder', (event, pathVault: string | null = null) => {
@@ -138,41 +138,39 @@ function setupEvents() {
         printMessage.printError('Folder not added')
       }
     })
-    .catch((err) => {
-      printMessage.printError(err)
-    })
+      .catch((err) => {
+        printMessage.printError(err)
+      })
   })
 
   ipcMain.on('delete-note-or-folder', (event, arg) => {
     printMessage.printINFO('Request to remove : ' + arg)
     modificationsInVaultFromApp++
 
-    VaultManagement.deleteFileOrFolder(arg).then((deleted) => {
-      if (deleted) {
+    VaultManagement.deleteFileOrFolder(arg).then(() => {
         printMessage.printOK(arg + ' removed!')
-      } else {
-        printMessage.printError(arg + ' not removed!')
-      }
     })
-    .catch((err) => {
-      printMessage.printError(err)
-    })
+      .catch((err) => {
+        printMessage.printError(err)
+      })
   })
 
   ipcMain.on('rename-note-or-folder', (event, path: string, newName: string) => {
     printMessage.printINFO('Request to rename : ' + path)
     modificationsInVaultFromApp += 2
 
-    VaultManagement.renameFileOrFolder(path, newName).then((renamed) => {
-      if (renamed) {
-        printMessage.printOK(path + ' renamed!')
-      } else {
-        printMessage.printError(path + ' not renamed!')
-      }
+    VaultManagement.renameFileOrFolder(path, newName).then(() => {
+      printMessage.printOK(path + ' renamed!')
     })
-    .catch((err) => {
-      printMessage.printError(err)
-    })
+      .catch((err) => {
+        printMessage.printError(err)
+        VaultManagement.getNoteOrFolderInfo(path, true).then((note) => {
+          mainWindow?.webContents.send('note-updated', note)
+        })
+          .catch((err) => {
+            printMessage.printError(err)
+          })
+      })
   })
 
   ipcMain.on('show-in-explorer', (event, path: string) => {

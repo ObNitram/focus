@@ -30,11 +30,11 @@ export default function FileList(props: FileListProps) {
         }
     }, [props.files, props.collapsedAll, props.folderToExpand]);
 
-    if (!files) return null;
+    if (!files || !files.children) return null;
 
     return (
         <ul className={styles.sidebar_list}>
-            {files.map((item: any) => (
+            {files.children.map((item: any) => (
                 <FileListItem  key={item.path} item={item} collapsedAll={collapsedAll} renaming={false} folderToExpand={folderToExpand} />
             ))}
         </ul>

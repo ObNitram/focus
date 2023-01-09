@@ -22,13 +22,11 @@ export class File {
 }
 
 export function findAvailableName(dir: string, name: string): Promise<string> {
-    console.log("findAvailableName")
-    console.log(dir)
-    console.log(name)
     return new Promise((resolve, reject) => {
         readdir(dir, (err, files) => {
             if (err) {
                 reject("Error while reading folder: " + err)
+                return
             }
 
             let i = 1
@@ -78,6 +76,7 @@ function getFolderContentInner(folderPath: string, recursive: boolean = false): 
                     stat(join(folderPath, file.name), (err, stats) => {
                         if (err) {
                             reject("Error while getting file or folder info: " + err)
+                            return
                         }
 
                         if (currIsDirectory && recursive) {
@@ -126,18 +125,25 @@ export function showInExplorer(folderPath: string) {
     shell.showItemInFolder(folderPath)
 }
 
-export function getFileOrFolderInfo(path: string): Promise<File> {
+/**
+ * Get the info of a file or folder
+ * @param path      The path of the file or folder
+ * @param recursive If true, the function will get the content of the subfolders (default: false)
+ * @returns A promise that resolves to a File object
+ */
+export function getFileOrFolderInfo(path: string, recursive: boolean = false): Promise<File> {
     return new Promise((resolve, reject) => {
         stat(path, (err, stats) => {
             if (err) {
                 reject("Error while getting file or folder info: " + err)
+                return
             }
 
             let name = path.split('/').pop()
             let isDirectory = stats.isDirectory()
 
             if (isDirectory) {
-                getFolderContentInner(path).then((children) => {
+                getFolderContentInner(path, recursive).then((children) => {
                     resolve(new File(name, isDirectory, stats.birthtimeMs, stats.mtimeMs, children, path))
                 })
             }
@@ -146,14 +152,15 @@ export function getFileOrFolderInfo(path: string): Promise<File> {
     })
 }
 
-export function deleteFileOrFolder(path: string): Promise<boolean> {
+export function deleteFileOrFolder(path: string): Promise<void> {
     return new Promise((resolve, reject) => {
         rm(path, { recursive: true }, (err) => {
             if (err) {
                 reject("Error while deleting file or folder: " + err)
+                return
             }
             printMessage.printOK("File or folder deleted: " + path)
-            resolve(true)
+            resolve()
         })
     })
 }
@@ -168,6 +175,7 @@ export function createNote(dir: string): Promise<File> {
                     writeFile(noteFullPath, '', (err) => {
                         if (err) {
                             reject("Error while creating note: " + err)
+                            return
                         }
                         printMessage.printOK("Note created: " + noteFullPath)
                         resolve(new File(noteName, false, Date.now(), Date.now(), [], noteFullPath))
@@ -175,6 +183,9 @@ export function createNote(dir: string): Promise<File> {
                 } catch (e) {
                     reject("Error while creating note: " + e)
                 }
+            })
+            .catch((err) => {
+                reject("Error while creating note: " + err)
             })
     })
 }
@@ -189,6 +200,7 @@ export function createFolder(dir: string, folderName: string): Promise<File> {
                     mkdir(folderFullPath, (err) => {
                         if (err) {
                             reject("Error while creating folder: " + err)
+                            return
                         }
                         printMessage.printOK("Folder created: " + folderFullPath)
                         resolve(new File(folderName, true, Date.now(), Date.now(), [], folderFullPath))
@@ -197,15 +209,19 @@ export function createFolder(dir: string, folderName: string): Promise<File> {
                     reject("Error while creating folder: " + e)
                 }
             })
+            .catch((err) => {
+                reject("Error while creating folder: " + err)
+            })
     })
 }
 
-export function renameFileOrFolder(oldPath: string, newPath: string): Promise<boolean> {
+export function renameFileOrFolder(oldPath: string, newPath: string): Promise<void> {
     return new Promise((resolve, reject) => {
         try {
             stat(oldPath, (err, stats) => {
                 if (err) {
                     reject("Error while getting file or folder info: " + err)
+                    return
                 }
 
                 if (stats.isDirectory()) {
@@ -230,10 +246,14 @@ export function renameFileOrFolder(oldPath: string, newPath: string): Promise<bo
                     rename(oldPath, newPath, (err) => {
                         if (err) {
                             reject("Error while renaming file or folder: " + err)
+                            return
                         }
                         printMessage.printOK("File or folder renamed: " + oldPath + " -> " + newPath)
-                        resolve(true)
+                        resolve()
                     })
+                })
+                .catch((err) => {
+                    reject("Error while renaming file or folder: " + err)
                 })
             })
         }

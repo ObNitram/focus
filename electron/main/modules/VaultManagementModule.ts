@@ -8,12 +8,22 @@ export function createNote(dir: string): Promise<FileSystemModule.File> {
     return FileSystemModule.createNote(dir)
 }
 
-export function deleteFileOrFolder(path: string): Promise<boolean> {
+export function deleteFileOrFolder(path: string): Promise<void> {
     return FileSystemModule.deleteFileOrFolder(path)
 }
 
-export function renameFileOrFolder(oldPath: string, newName: string): Promise<boolean> {
+export function renameFileOrFolder(oldPath: string, newName: string): Promise<void> {
+    if (!oldPath || !newName) {
+        return Promise.reject('Invalid parameters')
+    }
+    if (oldPath === newName) {
+        return Promise.resolve()
+    }
+
     let newPath = oldPath.replace(/[^\/]*$/, newName)
+    if (oldPath.endsWith('.md')) {
+        newPath += '.md'
+    }
     return FileSystemModule.renameFileOrFolder(oldPath, newPath)
 }
 
@@ -25,8 +35,8 @@ export function showInExplorer(folderPath: string): void {
     return FileSystemModule.showInExplorer(folderPath)
 }
 
-export function getNoteOrFolderInfo(path: string): Promise<FileSystemModule.File> {
-    return FileSystemModule.getFileOrFolderInfo(path)
+export function getNoteOrFolderInfo(path: string, recursive: boolean = false): Promise<FileSystemModule.File> {
+    return FileSystemModule.getFileOrFolderInfo(path, recursive)
 }
 
 export default FileSystemModule.File
