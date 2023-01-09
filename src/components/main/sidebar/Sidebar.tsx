@@ -83,7 +83,6 @@ export default function Sidebar(props: any) {
 
   const handleMouseDown = (event: React.MouseEvent) => {
     if(!isHidden)  window.addEventListener('mousemove', handleMove)
-    console.log('down')
   };
 
   const handleMove = useCallback((e:MouseEvent) => {
@@ -96,13 +95,10 @@ export default function Sidebar(props: any) {
       handleMouseUp()
       return
     }
-    console.log(refBar.current.style.width)
     refBar.current.style.width = `${refBar.current.offsetWidth + e.movementX}px`
-    console.log(refBar.current.style.width)
   }, [])
 
   const handleMouseUp = () => {
-    console.log('up')
     window.removeEventListener('mousemove', handleMove)
   };
 
