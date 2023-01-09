@@ -87,7 +87,6 @@ export default function Sidebar(props: any) {
 
   const handleMove = useCallback((e:MouseEvent) => {
     if(! refBar || !refBar.current) return;
-    console.log(refBar.current?.offsetWidth * 100 / window.innerWidth)
     if(e.movementX > 0 && refBar.current?.offsetWidth * 100 / window.innerWidth >= 70){
       handleMouseUp()
       return
