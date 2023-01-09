@@ -22,6 +22,7 @@ export class File {
 }
 
 export function findAvailableName(dir: string, name: string): Promise<string> {
+    printMessage.printLog('In findAvailableName, dir is ' + dir + ' and name is ' + name)
     return new Promise((resolve, reject) => {
         readdir(dir, (err, files) => {
             if (err) {
@@ -33,6 +34,7 @@ export function findAvailableName(dir: string, name: string): Promise<string> {
             let newName = name
             stat(join(dir, newName), (err, stats) => {
                 if (err) {
+                    printMessage.printLog('Name found is ' + newName)
                     resolve(newName)
                 } else {
                     while (files.includes(newName)) {
@@ -44,6 +46,7 @@ export function findAvailableName(dir: string, name: string): Promise<string> {
                         }
                         i++
                     }
+                    printMessage.printLog('Name found is ' + newName)
                     resolve(newName)
                 }
             })
@@ -238,9 +241,11 @@ export function renameFileOrFolder(oldPath: string, newPath: string): Promise<vo
                     }
                 }
                 let parts = newPath.split('/')
-                let name = parts[parts.length - 2]
+                if(parts[parts.length-1] == '') parts.pop()
+                let name = parts[parts.length - 1]
                 let dir = newPath.slice(0, -name.length-1)
-
+                printMessage.printLog('New name is ' + newPath)
+                console.log(name)
                 findAvailableName(dir, name).then((availableName) => {
                     newPath = join(dir, availableName)
                     rename(oldPath, newPath, (err) => {
