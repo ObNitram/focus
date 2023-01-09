@@ -167,7 +167,7 @@ export function deleteFileOrFolder(path: string): Promise<void> {
 
 export function createNote(dir: string): Promise<File> {
     return new Promise((resolve, reject) => {
-        findAvailableName(dir, 'New Note.md')
+        findAvailableName(dir, 'Untitled.md')
             .then((noteName) => {
                 let noteFullPath = join(dir, noteName)
 

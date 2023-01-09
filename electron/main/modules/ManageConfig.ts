@@ -1,6 +1,7 @@
 import fs from 'fs'
 import {app} from 'electron'
 import * as outPut from './OutputModule'
+import * as vaultManagement from './VaultManagementModule'
 
 const pathConfigFolder:string = app.getPath('appData')+ '/focus/'
 const vaultConfigFileName:string = 'vaultConfig.json'
@@ -9,7 +10,6 @@ type vaultConfigFileNameType = {
     location:string;
 }
 
-let pathVault:string|null = null;
 
 export function initConfig(){
     if(!fs.existsSync(pathConfigFolder)) {
@@ -47,7 +47,7 @@ export function initConfig(){
     if(data){
         try {
             let res:vaultConfigFileNameType = JSON.parse(data)
-            pathVault = res.location
+            vaultManagement.setPath(res.location)
             outPut.printOK('Congig is OK!')
             return true
         } catch (error:any) {
@@ -62,13 +62,7 @@ export function initConfig(){
 
 
 
-export function getPathVault(){
-    return pathVault
-}
 
-export function setPathVault(path:string){
-    pathVault = path
-}
 
 export function saveInSettingPathVault(path:string):boolean{
     outPut.printINFO("Try to save user's vault path...")
@@ -88,7 +82,7 @@ export function saveInSettingPathVault(path:string):boolean{
         outPut.printError('An error occured while trying to save the path in file system.')
         return false
     }
-    setPathVault(path)
+    vaultManagement.setPath(path)
     outPut.printOK('Path is saved !')
     return true
 }

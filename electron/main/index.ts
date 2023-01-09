@@ -20,7 +20,7 @@ import chokidar from 'chokidar'
 import * as VaultManagement from './modules/VaultManagementModule'
 import * as WindowsManagement from './modules/WindowsManagement'
 import * as printMessage from './modules/OutputModule'
-import { getPathVault, setPathVault, initConfig, saveInSettingPathVault } from './modules/ManageConfig'
+import { initConfig, saveInSettingPathVault } from './modules/ManageConfig'
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration()
@@ -48,7 +48,7 @@ let modificationsInVaultFromOutsideTimer: NodeJS.Timeout | null = null
 
 function sendVaultContent() {
   printMessage.printINFO('Request to get folder content !')
-  VaultManagement.getFolderContent(getPathVault(), true).then((content) => {
+  VaultManagement.getVaultContent().then((content) => {
     mainWindow?.webContents.send('folder-content', content)
   })
 }
@@ -58,7 +58,7 @@ function setupEvents() {
     sendVaultContent()
   })
 
-  watcher = chokidar.watch(getPathVault(), {
+  watcher = chokidar.watch(VaultManagement.getPathVault(), {
     ignored: /(^|[\/\\])\../, // ignore dotfiles
     persistent: false,
     ignoreInitial: true
@@ -115,7 +115,7 @@ function setupEvents() {
     printMessage.printINFO('Request to add note !')
     modificationsInVaultFromApp++
 
-    VaultManagement.createNote(pathVault ? pathVault : getPathVault()).then((note) => {
+    VaultManagement.createNote(pathVault ? pathVault : VaultManagement.getPathVault()).then((note) => {
       if (note) {
         printMessage.printOK('Note added')
       } else {
@@ -131,7 +131,7 @@ function setupEvents() {
     printMessage.printINFO('Request to add folder !')
     modificationsInVaultFromApp++
 
-    VaultManagement.createFolder(pathVault ? pathVault : getPathVault(), 'Untitled').then((folder) => {
+    VaultManagement.createFolder(pathVault ? pathVault : VaultManagement.getPathVault(), 'Untitled').then((folder) => {
       if (folder) {
         printMessage.printOK('Folder added')
       } else {
@@ -210,15 +210,16 @@ if (initConfig() == false) {
 
 app.whenReady().then(() => {
   setupEvents();
-  pathVault = getPathVault()
-  if (pathVault == null) {
+  pathVault = VaultManagement.getPathVault()
+  printMessage.printLog('Path found is ' + pathVault)
+  if(pathVault == null){
     printMessage.printINFO('This is the first time of application launch or the config was reseted !')
     printMessage.printINFO('Launch select vault location window...')
     WindowsManagement.createVaultWindow()
   } else {
     printMessage.printINFO('A valid configuration is found, launching the main window...')
-    setPathVault(pathVault)
-    mainWindow = WindowsManagement.createMainWindow();
+    VaultManagement.setPath(pathVault)
+    mainWindow =  WindowsManagement.createMainWindow();
   }
 })
 

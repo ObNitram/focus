@@ -1,6 +1,16 @@
 import * as FileSystemModule from './FileSystemModule'
 
-export function createFolder(dir: string, folderName: string): Promise<FileSystemModule.File> {
+let pathVault:string|null = null;
+
+export function getPathVault(){
+    return pathVault
+}
+
+export function setPath(path:string){
+    pathVault = path
+}
+
+export function createFolder(dir: string, folderName: string):Promise<FileSystemModule.File> {
     return FileSystemModule.createFolder(dir, folderName)
 }
 
@@ -27,8 +37,8 @@ export function renameFileOrFolder(oldPath: string, newName: string): Promise<vo
     return FileSystemModule.renameFileOrFolder(oldPath, newPath)
 }
 
-export function getFolderContent(folderPath: string, recursive: boolean = false): Promise<FileSystemModule.File> {
-    return FileSystemModule.getFolderContent(folderPath, recursive)
+export function getVaultContent(): Promise<FileSystemModule.File> {
+    return FileSystemModule.getFolderContent(pathVault, true)
 }
 
 export function showInExplorer(folderPath: string): void {
