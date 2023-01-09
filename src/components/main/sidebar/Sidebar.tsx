@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import styles from 'styles/components/main/sidebar.module.scss'
 
 import FileList from "./FileList"
@@ -15,6 +15,8 @@ export default function Sidebar(props: any) {
   const [files, setFiles] = React.useState<any>([])
   const [folderName, setFolderName] = React.useState('MyVault')
   const [collapsedAll, setCollapsedAll] = React.useState<boolean | null>(null)
+  const refBar = useRef<null | HTMLDivElement>(null)
+  const [isResizing, setIsResizing] = useState<boolean>(false)
 
   const [folderToExpand, setFolderToExpand] = React.useState<string | null>(null)
 
@@ -121,13 +123,42 @@ export default function Sidebar(props: any) {
     setFiles(filesCopy)
   }
 
+  const handleMouseDown = (event: React.MouseEvent) => {
+    setIsResizing(true);
+    window.addEventListener('mousemove', handleMove)
+    console.log('down')
+  };
+
+  const handleMove = useCallback((e:MouseEvent) => {
+    if(! refBar || !refBar.current) return;
+    console.log(refBar.current?.offsetWidth * 100 / window.innerWidth)
+    if(e.movementX > 0 && refBar.current?.offsetWidth * 100 / window.innerWidth >= 70){
+      setIsResizing(false)
+      handleMouseUp()
+      return
+    }else if(e.movementX<0 && refBar.current?.offsetWidth * 100 / window.innerWidth <= 20){
+      handleMouseUp()
+      return
+    }
+    refBar.current.style.width = `${refBar.current.offsetWidth + e.movementX}px`
+  }, [])
+
+  const handleMouseUp = () => {
+    console.log('up')
+    setIsResizing(false);
+    window.removeEventListener('mousemove', handleMove)
+  };
+
+
   return (
-    <div className={styles.sidebar}>
+    <div className={styles.sidebar} ref={refBar}>
+
       <div className={styles.sidebar_header}>
         <TopBar onCollapseAll={handleCollapseAll} onSortOrderChange={handleSortOrderChange} />
         <h2>{folderName}</h2>
       </div>
       <FileList collapsedAll={collapsedAll} files={files} folderToExpand={folderToExpand} />
+      <div className={styles.left_border} onMouseDown={(e) => handleMouseDown(e)} onMouseUpCapture={() => handleMouseUp()}></div>
     </div>
   )
 }
