@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
+import {gsap} from 'gsap'
 import styles from 'styles/components/main/sidebar.module.scss'
 
 import FileList from "./FileList"
 import TopBar from "./TopBar"
+import { white } from 'colors'
 
 const { ipcRenderer } = window.require('electron')
 
@@ -16,8 +18,8 @@ export default function Sidebar(props: any) {
   const [folderName, setFolderName] = React.useState('MyVault')
   const [collapsedAll, setCollapsedAll] = React.useState<boolean | null>(null)
   const refBar = useRef<null | HTMLDivElement>(null)
-  const [isResizing, setIsResizing] = useState<boolean>(false)
-
+  const refResizeBar = useRef<null|HTMLDivElement>(null)
+  const [isHidden, setIsHidden] = React.useState<boolean>(false)
   const [folderToExpand, setFolderToExpand] = React.useState<string | null>(null)
 
   function setupEvents() {
@@ -33,6 +35,7 @@ export default function Sidebar(props: any) {
   }
 
   useEffect(() => {
+
     getFiles()
     ipcRenderer.removeAllListeners('folder-content')
     ipcRenderer.removeAllListeners('note-created')
@@ -124,8 +127,7 @@ export default function Sidebar(props: any) {
   }
 
   const handleMouseDown = (event: React.MouseEvent) => {
-    setIsResizing(true);
-    window.addEventListener('mousemove', handleMove)
+    if(!isHidden)  window.addEventListener('mousemove', handleMove)
     console.log('down')
   };
 
@@ -133,32 +135,79 @@ export default function Sidebar(props: any) {
     if(! refBar || !refBar.current) return;
     console.log(refBar.current?.offsetWidth * 100 / window.innerWidth)
     if(e.movementX > 0 && refBar.current?.offsetWidth * 100 / window.innerWidth >= 70){
-      setIsResizing(false)
       handleMouseUp()
       return
     }else if(e.movementX<0 && refBar.current?.offsetWidth * 100 / window.innerWidth <= 20){
       handleMouseUp()
       return
     }
+    console.log(refBar.current.style.width)
     refBar.current.style.width = `${refBar.current.offsetWidth + e.movementX}px`
+    console.log(refBar.current.style.width)
   }, [])
 
   const handleMouseUp = () => {
     console.log('up')
-    setIsResizing(false);
     window.removeEventListener('mousemove', handleMove)
   };
 
 
+  const handleHiddenBar = () => {
+    if(!refBar || ! refBar.current || !refResizeBar || !refResizeBar.current) return
+    let ctx = gsap.context((self:gsap.Context) => {
+      if(isHidden){
+        
+        gsap.timeline().to(refBar.current, {
+          width: "300px",
+          duration: 0.2,
+        }).to('.'+styles.sidebar_header, {
+          borderBottom: 1,
+          duration: 0.1
+        }).to('h2', {
+          visibility: 'visible',
+          duration: 0
+        }).to('.'+styles.sidebar_list, {
+          visibility: 'visible',
+          duration: 0,
+        }).to('.'+styles.sidebar_list, {
+          // visibility: 'visible',
+          duration: 0.2,
+          opacity: 1,
+        })
+      }else{
+        gsap.timeline().to('h2', {
+          visibility: 'hidden',
+          duration: 0.1
+        }).to('.'+styles.sidebar_list, {
+          // visibility: 'hidden',
+          opacity: 0,
+          duration: 0.1
+        }).to('.'+styles.sidebar_list, {
+          visibility: 'hidden',
+          duration: 0
+        }).to('.'+styles.sidebar_header, {
+          borderBottom: 0,
+          duration: 0
+          
+        }, -0.1).to(refBar.current, {
+          width: "60px",
+          duration: 0.2
+        })
+      }
+    }, refBar)
+    setIsHidden(!isHidden)
+    refResizeBar.current.style.cursor = isHidden? 'e-resize' : 'default'
+  }
+
   return (
     <div className={styles.sidebar} ref={refBar}>
 
-      <div className={styles.sidebar_header}>
-        <TopBar onCollapseAll={handleCollapseAll} onSortOrderChange={handleSortOrderChange} />
+      <div className={styles.sidebar_header + ' test'}>
+        <TopBar onCollapseAll={handleCollapseAll} onSortOrderChange={handleSortOrderChange} onHiddenBar={handleHiddenBar} isHidden={isHidden}/>
         <h2>{folderName}</h2>
       </div>
       <FileList collapsedAll={collapsedAll} files={files} folderToExpand={folderToExpand} />
-      <div className={styles.left_border} onMouseDown={(e) => handleMouseDown(e)} onMouseUpCapture={() => handleMouseUp()}></div>
+      <div ref={refResizeBar} className={styles.left_border} onMouseDown={(e) => handleMouseDown(e)} onMouseUpCapture={() => handleMouseUp()}></div>
     </div>
   )
 }

@@ -6,6 +6,7 @@ import { MdOutlineEditNote } from 'react-icons/md'
 import { AiFillFolderAdd } from 'react-icons/ai'
 import { TbSortDescending } from 'react-icons/tb'
 import { VscCollapseAll, VscExpandAll } from 'react-icons/vsc'
+import { BiChevronsLeft, BiChevronsRight} from 'react-icons/bi'
 
 import Dropdown, { DropdownItem } from '../../generic/Dropdown'
 import IconButton from '../../generic/buttons/IconButton'
@@ -48,6 +49,8 @@ const sortOrderItems = [
 export interface TopBarProps {
     onCollapseAll: (collapse: boolean) => void
     onSortOrderChange: (item: DropdownItem) => void
+    onHiddenBar: () => void
+    isHidden: boolean
 }
 
 export default function TopBar(props: TopBarProps) {
@@ -98,6 +101,7 @@ export default function TopBar(props: TopBarProps) {
                 <Dropdown items={sortOrderItems} hidden={changeSortOrderHidden} onItemSelect={props.onSortOrderChange} displaySelectionIndicator={true}/>
             </IconButton>
             <IconButton title={collapsed ? 'Expand all' : 'Collapse all'} onClick={handleCollapseAll} icon={collapsed ? <VscExpandAll/> : <VscCollapseAll/>}></IconButton>
+            <IconButton title='Hide sidebar' icon={props.isHidden? <BiChevronsRight/> :<BiChevronsLeft/>} onClick={props.onHiddenBar} />
         </div>
     )
 }
