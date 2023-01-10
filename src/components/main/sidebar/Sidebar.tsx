@@ -49,6 +49,11 @@ export default function Sidebar(props: any) {
     ipcRenderer.on('note-updated', (event, note) => {
       setFiles({...FileListLogic.modifyNoteOrFolder(note, files, mainFolderPath)})
     })
+
+    ipcRenderer.on('size_sidebar', (event, size) => {
+      console.log('size recv : ' + size)
+      if(refBar && refBar.current) refBar.current.style.width = '' + size+'px'
+    })
   }
 
   useEffect(() => {
@@ -60,15 +65,21 @@ export default function Sidebar(props: any) {
       ipcRenderer.removeAllListeners('folder-created')
       ipcRenderer.removeAllListeners('note-or-folder-deleted')
       ipcRenderer.removeAllListeners('note-updated')
+      ipcRenderer.removeAllListeners('size_sidebar')
     }
   }, [props.folderName, files])
 
   useEffect(() => {
+    getSizeSideBar()
     getListOfFilesAndFolders()
   }, [])
 
   function getListOfFilesAndFolders() {
     ipcRenderer.send('get-folder-content')
+  }
+
+  function getSizeSideBar(){
+    ipcRenderer.send('getSizeSidebar')
   }
 
   function handleCollapseAll(collapseAll: boolean) {
@@ -99,6 +110,7 @@ export default function Sidebar(props: any) {
 
   const handleMouseUp = () => {
     window.removeEventListener('mousemove', handleMove)
+    ipcRenderer.send('newSizeSideBar', refBar.current?.offsetWidth)
   };
 
 

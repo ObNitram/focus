@@ -20,7 +20,7 @@ import chokidar from 'chokidar'
 import * as VaultManagement from './modules/VaultManagementModule'
 import * as WindowsManagement from './modules/WindowsManagement'
 import * as printMessage from './modules/OutputModule'
-import { initConfig, saveInSettingPathVault } from './modules/ManageConfig'
+import { initConfig, saveInSettingPathVault, initGeneralConfig, saveSizeSideBar, getSizeSidebar } from './modules/ManageConfig'
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration()
@@ -199,11 +199,20 @@ function setupEvents() {
     printMessage.printLog('hide application is asked')
     BrowserWindow.getFocusedWindow().minimize()
   })
+
+  ipcMain.on('getSizeSidebar', (event) => {
+    event.reply('size_sidebar', getSizeSidebar())
+  })
+
+  ipcMain.on('newSizeSideBar', (event, number) => {
+    printMessage.printLog('Save size of sidebar asked')
+    saveSizeSideBar(number).then((value) => printMessage.printOK(value)).catch((reason) => printMessage.printError(reason))
+  })
 }
 
 
 
-if (initConfig() == false) {
+if (initConfig() == false || initGeneralConfig() == false) {
   printMessage.printError('The configuration of settings is corrupted or a system error occured. Exiting...')
   app.exit();
 }

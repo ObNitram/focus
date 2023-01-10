@@ -7,7 +7,7 @@ import Sidebar from "./components/main/sidebar/Sidebar"
 import MenuBar from './components/main/menubar/MenuBar'
 
 const App: React.FC = () => {
-
+  
   // TODO: Set folder name and dir after retrieving the saved values
 
   return (
