@@ -93,7 +93,6 @@ export function initGeneralConfig():boolean{
             outPut.printError('Failed to create the file. Aborting.')
             return false;
         }
-        return true
     }
     let data;
     try{
