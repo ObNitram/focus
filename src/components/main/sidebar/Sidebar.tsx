@@ -90,7 +90,7 @@ export default function Sidebar(props: any) {
     if(e.movementX > 0 && refBar.current?.offsetWidth * 100 / window.innerWidth >= 70){
       handleMouseUp()
       return
-    }else if(e.movementX<0 && refBar.current?.offsetWidth * 100 / window.innerWidth <= 20){
+    }else if(e.movementX<0 && refBar.current?.offsetWidth <= 280){
       handleMouseUp()
       return
     }
