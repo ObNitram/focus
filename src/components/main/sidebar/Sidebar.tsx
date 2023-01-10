@@ -122,36 +122,41 @@ export default function Sidebar(props: any) {
         gsap.timeline().to(refBar.current, {
           width: "300px",
           duration: 0.2,
-        }).to('.'+styles.sidebar_header, {
-          borderBottom: 1,
-          duration: 0.1
         }).to('h2', {
           visibility: 'visible',
           duration: 0
+        }).to('h2', {
+          opacity: 1,
+          duration: 0.1
+        }).to('.'+styles.sidebar_header, {
+          borderBottom: 1,
+          duration: 0.1
         }).to('.'+styles.sidebar_list, {
           visibility: 'visible',
           duration: 0,
         }).to('.'+styles.sidebar_list, {
           // visibility: 'visible',
-          duration: 0.2,
+          duration: 0.15,
           opacity: 1,
         })
       }else{
         gsap.timeline().to('h2', {
-          visibility: 'hidden',
-          duration: 0.1
-        }).to('.'+styles.sidebar_list, {
-          // visibility: 'hidden',
           opacity: 0,
           duration: 0.1
-        }).to('.'+styles.sidebar_list, {
+        }).to('h2', {
           visibility: 'hidden',
           duration: 0
         }).to('.'+styles.sidebar_header, {
           borderBottom: 0,
+          duration: 0.1
+        }).to('.'+styles.sidebar_list, {
+          // visibility: 'hidden',
+          opacity: 0,
+          duration: 0.15
+        }).to('.'+styles.sidebar_list, {
+          visibility: 'hidden',
           duration: 0
-          
-        }, -0.1).to(refBar.current, {
+        }).to(refBar.current, {
           width: "60px",
           duration: 0.2
         })
