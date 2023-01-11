@@ -21,7 +21,7 @@ export class File {
     }
 }
 
-export function findAvailableName(dir: string, name: string): Promise<string> {
+export async function findAvailableName(dir: string, name: string): Promise<string> {
     printMessage.printLog('In findAvailableName, dir is ' + dir + ' and name is ' + name)
     return new Promise((resolve, reject) => {
         readdir(dir, (err, files) => {
@@ -65,7 +65,7 @@ export function findAvailableName(dir: string, name: string): Promise<string> {
     })
 }
 
-function getFolderContentInner(folderPath: string, recursive: boolean = false): Promise<File[]> {
+async function getFolderContentInner(folderPath: string, recursive: boolean = false): Promise<File[]> {
     return new Promise((resolve) => {
         readdir(folderPath, { withFileTypes: true }, (err, files) => {
 
@@ -119,7 +119,7 @@ function getFolderContentInner(folderPath: string, recursive: boolean = false): 
  * @param recursive If true, the function will get the content of the subfolders
  * @returns A promise that resolves to an array of File objects
  */
-export function getFolderContent(folderPath: string, recursive: boolean = false): Promise<File> {
+export async function getFolderContent(folderPath: string, recursive: boolean = false): Promise<File> {
     return new Promise((resolve) => {
         stat(folderPath, (err, stats) => {
             if (err) {
@@ -145,7 +145,7 @@ export function showInExplorer(folderPath: string) {
  * @param recursive If true, the function will get the content of the subfolders (default: false)
  * @returns A promise that resolves to a File object
  */
-export function getFileOrFolderInfo(path: string, recursive: boolean = false): Promise<File> {
+export async function getFileOrFolderInfo(path: string, recursive: boolean = false): Promise<File> {
     return new Promise((resolve, reject) => {
         stat(path, (err, stats) => {
             if (err) {
@@ -166,7 +166,7 @@ export function getFileOrFolderInfo(path: string, recursive: boolean = false): P
     })
 }
 
-export function deleteFileOrFolder(path: string): Promise<void> {
+export async function deleteFileOrFolder(path: string): Promise<void> {
     return new Promise((resolve, reject) => {
         rm(path, { recursive: true }, (err) => {
             if (err) {
@@ -179,7 +179,7 @@ export function deleteFileOrFolder(path: string): Promise<void> {
     })
 }
 
-export function createNote(dir: string): Promise<File> {
+export async function createNote(dir: string): Promise<File> {
     return new Promise((resolve, reject) => {
         findAvailableName(dir, 'Untitled.md')
             .then((noteName) => {
@@ -204,7 +204,7 @@ export function createNote(dir: string): Promise<File> {
     })
 }
 
-export function createFolder(dir: string, folderName: string): Promise<File> {
+export async function createFolder(dir: string, folderName: string): Promise<File> {
     return new Promise((resolve, reject) => {
         findAvailableName(dir, folderName)
             .then((folderName) => {
@@ -229,7 +229,7 @@ export function createFolder(dir: string, folderName: string): Promise<File> {
     })
 }
 
-export function renameFileOrFolder(oldPath: string, newPath: string): Promise<void> {
+export async function renameFileOrFolder(oldPath: string, newPath: string): Promise<void> {
     return new Promise((resolve, reject) => {
         try {
             stat(oldPath, (err, stats) => {
@@ -278,7 +278,7 @@ export function renameFileOrFolder(oldPath: string, newPath: string): Promise<vo
     })
 }
 
-export function moveFileOrFolder(oldPath: string, newPath: string): Promise<void> {
+export async function moveFileOrFolder(oldPath: string, newPath: string): Promise<void> {
     return new Promise((resolve, reject) => {
         try {
             stat(oldPath, (err, stats) => {
@@ -327,7 +327,7 @@ export function moveFileOrFolder(oldPath: string, newPath: string): Promise<void
     })
 }
 
-export function copyFileOrFolder(oldPath: string, newPath: string): Promise<void> {
+export async function copyFileOrFolder(oldPath: string, newPath: string): Promise<void> {
     return new Promise((resolve, reject) => {
         try {
             stat(oldPath, (err, stats) => {
