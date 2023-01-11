@@ -51,7 +51,6 @@ export default function Sidebar(props: any) {
     })
 
     ipcRenderer.on('size_sidebar', (event, size) => {
-      console.log('size recv : ' + size)
       if(refBar && refBar.current) refBar.current.style.width = '' + size+'px'
     })
   }
@@ -118,7 +117,7 @@ export default function Sidebar(props: any) {
     if(!refBar || ! refBar.current || !refResizeBar || !refResizeBar.current) return
     let ctx = gsap.context((self:gsap.Context) => {
       if(isHidden){
-        
+
         gsap.timeline().to(refBar.current, {
           width: "300px",
           duration: 0.2,

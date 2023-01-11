@@ -1,5 +1,5 @@
 import { shell } from 'electron'
-import { mkdir, readdir, rename, rm, stat, writeFile } from 'original-fs'
+import { cp, mkdir, readdir, rename, rm, stat, writeFile } from 'original-fs'
 import { join } from 'path'
 import * as printMessage from './OutputModule'
 
@@ -39,10 +39,21 @@ export function findAvailableName(dir: string, name: string): Promise<string> {
                 } else {
                     while (files.includes(newName)) {
                         if (stats.isDirectory()) {
-                            newName = name + " (" + i + ")"
+                            // if name ends with a number, increment it
+                            if (name.match(/\(\d+\)$/)) {
+                                newName = name.replace(/\(\d+\)$/, "(" + i + ")")
+                            } else {
+                                newName = name + " (" + i + ")"
+                            }
                         } else {
                             let extension = name.split('.').pop()
-                            newName = name.replace('.' + extension, " (" + i + ")." + extension)
+
+                            if (name.match(/\(\d+\)\.\w+$/)) {
+                                newName = name.replace(/\(\d+\)\.\w+$/, "(" + i + ")." + extension)
+                            }
+                            else {
+                                newName = name.replace('.' + extension, " (" + i + ")." + extension)
+                            }
                         }
                         i++
                     }
@@ -245,7 +256,6 @@ export function renameFileOrFolder(oldPath: string, newPath: string): Promise<vo
                 let name = parts[parts.length - 1]
                 let dir = newPath.slice(0, -name.length-1)
                 printMessage.printLog('New name is ' + newPath)
-                console.log(name)
                 findAvailableName(dir, name).then((availableName) => {
                     newPath = join(dir, availableName)
                     rename(oldPath, newPath, (err) => {
@@ -264,6 +274,104 @@ export function renameFileOrFolder(oldPath: string, newPath: string): Promise<vo
         }
         catch (e) {
             reject("Error while renaming file or folder: " + e)
+        }
+    })
+}
+
+export function moveFileOrFolder(oldPath: string, newPath: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        try {
+            stat(oldPath, (err, stats) => {
+                if (err) {
+                    reject("Error while getting file or folder info: " + err)
+                    return
+                }
+
+                if (stats.isDirectory()) {
+                    if (!newPath.endsWith('/')) {
+                        newPath += '/'
+                    }
+                }
+                else {
+                    if (newPath.endsWith('/')) {
+                        newPath = newPath.slice(0, -1)
+                    }
+                    if (!newPath.endsWith('.md')) {
+                        newPath += '.md'
+                    }
+                }
+                let parts = newPath.split('/')
+                if(parts[parts.length-1] == '') parts.pop()
+                let name = parts[parts.length - 1]
+                let dir = newPath.slice(0, -name.length-1)
+                printMessage.printLog('New name is ' + newPath)
+                findAvailableName(dir, name).then((availableName) => {
+                    newPath = join(dir, availableName)
+                    rename(oldPath, newPath, (err) => {
+                        if (err) {
+                            reject("Error while moving file or folder: " + err)
+                            return
+                        }
+                        printMessage.printOK("File or folder moved: " + oldPath + " -> " + newPath)
+                        resolve()
+                    })
+                })
+                .catch((err) => {
+                    reject("Error while moving file or folder: " + err)
+                })
+            })
+        }
+        catch (e) {
+            reject("Error while moving file or folder: " + e)
+        }
+    })
+}
+
+export function copyFileOrFolder(oldPath: string, newPath: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        try {
+            stat(oldPath, (err, stats) => {
+                if (err) {
+                    reject("Error while getting file or folder info: " + err)
+                    return
+                }
+
+                if (stats.isDirectory()) {
+                    if (!newPath.endsWith('/')) {
+                        newPath += '/'
+                    }
+                }
+                else {
+                    if (newPath.endsWith('/')) {
+                        newPath = newPath.slice(0, -1)
+                    }
+                    if (!newPath.endsWith('.md')) {
+                        newPath += '.md'
+                    }
+                }
+                let parts = newPath.split('/')
+                if(parts[parts.length-1] == '') parts.pop()
+                let name = parts[parts.length - 1]
+                let dir = newPath.slice(0, -name.length-1)
+                printMessage.printLog('New name is ' + newPath)
+                findAvailableName(dir, name).then((availableName) => {
+                    newPath = join(dir, availableName)
+                    cp(oldPath, newPath, { recursive: true }, (err) => {
+                        if (err) {
+                            reject("Error while copying file or folder: " + err)
+                            return
+                        }
+                        printMessage.printOK("File or folder copied: " + oldPath + " -> " + newPath)
+                        resolve()
+                    })
+                })
+                .catch((err) => {
+                    reject("Error while copying file or folder: " + err)
+                })
+            })
+        }
+        catch (e) {
+            reject("Error while copying file or folder: " + e)
         }
     })
 }

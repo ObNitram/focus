@@ -22,6 +22,14 @@ export function deleteFileOrFolder(path: string): Promise<void> {
     return FileSystemModule.deleteFileOrFolder(path)
 }
 
+export function moveFileOrFolder(oldPath: string, newPath: string): Promise<void> {
+    return FileSystemModule.moveFileOrFolder(oldPath, newPath)
+}
+
+export function copyFileOrFolder(oldPath: string, newPath: string): Promise<void> {
+    return FileSystemModule.copyFileOrFolder(oldPath, newPath)
+}
+
 export function renameFileOrFolder(oldPath: string, newName: string): Promise<void> {
     if (!oldPath || !newName) {
         return Promise.reject('Invalid parameters')

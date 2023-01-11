@@ -19,6 +19,8 @@ export default function FileListItem(this: any, props: FileListItemProps) {
     const [renaming, setRenaming] = React.useState(false);
     const [dropdownHidden, setDropdownHidden] = React.useState(true);
 
+    const [dragOver, setDragOver] = React.useState(false);
+
     const refItem = useRef<HTMLDivElement>(null);
 
     const dropdownRightClickCommonItems = [
@@ -75,11 +77,13 @@ export default function FileListItem(this: any, props: FileListItemProps) {
         document.addEventListener('click', handleClickOutside);
         document.addEventListener('keydown', handleEnterKeyPressed);
         document.addEventListener('contextmenu', handleRightClick);
+        document.addEventListener('drop', handleDrop);
 
         return () => {
             document.removeEventListener('click', handleClickOutside);
             document.removeEventListener('keydown', handleEnterKeyPressed);
             document.removeEventListener('contextmenu', handleRightClick);
+            document.removeEventListener('drop', handleDrop);
         }
     }, [props.item, props.collapsedAll, props.folderToExpand, dropdownHidden])
 
@@ -95,6 +99,14 @@ export default function FileListItem(this: any, props: FileListItemProps) {
             doRenaming();
         }
     };
+
+    const handleDrop = (event: MouseEvent) => {
+        const itemDropOn = refItem.current && refItem.current.contains(event.target as Node);
+
+        if (itemDropOn) {
+            setDragOver(false);
+        }
+    }
 
     const handleEnterKeyPressed = (event: KeyboardEvent) => {
         const isItemRenaming = refItem.current && refItem.current.querySelector('input')?.readOnly === false;
@@ -164,12 +176,63 @@ export default function FileListItem(this: any, props: FileListItemProps) {
         }
     }
 
+
+    // Drag n drop
+    function dragStartHandler(event: React.DragEvent<HTMLDivElement>) {
+        event.dataTransfer.setData("text/plain", item.path);
+        event.dataTransfer.dropEffect = "move";
+
+        const dragImage = document.createElement('div');
+        dragImage.className = styles.sidebar_list_drag_image;
+        dragImage.textContent = item.name;
+
+        document.body.appendChild(dragImage);
+        event.dataTransfer.setDragImage(dragImage, 0, 0);
+
+        // Remove the element when the drag n drop operation is done
+        setTimeout(() => document.body.removeChild(dragImage), 0);
+    }
+
+    function dragOverHandler(event: React.DragEvent<HTMLDivElement>) {
+        event.preventDefault();
+
+        // if ctrl key pressed, copy the file
+        if (event.ctrlKey) {
+            event.dataTransfer.dropEffect = "copy";
+        }
+        else {
+            event.dataTransfer.dropEffect = "move";
+        }
+        setDirCollapsed(false);
+
+        setDragOver(true);
+    }
+
+    function handleDragLeave (event: React.DragEvent<HTMLDivElement>) {
+        setDragOver(false);
+    }
+
+    function dropHandler(event: React.DragEvent<HTMLDivElement>) {
+        event.preventDefault();
+        const data = event.dataTransfer.getData("text/plain");
+
+        // if ctrl key pressed, copy the file
+        if (event.ctrlKey) {
+            ipcRenderer.send('copy-note-or-folder', data, item.path)
+        }
+        else {
+            ipcRenderer.send('move-note-or-folder', data, item.path)
+        }
+    }
+
+
+
     if (!item) return null;
 
     if (item.isDirectory) {
         return (
             <li className={`${styles.sidebar_list_folder} ${dirCollapsed === false || dirCollapsedAll === false ? styles.sidebar_list_folder_expanded : styles.sidebar_list_folder_collapsed}`}>
-                <div onClick={handleClickDirectory} ref={refItem}>
+                <div onClick={handleClickDirectory} ref={refItem} className={`${dragOver ? styles.sidebar_list_drag_over : ''}`} draggable={true} onDragStart={dragStartHandler} onDragOver={dragOverHandler} onDrop={dropHandler} onDragLeave={handleDragLeave}>
                     <span className={styles.sidebar_list_folder_name}>
                         <input type="text" value={item.name} readOnly={!renaming} onChange={(e) => setItem({ ...item, name: e.target.value })} />
                     </span>
@@ -186,8 +249,8 @@ export default function FileListItem(this: any, props: FileListItemProps) {
 
     else {
         return (
-            <li className={styles.sidebar_list_file}>
-                <div ref={refItem}>
+            <li className={styles.sidebar_list_file} draggable={true}>
+                <div ref={refItem} onDragStart={dragStartHandler}>
                     <Dropdown items={dropdownRightClickCommonItems} onItemSelect={(dropdownItem: any) => { handleDropdownItemClickCommon(dropdownItem, item.path) }} hidden={dropdownHidden} />
                     <input type="text" value={item.name} readOnly={!renaming} onChange={(e) => setItem({ ...item, name: e.target.value })} />
                 </div>

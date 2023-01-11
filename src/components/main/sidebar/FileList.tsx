@@ -1,3 +1,4 @@
+import { ipcRenderer } from "electron";
 import React, { useEffect } from "react";
 import styles from 'styles/components/main/sidebar.module.scss'
 
@@ -30,10 +31,35 @@ export default function FileList(props: FileListProps) {
         }
     }, [props.files, props.collapsedAll, props.folderToExpand]);
 
+    function handleDragOver(event: React.DragEvent<HTMLUListElement>) {
+        event.preventDefault();
+
+        // if ctrl key pressed, copy the file
+        if (event.ctrlKey) {
+            event.dataTransfer.dropEffect = "copy";
+        }
+        else {
+            event.dataTransfer.dropEffect = "move";
+        }
+    }
+
+    function dropHandler(event: React.DragEvent<HTMLUListElement>) {
+        event.preventDefault();
+        const data = event.dataTransfer.getData("text/plain");
+
+        // if ctrl key pressed, copy the file
+        if (event.ctrlKey) {
+            ipcRenderer.send('copy-note-or-folder', data)
+        }
+        else {
+            ipcRenderer.send('move-note-or-folder', data)
+        }
+    }
+
     if (!files || !files.children) return null;
 
     return (
-        <ul className={styles.sidebar_list}>
+        <ul className={styles.sidebar_list} onDragOver={handleDragOver} onDrop={dropHandler}>
             {files.children.map((item: any) => (
                 <FileListItem  key={item.path} item={item} collapsedAll={collapsedAll} renaming={false} folderToExpand={folderToExpand} />
             ))}

@@ -173,6 +173,50 @@ function setupEvents() {
       })
   })
 
+  ipcMain.on('move-note-or-folder', (event, path: string, newParentFolder: string|null = null) => {
+    if (newParentFolder === null) {
+      newParentFolder = VaultManagement.getPathVault()
+    }
+
+    printMessage.printINFO('Request to move : ' + path + ' to ' + newParentFolder)
+    if (path === newParentFolder || path === newParentFolder.concat('/', path.split('/').pop())) {
+      printMessage.printINFO('No move needed')
+      return
+    }
+
+    let pathParts = path.split('/')
+    const newPath = join(newParentFolder, pathParts[pathParts.length - 1])
+
+    modificationsInVaultFromApp += 2
+
+    VaultManagement.moveFileOrFolder(path, newPath).then(() => {
+      printMessage.printOK(path + ' moved!')
+    })
+      .catch((err) => {
+        printMessage.printError(err)
+      })
+  })
+
+  ipcMain.on('copy-note-or-folder', (event, path: string, newParentFolder: string|null = null) => {
+    if (newParentFolder === null) {
+      newParentFolder = VaultManagement.getPathVault()
+    }
+
+    printMessage.printINFO('Request to copy : ' + path + ' to ' + newParentFolder)
+
+    let pathParts = path.split('/')
+    const newPath = join(newParentFolder, pathParts[pathParts.length - 1])
+
+    modificationsInVaultFromApp += 2
+
+    VaultManagement.copyFileOrFolder(path, newPath).then(() => {
+      printMessage.printOK(path + ' copied!')
+    })
+      .catch((err) => {
+        printMessage.printError(err)
+      })
+  })
+
   ipcMain.on('show-in-explorer', (event, path: string) => {
     printMessage.printINFO('Request to show in explorer : ' + path)
     VaultManagement.showInExplorer(path)
