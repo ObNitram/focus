@@ -1,0 +1,146 @@
+@import'../../variables.scss';
+
+.sidebar {
+    background-color: $main-color;
+    width: 300px;
+    height: $heigt_sidebar;
+    position: fixed;
+    top: $height_menubar;
+    overflow-x: hidden;
+    overflow-y: hidden;
+
+    .left_border{
+        position: absolute;
+        right: 0px;
+        top: 0;
+        bottom: 0;
+        width: 5px;
+        background-color: #444;
+        cursor: e-resize;
+        z-index: 9;
+    }
+
+    h2 {
+        color: $text-color;
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin: 0;
+        padding: 1rem 0 1rem 0;
+        // padding-top: 1rem;
+        text-align: center;
+        // border: 1px solid $text-color;
+    }
+
+    .sidebar_header {
+        border-bottom: 1px solid $text-color;
+        height: 8rem;
+        width: inherit;
+        max-width: inherit;
+        position: fixed;
+        z-index: 1;
+
+        .sidebar_topbar {
+            position: relative;
+        }
+    }
+
+    .sidebar_list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        height: calc(100% - 9rem);
+        padding-left: 1rem;
+        overflow-y: auto;
+        margin-top: 9rem;
+
+        li {
+            margin: 0.5rem;
+            padding: 0.5rem 0.5rem 0.5rem 0;
+            font-size: 1rem;
+            color: $text-color;
+            font-weight: normal;
+            text-align: left;
+            border-radius: 0.5rem;
+
+            display: flex;
+            flex-direction: column;
+            position: relative;
+
+            div {
+                border-radius: 0.5rem;
+            }
+
+            div:hover,
+            &.sidebar_list_file:hover {
+                cursor: pointer;
+                background-color: $hover;
+            }
+
+            // make the input text look like a normal text
+            input {
+                background-color: transparent;
+                border: none;
+                color: $text-color;
+                font-size: 1rem;
+                font-weight: normal;
+                margin: 0;
+                padding: 0.5rem;
+                text-align: left;
+                width: 100%;
+                cursor: unset;
+
+                &:not(:read-only) {
+                    cursor: text;
+                }
+
+                &:focus {
+                    outline: none;
+                }
+            }
+
+            &.sidebar_list_folder {
+
+                font-weight: bold;
+
+                .sidebar_list_folder_children {
+                    flex: none;
+                    border-left: 1px solid $text-color;
+                    margin-left: 10px;
+                    padding-left: 20px;
+                }
+
+                .sidebar_list_folder_name {
+                    display: flex;
+
+                    input {
+                        font-weight: bold;
+                    }
+                }
+
+                &.sidebar_list_folder_expanded {
+
+                    .children {
+                        display: block;
+                    }
+
+                    .sidebar_list_folder_name::before {
+                        content: '-';
+                        margin: 0.4rem
+                    }
+                }
+
+                &.sidebar_list_folder_collapsed {
+
+                    .sidebar_list_folder_children {
+                        display: none;
+                    }
+
+                    .sidebar_list_folder_name::before {
+                        content: '+';
+                        margin: 0.4rem;
+                    }
+                }
+            }
+        }
+    }
+}
