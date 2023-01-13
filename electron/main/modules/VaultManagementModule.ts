@@ -38,7 +38,14 @@ export function renameFileOrFolder(oldPath: string, newName: string): Promise<vo
 }
 
 export function getVaultContent(): Promise<FileSystemModule.File> {
-    return FileSystemModule.getFolderContent(pathVault, true)
+    return new Promise<FileSystemModule.File>((resolve, reject) => {
+        FileSystemModule.getFolderContent(pathVault, true).then((value: FileSystemModule.File) => {
+            value.children = value.children.map((file) => {
+                return FileSystemModule.removeMD(file)
+            })
+            resolve(value)
+        }).catch((reason) => reject(reason))
+    })
 }
 
 export function showInExplorer(folderPath: string): void {

@@ -267,3 +267,10 @@ export function renameFileOrFolder(oldPath: string, newPath: string): Promise<vo
         }
     })
 }
+
+export function removeMD(file: File):File{
+    if(file.name.endsWith('.md')){
+        file.name = file.name.slice(0, -3);
+    }
+    return file
+}
