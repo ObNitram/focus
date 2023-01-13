@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import styles from 'styles/components/main/sidebar.module.scss'
 
 import FileListItem from "./FileListItem";
