@@ -51,12 +51,19 @@ function sendVaultContent() {
   VaultManagement.getVaultContent().then((content) => {
     mainWindow?.webContents.send('folder-content', content)
   })
+  .catch((err) => {
+    printMessage.printError(err)
+  })
 }
 
-function setupEvents() {
-  ipcMain.on('get-folder-content', () => {
-    sendVaultContent()
-  })
+function setupWatcher() {
+  if (watcher) {
+    watcher.close()
+  }
+
+  if (VaultManagement.getPathVault() === null) {
+    return
+  }
 
   watcher = chokidar.watch(VaultManagement.getPathVault(), {
     ignored: /(^|[\/\\])\../, // ignore dotfiles
@@ -109,7 +116,14 @@ function setupEvents() {
       }, 1000)
     }
   })
+}
 
+function setupEvents() {
+  setupWatcher()
+
+  ipcMain.on('get-folder-content', () => {
+    sendVaultContent()
+  })
 
   ipcMain.on('create-note', (event, pathVault: string | null = null) => {
     printMessage.printINFO('Request to add note !')
@@ -148,7 +162,7 @@ function setupEvents() {
     modificationsInVaultFromApp++
 
     VaultManagement.deleteFileOrFolder(arg).then(() => {
-        printMessage.printOK(arg + ' removed!')
+      printMessage.printOK(arg + ' removed!')
     })
       .catch((err) => {
         printMessage.printError(err)
@@ -173,7 +187,7 @@ function setupEvents() {
       })
   })
 
-  ipcMain.on('move-note-or-folder', (event, path: string, newParentFolder: string|null = null) => {
+  ipcMain.on('move-note-or-folder', (event, path: string, newParentFolder: string | null = null) => {
     if (newParentFolder === null) {
       newParentFolder = VaultManagement.getPathVault()
     }
@@ -197,7 +211,7 @@ function setupEvents() {
       })
   })
 
-  ipcMain.on('copy-note-or-folder', (event, path: string, newParentFolder: string|null = null) => {
+  ipcMain.on('copy-note-or-folder', (event, path: string, newParentFolder: string | null = null) => {
     if (newParentFolder === null) {
       newParentFolder = VaultManagement.getPathVault()
     }
@@ -226,7 +240,8 @@ function setupEvents() {
     if (!saveInSettingPathVault(path)) {
       app.exit();
     }
-    WindowsManagement.closeVaultWindowAndOpenMain()
+    setupWatcher()
+    mainWindow = WindowsManagement.closeVaultWindowAndOpenMain()
   })
 
   ipcMain.on('closeApp', () => {
@@ -265,14 +280,14 @@ app.whenReady().then(() => {
   setupEvents();
   pathVault = VaultManagement.getPathVault()
   printMessage.printLog('Path found is ' + pathVault)
-  if(pathVault == null){
+  if (pathVault == null) {
     printMessage.printINFO('This is the first time of application launch or the config was reseted !')
     printMessage.printINFO('Launch select vault location window...')
     WindowsManagement.createVaultWindow()
   } else {
     printMessage.printINFO('A valid configuration is found, launching the main window...')
     VaultManagement.setPath(pathVault)
-    mainWindow =  WindowsManagement.createMainWindow();
+    mainWindow = WindowsManagement.createMainWindow();
   }
 })
 

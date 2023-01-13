@@ -1,10 +1,9 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import {gsap} from 'gsap'
+import React, { useCallback, useEffect, useRef } from 'react'
+import { gsap } from 'gsap'
 import styles from 'styles/components/main/sidebar.module.scss'
 
 import FileList from "./FileList"
 import TopBar from "./TopBar"
-import { white } from 'colors'
 
 import * as FileListLogic from './FileListLogic'
 
@@ -17,14 +16,14 @@ export default function Sidebar(props: any) {
   const [folderName, setFolderName] = React.useState('MyVault')
   const [collapsedAll, setCollapsedAll] = React.useState<boolean | null>(null)
   const refBar = useRef<null | HTMLDivElement>(null)
-  const refResizeBar = useRef<null|HTMLDivElement>(null)
+  const refResizeBar = useRef<null | HTMLDivElement>(null)
   const [isHidden, setIsHidden] = React.useState<boolean>(false)
   const [folderToExpand, setFolderToExpand] = React.useState<string | null>(null)
 
   function setupEvents() {
     ipcRenderer.on('folder-content', (event, folderContent) => {
       FileListLogic.changeSortOrderRecursive(folderContent)
-      setFiles({...folderContent})
+      setFiles({ ...folderContent })
 
       // Retrieve folder name
       setFolderName(folderContent.name)
@@ -32,31 +31,36 @@ export default function Sidebar(props: any) {
     })
 
     ipcRenderer.on('note-created', (event, note) => {
-      setFiles({...FileListLogic.addNoteOrFolder(note, files, mainFolderPath)})
+      setFiles({ ...FileListLogic.addNoteOrFolder(note, files, mainFolderPath) })
 
       setCollapsedAll(null)
       setFolderToExpand(note.path.split('/').slice(0, note.path.split('/').length - 1).join('/'))
     })
     ipcRenderer.on('folder-created', (event, folder) => {
-      setFiles({...FileListLogic.addNoteOrFolder(folder, files, mainFolderPath)})
+      setFiles({ ...FileListLogic.addNoteOrFolder(folder, files, mainFolderPath) })
 
       setCollapsedAll(null)
       setFolderToExpand(folder.path.split('/').slice(0, folder.path.split('/').length - 1).join('/'))
     })
     ipcRenderer.on('note-or-folder-deleted', (event, path) => {
-      setFiles({...FileListLogic.deleteNoteOrFolder(files, path)})
+      setFiles({ ...FileListLogic.deleteNoteOrFolder(files, path) })
     })
     ipcRenderer.on('note-updated', (event, note) => {
-      setFiles({...FileListLogic.modifyNoteOrFolder(note, files, mainFolderPath)})
+      setFiles({ ...FileListLogic.modifyNoteOrFolder(note, files, mainFolderPath) })
     })
 
     ipcRenderer.on('size_sidebar', (event, size) => {
-      if(refBar && refBar.current) refBar.current.style.width = '' + size+'px'
+      if (refBar && refBar.current) refBar.current.style.width = '' + size + 'px'
     })
   }
 
   useEffect(() => {
     setupEvents()
+
+    if (files === null) {
+        getSizeSideBar()
+        getListOfFilesAndFolders()
+    }
 
     return () => {
       ipcRenderer.removeAllListeners('folder-content')
@@ -68,16 +72,11 @@ export default function Sidebar(props: any) {
     }
   }, [props.folderName, files])
 
-  useEffect(() => {
-    getSizeSideBar()
-    getListOfFilesAndFolders()
-  }, [])
-
   function getListOfFilesAndFolders() {
     ipcRenderer.send('get-folder-content')
   }
 
-  function getSizeSideBar(){
+  function getSizeSideBar() {
     ipcRenderer.send('getSizeSidebar')
   }
 
@@ -86,21 +85,21 @@ export default function Sidebar(props: any) {
   }
 
   function handleSortOrderChange(item: any) {
-    const filesCopy = {...files}
+    const filesCopy = { ...files }
     FileListLogic.changeSortOrderRecursive(filesCopy, item.key)
     setFiles(filesCopy)
   }
 
   const handleMouseDown = (event: React.MouseEvent) => {
-    if(!isHidden)  window.addEventListener('mousemove', handleMove)
+    if (!isHidden) window.addEventListener('mousemove', handleMove)
   };
 
-  const handleMove = useCallback((e:MouseEvent) => {
-    if(! refBar || !refBar.current) return;
-    if(e.movementX > 0 && refBar.current?.offsetWidth * 100 / window.innerWidth >= 70){
+  const handleMove = useCallback((e: MouseEvent) => {
+    if (!refBar || !refBar.current) return;
+    if (e.movementX > 0 && refBar.current?.offsetWidth * 100 / window.innerWidth >= 70) {
       handleMouseUp()
       return
-    }else if(e.movementX<0 && refBar.current?.offsetWidth <= 280){
+    } else if (e.movementX < 0 && refBar.current?.offsetWidth <= 280) {
       handleMouseUp()
       return
     }
@@ -114,9 +113,9 @@ export default function Sidebar(props: any) {
 
 
   const handleHiddenBar = () => {
-    if(!refBar || ! refBar.current || !refResizeBar || !refResizeBar.current) return
-    let ctx = gsap.context((self:gsap.Context) => {
-      if(isHidden){
+    if (!refBar || !refBar.current || !refResizeBar || !refResizeBar.current) return
+    let ctx = gsap.context((self: gsap.Context) => {
+      if (isHidden) {
 
         gsap.timeline().to(refBar.current, {
           width: "300px",
@@ -127,32 +126,32 @@ export default function Sidebar(props: any) {
         }).to('h2', {
           opacity: 1,
           duration: 0.1
-        }).to('.'+styles.sidebar_header, {
+        }).to('.' + styles.sidebar_header, {
           borderBottom: 1,
           duration: 0.1
-        }).to('.'+styles.sidebar_list, {
+        }).to('.' + styles.sidebar_list, {
           visibility: 'visible',
           duration: 0,
-        }).to('.'+styles.sidebar_list, {
+        }).to('.' + styles.sidebar_list, {
           // visibility: 'visible',
           duration: 0.15,
           opacity: 1,
         })
-      }else{
+      } else {
         gsap.timeline().to('h2', {
           opacity: 0,
           duration: 0.1
         }).to('h2', {
           visibility: 'hidden',
           duration: 0
-        }).to('.'+styles.sidebar_header, {
+        }).to('.' + styles.sidebar_header, {
           borderBottom: 0,
           duration: 0.1
-        }).to('.'+styles.sidebar_list, {
+        }).to('.' + styles.sidebar_list, {
           // visibility: 'hidden',
           opacity: 0,
           duration: 0.15
-        }).to('.'+styles.sidebar_list, {
+        }).to('.' + styles.sidebar_list, {
           visibility: 'hidden',
           duration: 0
         }).to(refBar.current, {
@@ -162,14 +161,14 @@ export default function Sidebar(props: any) {
       }
     }, refBar)
     setIsHidden(!isHidden)
-    refResizeBar.current.style.cursor = isHidden? 'e-resize' : 'default'
+    refResizeBar.current.style.cursor = isHidden ? 'e-resize' : 'default'
   }
 
   return (
     <div className={styles.sidebar} ref={refBar}>
 
       <div className={styles.sidebar_header + ' test'}>
-        <TopBar onCollapseAll={handleCollapseAll} onSortOrderChange={handleSortOrderChange} onHiddenBar={handleHiddenBar} isHidden={isHidden}/>
+        <TopBar onCollapseAll={handleCollapseAll} onSortOrderChange={handleSortOrderChange} onHiddenBar={handleHiddenBar} isHidden={isHidden} />
         <h2>{folderName}</h2>
       </div>
       <FileList collapsedAll={collapsedAll} files={files} folderToExpand={folderToExpand} />

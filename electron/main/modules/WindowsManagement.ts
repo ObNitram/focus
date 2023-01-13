@@ -6,6 +6,8 @@ import { BrowserWindow, shell, ipcMain, dialog, app } from "electron"
 import { createFolder } from "./VaultManagementModule"
 import { join } from 'path'
 
+import * as printMessage from './OutputModule'
+
 let mainWindow: BrowserWindow | null = null
 let winVault: BrowserWindow | null = null
 
@@ -108,16 +110,22 @@ function addListenerVaultWindow(){
       vaultPath = defaultPath
     }
 
-    const vault = createFolder(vaultPath,vaultName)
-    if (!vault) {
-      return
-    }
-    event.reply('vault-created', vault.path)
+    createFolder(vaultPath,vaultName).then((vault) => {
+      if (!vault) {
+        return
+      }
+
+      event.reply('vault-created', vault.path)
+    })
+    .catch((err) => {
+      printMessage.printError(err)
+    })
   })
 }
 
 export function closeVaultWindowAndOpenMain(){
   winVault.close();
   mainWindow = createMainWindow();
+  return mainWindow
 }
 
