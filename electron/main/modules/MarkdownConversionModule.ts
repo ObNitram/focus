@@ -207,6 +207,24 @@ class OrderedListNodeV1 implements ListNode {
     }
 }
 
+class CodeNodeV1 implements Node {
+    children: Node[];
+    direction: 'ltr' | 'rtl';
+    format: string;
+    indent: number;
+    language?: string;
+    type: string;
+    version: number;
+
+    constructor() {
+        this.children = [];
+        this.direction = 'ltr';
+        this.format = '';
+        this.indent = 0;
+        this.type = 'code';
+        this.version = 1;
+    }
+}
 
 /**
  * create text nodes, separated by bold, italic and normal text
@@ -327,6 +345,31 @@ function proceedList(text: string, currentList: BulletListNodeV1 | null = null, 
     return list;
 }
 
+/**
+ * create a code node
+ * @param text the text to be processed
+ * @param currentCode the current code node
+ * @returns the created code node
+ */
+function proceedCode(text: string, currentCode: CodeNodeV1 | null = null): CodeNodeV1 {
+    let code = currentCode;
+    if (!code) {
+        code = new CodeNodeV1();
+    }
+    else {
+        code.children.push(new LineBreakNodeV1());
+    }
+    if (text.startsWith('```')) {
+        code.language = text.substring(3);
+        text = '';
+    }
+    if (text.endsWith('```')) {
+        text = text.substring(0, text.length - 3);
+    }
+
+    code.children.push(new TextNodeV1(text, textFormat.normal));
+    return code;
+}
 
 export function convertMarkdownToJSON(markdown: string): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -336,6 +379,7 @@ export function convertMarkdownToJSON(markdown: string): Promise<string> {
         let currentParagraph: ParagraphNodeV1 = null;
         let currentQuote: QuoteNodeV1 = null;
         let currentList: ListNode = null;
+        let currentCode: CodeNodeV1 = null;
 
         for (let i = 0; i < parts.length; i++) {
             let part = parts[i];
@@ -385,6 +429,35 @@ export function convertMarkdownToJSON(markdown: string): Promise<string> {
                     let list = proceedList(part, currentList, true);
                     if (list) {
                         currentList = list;
+                        nodeCreated = true;
+                    }
+                }
+                else if (part.startsWith('```')) { // code (start or end)
+                    if (currentCode) {
+                        jsonObject.root.children.push(currentCode);
+                        currentCode = null;
+                        nodeCreated = true;
+                    }
+                    else {
+                        if (currentParagraph) {
+                            jsonObject.root.children.push(currentParagraph);
+                            currentParagraph = null;
+                        }
+                        currentCode = proceedCode(part);
+                        if (currentCode) {
+                            nodeCreated = true;
+                        }
+                    }
+                }
+                else if (currentCode) { // code (middle)
+                    currentCode = proceedCode(part, currentCode);
+                    nodeCreated = true;
+                }
+                else if (part.endsWith('```')) { // code (end)
+                    if (currentCode) {
+                        jsonObject.root.children.push(currentCode);
+                        currentCode = null;
+
                         nodeCreated = true;
                     }
                 }

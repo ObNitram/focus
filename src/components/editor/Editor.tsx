@@ -71,7 +71,6 @@ export default function Editor() {
                     />
                     <RestoreFromJSONPlugin />
                     <ListPlugin />
-                    <CodeHighlightPlugin />
                 </div>
             </div>
         </LexicalComposer>
