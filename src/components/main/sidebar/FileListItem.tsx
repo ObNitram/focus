@@ -252,12 +252,21 @@ export default function FileListItem(this: any, props: FileListItemProps) {
 
 
     function handleSelectFile(event: React.MouseEvent, path: string) {
+        event.stopPropagation()
         if (event.ctrlKey) {
-            selectedFilesContext?.[1]([...selectedFilesContext[0]].concat([path]))
+            if(selectedFilesContext?.[0].includes(path)){
+                selectedFilesContext?.[1]([...selectedFilesContext[0]].filter((value) => {
+                    return value != path
+                } ))
+            }else{
+                selectedFilesContext?.[1]([...selectedFilesContext[0].concat(path)])
+            }
         } else {
-            console.log("1" + selectedFilesContext?.[0])
-            selectedFilesContext?.[1]([path])
-            console.log("2" + selectedFilesContext?.[0])
+            if(selectedFilesContext?.[0].includes(path) && selectedFilesContext?.[0].length == 1){
+                selectedFilesContext?.[1]([])
+            }else{
+                selectedFilesContext?.[1]([path])
+            }
         }
     }
 
