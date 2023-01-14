@@ -18,6 +18,10 @@ import {
 } from '@lexical/list';
 
 import {
+    $createCodeNode
+  } from '@lexical/code';
+
+import {
     $getSelection,
     NodeSelection,
     RangeSelection,
@@ -164,6 +168,28 @@ export default function Toolbar() {
         });
     };
 
+    const formatCode = () => {
+        editor.update(() => {
+            let selection = $getSelection();
+
+            if (
+                $isRangeSelection(selection) ||
+                DEPRECATED_$isGridSelection(selection)
+            ) {
+                if (selection.isCollapsed()) {
+                    $setBlocksType_experimental(selection, () => $createCodeNode());
+                } else {
+                    const textContent = selection.getTextContent();
+                    const codeNode = $createCodeNode();
+                    selection.insertNodes([codeNode]);
+                    selection = $getSelection();
+                    if ($isRangeSelection(selection))
+                        selection.insertRawText(textContent);
+                }
+            }
+        });
+    };
+
     function handleDropdownTextFormatItemCLick(item: any) {
         if (item.key === currTextFormat) {
             if (currTextFormat === 'bullet-list' || currTextFormat === 'numbered-list') {
@@ -204,6 +230,9 @@ export default function Toolbar() {
                 break;
             case 'quote':
                 formatQuote();
+                break;
+            case 'code':
+                formatCode();
                 break;
         }
 

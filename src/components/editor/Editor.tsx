@@ -8,6 +8,7 @@ import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
 
 import {ListPlugin} from '@lexical/react/LexicalListPlugin';
+import CodeHighlightPlugin from './plugins/CodeHightlightPlugin/index';
 
 import editorConfig from "../../config/editor/editorConfig";
 
@@ -70,6 +71,7 @@ export default function Editor() {
                     />
                     <RestoreFromJSONPlugin />
                     <ListPlugin />
+                    <CodeHighlightPlugin />
                 </div>
             </div>
         </LexicalComposer>
