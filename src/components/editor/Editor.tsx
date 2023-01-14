@@ -1,4 +1,3 @@
-import {$getRoot, $getSelection, ParagraphNode, EditorState} from 'lexical';
 import {useEffect} from 'react';
 
 import styles from "styles/editor.module.scss";
@@ -6,43 +5,56 @@ import styles from "styles/editor.module.scss";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
-import {HistoryPlugin} from '@lexical/react/LexicalHistoryPlugin';
-import {OnChangePlugin} from '@lexical/react/LexicalOnChangePlugin';
-import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
 
-import EmojisPlugin from "./plugins/EmojisPlugin";
-
-import editorConfig from "../..//config/editor/editorConfig";
+import editorConfig from "../../config/editor/editorConfig";
 
 import Toolbar from './Toolbar';
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 
-function onChange(editorState: EditorState) {
-    editorState.read(() => {
-      // Read the contents of the EditorState here.
-      const root = $getRoot();
-      const selection = $getSelection();
-
-    });
-}
-
-function MyCustomAutoFocusPlugin() {
-    const [editor] = useLexicalComposerContext();
-  
-    useEffect(() => {
-      // Focus the editor when the effect fires!
-      editor.focus();
-    }, [editor]);
-  
-    return null;
-}
+const { ipcRenderer } = window.require('electron')
 
 function Placeholder() {
     return <div className={styles.editorPlaceholder}>Enter some plain text...</div>;
-  }
+}
+
+function RestoreFromJSONPlugin() {
+    const [editor] = useLexicalComposerContext()
+
+    function setupEvents() {
+        ipcRenderer.on('note-opened', (event, noteData) => {
+            console.log(noteData)
+
+            const editorState = editor.parseEditorState(noteData)
+            editor.setEditorState(editorState)
+        })
+    }
+
+    useEffect(() => {
+        setupEvents()
+        ipcRenderer.send('open-note', '/home/logan/Documents/myVault/aNote.md')
+
+        return () => {
+            ipcRenderer.removeAllListeners('note-opened')
+        }
+    }, [editor])
+
+    function getData() {
+        const editorState = editor.getEditorState()
+        const json = editorState.toJSON()
+
+        console.log(json)
+        console.log('Hey!')
+    }
+
+    return (
+        <div>
+            <button onClick={() => { getData() }} >Get Data</button>
+        </div>
+    )
+}
 
 export default function Editor() {
-
     return (
         <LexicalComposer initialConfig={editorConfig}>
             <div className={styles.editorContainer}>
@@ -54,10 +66,7 @@ export default function Editor() {
                         placeholder={<Placeholder />}
                         ErrorBoundary={LexicalErrorBoundary}
                     />
-                    <OnChangePlugin onChange={onChange} />
-                    <HistoryPlugin />
-                    <MyCustomAutoFocusPlugin />
-                    <EmojisPlugin />
+                    <RestoreFromJSONPlugin />
                 </div>
             </div>
         </LexicalComposer>

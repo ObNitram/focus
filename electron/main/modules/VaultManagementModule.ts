@@ -57,4 +57,8 @@ export function showInExplorer(folderPath: string): void {
     return FileSystemModule.showInExplorer(folderPath)
 }
 
+export function openFile(filePath: string): Promise<string> {
+    return FileSystemModule.openFileAndReadData(filePath)
+}
+
 export default FileSystemModule.File

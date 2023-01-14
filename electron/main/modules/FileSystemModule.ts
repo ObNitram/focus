@@ -1,5 +1,5 @@
 import { shell } from 'electron'
-import { cp, mkdir, readdir, rename, rm, stat, writeFile } from 'original-fs'
+import { cp, mkdir, readdir, readFile, rename, rm, stat, writeFile } from 'original-fs'
 import { join } from 'path'
 import * as printMessage from './OutputModule'
 
@@ -372,6 +372,35 @@ export async function copyFileOrFolder(oldPath: string, newPath: string): Promis
         }
         catch (e) {
             reject("Error while copying file or folder: " + e)
+        }
+    })
+}
+
+export async function openFileAndReadData(filePath: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+        try {
+            stat(filePath, (err, stats) => {
+                if (err) {
+                    reject("Error while getting file info: " + err)
+                    return
+                }
+
+                if (stats.isDirectory()) {
+                    reject("Error while getting file info: " + filePath + " is a folder")
+                    return
+                }
+
+                readFile(filePath, 'utf8', (err, data) => {
+                    if (err) {
+                        reject("Error while reading file: " + err)
+                        return
+                    }
+                    resolve(data)
+                })
+            })
+        }
+        catch (e) {
+            reject("Error while reading file: " + e)
         }
     })
 }

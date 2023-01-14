@@ -20,6 +20,7 @@ import chokidar from 'chokidar'
 import * as VaultManagement from './modules/VaultManagementModule'
 import * as WindowsManagement from './modules/WindowsManagement'
 import * as printMessage from './modules/OutputModule'
+import * as MarkdownConverter from './modules/MarkdownConversionModule'
 import { initConfig, saveInSettingPathVault, initGeneralConfig, saveSizeSideBar, getSizeSidebar } from './modules/ManageConfig'
 
 // Disable GPU Acceleration for Windows 7
@@ -225,6 +226,23 @@ function setupEvents() {
 
     VaultManagement.copyFileOrFolder(path, newPath).then(() => {
       printMessage.printOK(path + ' copied!')
+    })
+      .catch((err) => {
+        printMessage.printError(err)
+      })
+  })
+
+  ipcMain.on('open-note', (event, path: string) => {
+    printMessage.printINFO('Request to open : ' + path)
+    VaultManagement.openFile(path).then((noteData: string) => {
+      printMessage.printOK(path + ' opened!')
+
+      MarkdownConverter.convertMarkdownToJSON(noteData).then((noteData) => {
+        mainWindow?.webContents.send('note-opened', noteData)
+      })
+        .catch((err) => {
+          printMessage.printError(err)
+        })
     })
       .catch((err) => {
         printMessage.printError(err)
