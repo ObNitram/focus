@@ -7,6 +7,8 @@ import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
 
+import {ListPlugin} from '@lexical/react/LexicalListPlugin';
+
 import editorConfig from "../../config/editor/editorConfig";
 
 import Toolbar from './Toolbar';
@@ -67,6 +69,7 @@ export default function Editor() {
                         ErrorBoundary={LexicalErrorBoundary}
                     />
                     <RestoreFromJSONPlugin />
+                    <ListPlugin />
                 </div>
             </div>
         </LexicalComposer>

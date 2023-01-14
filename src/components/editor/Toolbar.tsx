@@ -100,7 +100,7 @@ export default function Toolbar() {
     const [isItalic, setIsItalic] = useState(false);
     const [isUnderline, setIsUnderline] = useState(false);
 
-    const currTextFormat = 'normal';
+    let currTextFormat = 'normal';
 
     const updateToolbar = useCallback(() => {
         const selection: null | RangeSelection | NodeSelection | GridSelection = $getSelection();
@@ -166,7 +166,8 @@ export default function Toolbar() {
 
     function handleDropdownTextFormatItemCLick(item: any) {
         if (item.key === currTextFormat) {
-            if (item.key === 'bullet-list' || item.key === 'numbered-list') {
+            if (currTextFormat === 'bullet-list' || currTextFormat === 'numbered-list') {
+                console.log('remove list');
                 editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
             }
             return;
@@ -195,6 +196,7 @@ export default function Toolbar() {
                 formatHeading('h6');
                 break;
             case 'bullet-list':
+                console.log('add list');
                 editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
                 break;
             case 'numbered-list':
@@ -204,6 +206,8 @@ export default function Toolbar() {
                 formatQuote();
                 break;
         }
+
+        currTextFormat = item.key;
     }
 
     return (
