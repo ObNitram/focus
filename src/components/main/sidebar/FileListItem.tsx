@@ -76,8 +76,6 @@ export default function FileListItem(this: any, props: FileListItemProps) {
             setDirCollapsedAll(props.collapsedAll);
             setDirCollapsed(props.collapsedAll);
         }
-        console.log('first useEffect apply')
-        console.log(item)
         // Event listeners
         document.addEventListener('click', handleClickOutside);
         document.addEventListener('keydown', handleEnterKeyPressed);
