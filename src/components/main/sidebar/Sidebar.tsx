@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import {gsap} from 'gsap'
 import styles from 'styles/components/main/sidebar.module.scss'
 
@@ -7,6 +7,7 @@ import TopBar from "./TopBar"
 import { white } from 'colors'
 
 import * as FileListLogic from './FileListLogic'
+import { SelectedFilesContext } from '@/context/selectedFilesContext'
 
 const { ipcRenderer } = window.require('electron')
 
@@ -20,6 +21,8 @@ export default function Sidebar(props: any) {
   const refResizeBar = useRef<null|HTMLDivElement>(null)
   const [isHidden, setIsHidden] = React.useState<boolean>(false)
   const [folderToExpand, setFolderToExpand] = React.useState<string | null>(null)
+
+  const selectedFilesContext = useContext(SelectedFilesContext)
 
   function setupEvents() {
     ipcRenderer.on('folder-content', (event, folderContent) => {
@@ -59,6 +62,8 @@ export default function Sidebar(props: any) {
   useEffect(() => {
     setupEvents()
 
+    document.addEventListener('keydown', handleSupprKey)
+
     return () => {
       ipcRenderer.removeAllListeners('folder-content')
       ipcRenderer.removeAllListeners('note-created')
@@ -66,8 +71,9 @@ export default function Sidebar(props: any) {
       ipcRenderer.removeAllListeners('note-or-folder-deleted')
       ipcRenderer.removeAllListeners('note-updated')
       ipcRenderer.removeAllListeners('size_sidebar')
+      document.removeEventListener('keydown', handleSupprKey)
     }
-  }, [props.folderName, files])
+  }, [props.folderName, files, selectedFilesContext])
 
   useEffect(() => {
     getSizeSideBar()
@@ -164,6 +170,15 @@ export default function Sidebar(props: any) {
     }, refBar)
     setIsHidden(!isHidden)
     refResizeBar.current.style.cursor = isHidden? 'e-resize' : 'default'
+  }
+
+  const handleSupprKey = (event:KeyboardEvent) => {
+    if(event.key == 'Delete'){
+      selectedFilesContext?.[0].forEach((path:string) => {
+        ipcRenderer.send('delete-note-or-folder', path)
+      })
+      selectedFilesContext?.[1]([])
+    }
   }
 
   return (
