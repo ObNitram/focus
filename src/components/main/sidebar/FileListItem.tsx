@@ -150,7 +150,8 @@ export default function FileListItem(this: any, props: FileListItemProps) {
         ipcRenderer.send('rename-note-or-folder', item.path, refItem.current?.querySelector('input')?.value)
     }
 
-    function handleClickDirectory() {
+    function handleClickDirectory(e:React.MouseEvent) {
+        e.stopPropagation()
         setDirCollapsed(!dirCollapsed)
         setDirCollapsedAll(null)
         setDropdownHidden(true)
