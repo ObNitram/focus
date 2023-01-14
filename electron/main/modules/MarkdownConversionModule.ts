@@ -126,6 +126,88 @@ class QuoteNodeV1 implements Node {
     }
 }
 
+class ListItemNodeV1 implements Node {
+    checked?: boolean;
+    children: Node[];
+    direction: 'ltr' | 'rtl';
+    format: string;
+    indent: number;
+    type: string;
+    value: number;
+    version: number;
+
+    constructor(value: number) {
+        this.children = [];
+        this.direction = 'ltr';
+        this.format = '';
+        this.indent = 0;
+        this.type = 'listitem';
+        this.value = value;
+        this.version = 1;
+    }
+}
+
+interface ListNode extends Node {
+    children: Node[];
+    direction: 'ltr' | 'rtl';
+    format: string;
+    indent: number;
+    listType: string;
+    start: number;
+    tag: string;
+    type: string;
+    version: number;
+}
+
+class BulletListNodeV1 implements ListNode {
+    children: Node[];
+    direction: 'ltr' | 'rtl';
+    format: string;
+    indent: number;
+    listType: string;
+    start: number;
+    tag: string;
+    type: string;
+    version: number;
+
+    constructor() {
+        this.children = [];
+        this.direction = 'ltr';
+        this.format = '';
+        this.indent = 0;
+        this.listType = 'bullet';
+        this.start = 1;
+        this.tag = 'ul';
+        this.type = 'list';
+        this.version = 1;
+    }
+}
+
+class OrderedListNodeV1 implements ListNode {
+    children: Node[];
+    direction: 'ltr' | 'rtl';
+    format: string;
+    indent: number;
+    listType: string;
+    start: number;
+    tag: string;
+    type: string;
+    version: number;
+
+    constructor() {
+        this.children = [];
+        this.direction = 'ltr';
+        this.format = '';
+        this.indent = 0;
+        this.listType = 'number';
+        this.start = 1;
+        this.tag = 'ol';
+        this.type = 'list';
+        this.version = 1;
+    }
+}
+
+
 /**
  * create text nodes, separated by bold, italic and normal text
  * @param text the text to be processed
@@ -205,7 +287,7 @@ function proceedHeading(text: string): HeadingNodeV1 {
  * @param currentQuote the current quote node
  * @returns the created quote node
  */
-function proceedQuote(text: string, currentQuote: QuoteNodeV1|null = null): QuoteNodeV1 {
+function proceedQuote(text: string, currentQuote: QuoteNodeV1 | null = null): QuoteNodeV1 {
     let textNodes = proceedText(text.substring(1));
 
     let quote = currentQuote;
@@ -219,14 +301,41 @@ function proceedQuote(text: string, currentQuote: QuoteNodeV1|null = null): Quot
     return quote;
 }
 
+/**
+ * create a list node
+ * @param text the text to be processed
+ * @param currentList the current list node
+ * @param orderedList true if the list is ordered, false if it is unordered
+ * @returns the created list node
+ */
+function proceedList(text: string, currentList: BulletListNodeV1 | null = null, orderedList: boolean = false): ListNode {
+    let textNodes = proceedText(text.substring(2));
+
+    let list = currentList;
+    if (!list) {
+        if (orderedList) {
+            list = new OrderedListNodeV1();
+        }
+        else {
+            list = new BulletListNodeV1();
+        }
+    }
+    let listItem = new ListItemNodeV1(list.children.length + 1);
+    listItem.children = textNodes;
+    list.children.push(listItem);
+
+    return list;
+}
+
 
 export function convertMarkdownToJSON(markdown: string): Promise<string> {
     return new Promise((resolve, reject) => {
         const parts = markdown.split('\n');
         let jsonObject: any = { root: new RootNodeV1() }
 
-        let currentParagraph: ParagraphNodeV1 = new ParagraphNodeV1();
+        let currentParagraph: ParagraphNodeV1 = null;
         let currentQuote: QuoteNodeV1 = null;
+        let currentList: ListNode = null;
 
         for (let i = 0; i < parts.length; i++) {
             let part = parts[i];
@@ -238,6 +347,10 @@ export function convertMarkdownToJSON(markdown: string): Promise<string> {
                 if (currentQuote) {
                     jsonObject.root.children.push(currentQuote);
                     currentQuote = null;
+                }
+                if (currentList) {
+                    jsonObject.root.children.push(currentList);
+                    currentList = null;
                 }
             } else {
                 let nodeCreated = false;
@@ -258,6 +371,20 @@ export function convertMarkdownToJSON(markdown: string): Promise<string> {
                     let quote = proceedQuote(part, currentQuote);
                     if (quote) {
                         currentQuote = quote;
+                        nodeCreated = true;
+                    }
+                }
+                else if (part.startsWith('-')) { // unordered list
+                    let list = proceedList(part, currentList);
+                    if (list) {
+                        currentList = list;
+                        nodeCreated = true;
+                    }
+                }
+                else if (part.match(/^\d+\./)) { // ordered list
+                    let list = proceedList(part, currentList, true);
+                    if (list) {
+                        currentList = list;
                         nodeCreated = true;
                     }
                 }
