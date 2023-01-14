@@ -252,9 +252,9 @@ export async function renameFileOrFolder(oldPath: string, newPath: string): Prom
                     }
                 }
                 let parts = newPath.split('/')
-                if(parts[parts.length-1] == '') parts.pop()
+                if (parts[parts.length - 1] == '') parts.pop()
                 let name = parts[parts.length - 1]
-                let dir = newPath.slice(0, -name.length-1)
+                let dir = newPath.slice(0, -name.length - 1)
                 printMessage.printLog('New name is ' + newPath)
                 findAvailableName(dir, name).then((availableName) => {
                     newPath = join(dir, availableName)
@@ -267,9 +267,9 @@ export async function renameFileOrFolder(oldPath: string, newPath: string): Prom
                         resolve()
                     })
                 })
-                .catch((err) => {
-                    reject("Error while renaming file or folder: " + err)
-                })
+                    .catch((err) => {
+                        reject("Error while renaming file or folder: " + err)
+                    })
             })
         }
         catch (e) {
@@ -301,9 +301,9 @@ export async function moveFileOrFolder(oldPath: string, newPath: string): Promis
                     }
                 }
                 let parts = newPath.split('/')
-                if(parts[parts.length-1] == '') parts.pop()
+                if (parts[parts.length - 1] == '') parts.pop()
                 let name = parts[parts.length - 1]
-                let dir = newPath.slice(0, -name.length-1)
+                let dir = newPath.slice(0, -name.length - 1)
                 printMessage.printLog('New name is ' + newPath)
                 findAvailableName(dir, name).then((availableName) => {
                     newPath = join(dir, availableName)
@@ -316,9 +316,9 @@ export async function moveFileOrFolder(oldPath: string, newPath: string): Promis
                         resolve()
                     })
                 })
-                .catch((err) => {
-                    reject("Error while moving file or folder: " + err)
-                })
+                    .catch((err) => {
+                        reject("Error while moving file or folder: " + err)
+                    })
             })
         }
         catch (e) {
@@ -350,9 +350,9 @@ export async function copyFileOrFolder(oldPath: string, newPath: string): Promis
                     }
                 }
                 let parts = newPath.split('/')
-                if(parts[parts.length-1] == '') parts.pop()
+                if (parts[parts.length - 1] == '') parts.pop()
                 let name = parts[parts.length - 1]
-                let dir = newPath.slice(0, -name.length-1)
+                let dir = newPath.slice(0, -name.length - 1)
                 printMessage.printLog('New name is ' + newPath)
                 findAvailableName(dir, name).then((availableName) => {
                     newPath = join(dir, availableName)
@@ -365,9 +365,9 @@ export async function copyFileOrFolder(oldPath: string, newPath: string): Promis
                         resolve()
                     })
                 })
-                .catch((err) => {
-                    reject("Error while copying file or folder: " + err)
-                })
+                    .catch((err) => {
+                        reject("Error while copying file or folder: " + err)
+                    })
             })
         }
         catch (e) {
@@ -403,4 +403,11 @@ export async function openFileAndReadData(filePath: string): Promise<string> {
             reject("Error while reading file: " + e)
         }
     })
+
+}
+export function removeMD(file: File): File {
+    if (file.name.endsWith('.md')) {
+        file.name = file.name.slice(0, -3);
+    }
+    return file
 }

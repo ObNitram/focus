@@ -97,11 +97,10 @@ body {
                 font-size: 1rem;
                 font-weight: normal;
                 margin: 0;
-                padding: 0.5rem;
+                padding: 0.5rem 0 0.5rem 0.5rem;
                 text-align: left;
-                width: 100%;
+                width: 90%;
                 cursor: unset;
-
                 &:not(:read-only) {
                     cursor: text;
                 }
@@ -154,6 +153,9 @@ body {
                     }
                 }
             }
+        }
+        .selected{
+            border: solid 1px $button_color;
         }
     }
 }

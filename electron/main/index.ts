@@ -22,6 +22,7 @@ import * as WindowsManagement from './modules/WindowsManagement'
 import * as printMessage from './modules/OutputModule'
 import * as MarkdownConverter from './modules/MarkdownConversionModule'
 import { initConfig, saveInSettingPathVault, initGeneralConfig, saveSizeSideBar, getSizeSidebar } from './modules/ManageConfig'
+import { removeMD } from './modules/FileSystemModule'
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration()
@@ -50,6 +51,7 @@ let modificationsInVaultFromOutsideTimer: NodeJS.Timeout | null = null
 function sendVaultContent() {
   printMessage.printINFO('Request to get folder content !')
   VaultManagement.getVaultContent().then((content) => {
+    console.log(content)
     mainWindow?.webContents.send('folder-content', content)
   })
   .catch((err) => {
@@ -80,7 +82,7 @@ function setupWatcher() {
         case 'add':
           VaultManagement.getNoteOrFolderInfo(path).then((note) => {
             printMessage.printLog('add ' + path)
-            mainWindow?.webContents.send('note-created', note)
+            mainWindow?.webContents.send('note-created', removeMD(note))
           })
           break
         case 'addDir':
@@ -92,7 +94,7 @@ function setupWatcher() {
         case 'change':
           VaultManagement.getNoteOrFolderInfo(path, true).then((note) => {
             printMessage.printLog('change ' + path)
-            mainWindow?.webContents.send('note-updated', note)
+            mainWindow?.webContents.send('note-updated', removeMD(note))
           })
           break
         case 'unlink':
