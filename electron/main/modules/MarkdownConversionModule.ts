@@ -4,6 +4,15 @@ enum textFormat {
     italic = 2
 }
 
+enum headingLevel {
+    h1 = "h1",
+    h2 = "h2",
+    h3 = "h3",
+    h4 = "h4",
+    h5 = "h5",
+    h6 = "h6"
+}
+
 interface Node {
     children?: Node[];
     direction?: 'ltr' | 'rtl';
@@ -69,15 +78,37 @@ class TextNodeV1 implements Node {
     }
 }
 
+class HeadingNodeV1 implements Node {
+    children: Node[];
+    direction: 'ltr' | 'rtl';
+    format: string;
+    indent: number;
+    tag: headingLevel;
+    type: string;
+    version: number;
+
+    constructor(tag: headingLevel) {
+        this.children = [];
+        this.direction = 'ltr';
+        this.format = '';
+        this.indent = 0;
+        this.tag = tag;
+        this.type = 'heading';
+        this.version = 1;
+    }
+}
+
 /**
  * create text nodes, separated by bold, italic and normal text
  * @param text the text to be processed
- * @param currentParagraph the current paragraph node
+ * @returns the created text nodes
  */
-function proceedText(text: string, currentParagraph: Node = new ParagraphNodeV1()) {
+function proceedText(text: string): Array<TextNodeV1> {
     let textParts = text.split(' ');
     let currentText = '';
     let currentFormat = textFormat.normal;
+
+    let textNodes: Array<TextNodeV1> = [];
 
     for (let i = 0; i < textParts.length; i++) {
         let textPart = textParts[i];
@@ -97,7 +128,7 @@ function proceedText(text: string, currentParagraph: Node = new ParagraphNodeV1(
             currentText += textPart;
         } else {
             if (currentText !== '') {
-                currentParagraph.children.push(new TextNodeV1(currentText, currentFormat));
+                textNodes.push(new TextNodeV1(currentText, currentFormat));
             }
             currentText = textPart;
             currentFormat = format;
@@ -105,8 +136,40 @@ function proceedText(text: string, currentParagraph: Node = new ParagraphNodeV1(
     }
 
     if (currentText !== '') {
-        currentParagraph.children.push(new TextNodeV1(currentText, currentFormat));
+        textNodes.push(new TextNodeV1(currentText, currentFormat));
     }
+    return textNodes;
+}
+
+/**
+ * create a heading node
+ * @param text the text to be processed
+ * @returns the created heading node
+ */
+
+function proceedHeading(text: string): HeadingNodeV1 {
+    let tag = null;
+    if (text.startsWith('#')) {
+        tag = headingLevel.h1;
+    } else if (text.startsWith('##')) {
+        tag = headingLevel.h2;
+    } else if (text.startsWith('###')) {
+        tag = headingLevel.h3;
+    } else if (text.startsWith('####')) {
+        tag = headingLevel.h4;
+    } else if (text.startsWith('#####')) {
+        tag = headingLevel.h5;
+    } else if (text.startsWith('######')) {
+        tag = headingLevel.h6;
+    }
+    else {
+        return null;
+    }
+
+    let heading = new HeadingNodeV1(tag);
+    let textNodes = proceedText(text.substring(tag.length + 1));
+    heading.children = textNodes;
+    return heading;
 }
 
 
@@ -118,14 +181,36 @@ export function convertMarkdownToJSON(markdown: string): Promise<string> {
 
         for (let i = 0; i < parts.length; i++) {
             let part = parts[i];
+            console.log(part);
             if (part === '') {
-                jsonObject.root.children.push(currentParagraph);
-                currentParagraph = new ParagraphNodeV1();
+                if (currentParagraph) {
+                    jsonObject.root.children.push(currentParagraph);
+                    currentParagraph = null;
+                }
             } else {
-                switch (part) {
-                    // text
-                    default:
-                        proceedText(part, currentParagraph);
+                let nodeCreated = false;
+
+                if (part.startsWith('#')) {
+                    let heading = proceedHeading(part);
+                    if (heading) {
+                        if (currentParagraph) {
+                            jsonObject.root.children.push(currentParagraph);
+                            currentParagraph = null;
+                        }
+
+                        jsonObject.root.children.push(heading);
+                        nodeCreated = true;
+                    }
+                }
+
+                if (!nodeCreated) {
+                    let textNode = proceedText(part);
+                    if (textNode) {
+                        if (!currentParagraph) {
+                            currentParagraph = new ParagraphNodeV1();
+                        }
+                        currentParagraph.children = currentParagraph.children.concat(textNode);
+                    }
                 }
             }
         }
