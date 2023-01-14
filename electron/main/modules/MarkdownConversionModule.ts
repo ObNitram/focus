@@ -16,7 +16,7 @@ enum headingLevel {
 interface Node {
     children?: Node[];
     direction?: 'ltr' | 'rtl';
-    format: string | number;
+    format?: string | number;
     indent?: number;
     type: string;
     version: number;
@@ -58,6 +58,16 @@ class ParagraphNodeV1 implements Node {
     }
 }
 
+class LineBreakNodeV1 implements Node {
+    type: string;
+    version: number;
+
+    constructor() {
+        this.type = 'linebreak';
+        this.version = 1;
+    }
+}
+
 class TextNodeV1 implements Node {
     detail: number;
     format: textFormat;
@@ -94,6 +104,24 @@ class HeadingNodeV1 implements Node {
         this.indent = 0;
         this.tag = tag;
         this.type = 'heading';
+        this.version = 1;
+    }
+}
+
+class QuoteNodeV1 implements Node {
+    children: Node[];
+    direction: 'ltr' | 'rtl';
+    format: string;
+    indent: number;
+    type: string;
+    version: number;
+
+    constructor() {
+        this.children = [];
+        this.direction = 'ltr';
+        this.format = '';
+        this.indent = 0;
+        this.type = 'quote';
         this.version = 1;
     }
 }
@@ -146,7 +174,6 @@ function proceedText(text: string): Array<TextNodeV1> {
  * @param text the text to be processed
  * @returns the created heading node
  */
-
 function proceedHeading(text: string): HeadingNodeV1 {
     let tag = null;
     if (text.startsWith('#')) {
@@ -172,12 +199,34 @@ function proceedHeading(text: string): HeadingNodeV1 {
     return heading;
 }
 
+/**
+ * create a quote node
+ * @param text the text to be processed
+ * @param currentQuote the current quote node
+ * @returns the created quote node
+ */
+function proceedQuote(text: string, currentQuote: QuoteNodeV1|null = null): QuoteNodeV1 {
+    let textNodes = proceedText(text.substring(1));
+
+    let quote = currentQuote;
+    if (!quote) {
+        quote = new QuoteNodeV1();
+    }
+    else {
+        quote.children.push(new LineBreakNodeV1());
+    }
+    quote.children = quote.children.concat(textNodes);
+    return quote;
+}
+
 
 export function convertMarkdownToJSON(markdown: string): Promise<string> {
     return new Promise((resolve, reject) => {
         const parts = markdown.split('\n');
         let jsonObject: any = { root: new RootNodeV1() }
-        let currentParagraph: Node = new ParagraphNodeV1();
+
+        let currentParagraph: ParagraphNodeV1 = new ParagraphNodeV1();
+        let currentQuote: QuoteNodeV1 = null;
 
         for (let i = 0; i < parts.length; i++) {
             let part = parts[i];
@@ -186,10 +235,14 @@ export function convertMarkdownToJSON(markdown: string): Promise<string> {
                     jsonObject.root.children.push(currentParagraph);
                     currentParagraph = null;
                 }
+                if (currentQuote) {
+                    jsonObject.root.children.push(currentQuote);
+                    currentQuote = null;
+                }
             } else {
                 let nodeCreated = false;
 
-                if (part.startsWith('#')) {
+                if (part.startsWith('#')) {  // heading
                     let heading = proceedHeading(part);
                     if (heading) {
                         if (currentParagraph) {
@@ -201,12 +254,23 @@ export function convertMarkdownToJSON(markdown: string): Promise<string> {
                         nodeCreated = true;
                     }
                 }
+                else if (part.startsWith('>')) { // quote
+                    let quote = proceedQuote(part, currentQuote);
+                    if (quote) {
+                        currentQuote = quote;
+                        nodeCreated = true;
+                    }
+                }
 
-                if (!nodeCreated) {
+
+                if (!nodeCreated) { // text
                     let textNode = proceedText(part);
                     if (textNode) {
                         if (!currentParagraph) {
                             currentParagraph = new ParagraphNodeV1();
+                        }
+                        else {
+                            currentParagraph.children.push(new LineBreakNodeV1());
                         }
                         currentParagraph.children = currentParagraph.children.concat(textNode);
                     }
