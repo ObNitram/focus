@@ -3,7 +3,8 @@ import { useState, useEffect, useCallback } from "react";
 
 import {
     HeadingTagType,
-    $createHeadingNode
+    $createHeadingNode,
+    $createQuoteNode
 } from '@lexical/rich-text';
 
 import {
@@ -14,7 +15,7 @@ import {
     INSERT_ORDERED_LIST_COMMAND,
     INSERT_UNORDERED_LIST_COMMAND,
     REMOVE_LIST_COMMAND,
-  } from '@lexical/list';
+} from '@lexical/list';
 
 import {
     $getSelection,
@@ -151,6 +152,18 @@ export default function Toolbar() {
         })
     }
 
+    const formatQuote = () => {
+        editor.update(() => {
+            const selection = $getSelection();
+            if (
+                $isRangeSelection(selection) ||
+                DEPRECATED_$isGridSelection(selection)
+            ) {
+                $setBlocksType_experimental(selection, () => $createQuoteNode());
+            }
+        });
+    };
+
     function handleDropdownTextFormatItemCLick(item: any) {
         if (item.key === currTextFormat) {
             if (item.key === 'bullet-list' || item.key === 'numbered-list') {
@@ -186,6 +199,9 @@ export default function Toolbar() {
                 break;
             case 'numbered-list':
                 editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
+                break;
+            case 'quote':
+                formatQuote();
                 break;
         }
     }

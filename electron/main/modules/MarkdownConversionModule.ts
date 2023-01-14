@@ -181,7 +181,6 @@ export function convertMarkdownToJSON(markdown: string): Promise<string> {
 
         for (let i = 0; i < parts.length; i++) {
             let part = parts[i];
-            console.log(part);
             if (part === '') {
                 if (currentParagraph) {
                     jsonObject.root.children.push(currentParagraph);
