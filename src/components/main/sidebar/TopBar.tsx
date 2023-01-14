@@ -1,6 +1,6 @@
 import styles from 'styles/components/main/sidebar.module.scss'
 
-import { useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 
 import { MdOutlineEditNote } from 'react-icons/md'
 import { AiFillFolderAdd } from 'react-icons/ai'
@@ -59,8 +59,13 @@ export default function TopBar(props: TopBarProps) {
 
     const changeSortOrderButtonRef = useRef<HTMLButtonElement>(null)
 
+
     useEffect(() => {
         document.addEventListener('click', clickOutside)
+
+        return () => {
+            document.removeEventListener('click', clickOutside)
+        }
     }, [])
 
     function collapseOrExpandAll(collapse: boolean = !collapsed) {
