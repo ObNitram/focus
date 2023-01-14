@@ -203,17 +203,18 @@ export default function FileListItem(this: any, props: FileListItemProps) {
     // Drag n drop
     function dragStartHandler(event: React.DragEvent<HTMLDivElement>) {
         event.dataTransfer.setData("text/plain", item.path);
+        console.log('Item path is ' + item.path)
         event.dataTransfer.dropEffect = "move";
 
-        const dragImage = document.createElement('div');
-        dragImage.className = styles.sidebar_list_drag_image;
-        dragImage.textContent = item.name;
+        // const dragImage = document.createElement('div');
+        // dragImage.className = styles.sidebar_list_drag_image;
+        // dragImage.textContent = item.name;
 
-        document.body.appendChild(dragImage);
-        event.dataTransfer.setDragImage(dragImage, 0, 0);
+        // document.body.appendChild(dragImage);
+        // event.dataTransfer.setDragImage(dragImage, 0, 0);
 
         // Remove the element when the drag n drop operation is done
-        setTimeout(() => document.body.removeChild(dragImage), 0);
+        // setTimeout(() => document.body.removeChild(dragImage), 0);
     }
 
     function dragOverHandler(event: React.DragEvent<HTMLDivElement>) {
@@ -238,7 +239,6 @@ export default function FileListItem(this: any, props: FileListItemProps) {
     function dropHandler(event: React.DragEvent<HTMLDivElement>) {
         event.preventDefault();
         const data = event.dataTransfer.getData("text/plain");
-
         // if ctrl key pressed, copy the file
         if (event.ctrlKey) {
             ipcRenderer.send('copy-note-or-folder', data, item.path)
@@ -295,8 +295,8 @@ export default function FileListItem(this: any, props: FileListItemProps) {
 
     else {
         return (
-            <li className={styles.sidebar_list_file} draggable={true}>
-                <div ref={refItem} onDragStart={dragStartHandler}>
+            <li className={styles.sidebar_list_file}>
+                <div ref={refItem} onDragStart={dragStartHandler} draggable={true}>
                     <Dropdown items={dropdownRightClickCommonItems} onItemSelect={(dropdownItem: any) => { handleDropdownItemClickCommon(dropdownItem, item.path) }} hidden={dropdownHidden} />
                     <input className={isSelected(item.path) ? styles.selected : ''} type="text" value={item.name} readOnly={!renaming} onChange={(e) => setItem({ ...item, name: e.target.value })} onClick={(event: React.MouseEvent) => handleSelectFile(event, item.path)} />
                 </div>
