@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@lexical/react": "^0.7.6",
+    "@lexical/utils": "^0.7.6",
     "chokidar": "^3.5.3",
     "colors": "^1.4.0",
     "gsap": "^3.11.4",
@@ -23,7 +24,7 @@
     "original-fs": "^1.2.0",
     "react-icons": "^4.7.1",
     "react-router-dom": "^6.5.0",
-    "remark": "^14.0.2"
+    "webassembly": "^0.11.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.25",
@@ -37,7 +38,9 @@
     "typescript": "^4.9.3",
     "vite": "^4.0.0",
     "vite-electron-plugin": "^0.5.2",
-    "vite-plugin-electron-renderer": "^0.11.3"
+    "vite-plugin-electron-renderer": "^0.11.3",
+    "vite-plugin-top-level-await": "^1.2.2",
+    "vite-plugin-wasm": "^3.1.1"
   },
   "debug": {
     "env": {
