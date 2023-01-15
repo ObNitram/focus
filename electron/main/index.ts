@@ -148,7 +148,7 @@ function setupEvents() {
     modificationsInVaultFromApp++
 
     VaultManagement.deleteFileOrFolder(arg).then(() => {
-        printMessage.printOK(arg + ' removed!')
+      printMessage.printOK(arg + ' removed!')
     })
       .catch((err) => {
         printMessage.printError(err)
@@ -221,14 +221,14 @@ app.whenReady().then(() => {
   setupEvents();
   pathVault = VaultManagement.getPathVault()
   printMessage.printLog('Path found is ' + pathVault)
-  if(pathVault == null){
+  if (pathVault == null) {
     printMessage.printINFO('This is the first time of application launch or the config was reseted !')
     printMessage.printINFO('Launch select vault location window...')
     WindowsManagement.createVaultWindow()
   } else {
     printMessage.printINFO('A valid configuration is found, launching the main window...')
     VaultManagement.setPath(pathVault)
-    mainWindow =  WindowsManagement.createMainWindow();
+    mainWindow = WindowsManagement.createMainWindow();
   }
 })
 
@@ -275,3 +275,13 @@ ipcMain.handle('open-win', (event, arg) => {
     childWindow.loadURL(`${urlProd}#${arg}`)
   }
 })
+
+// import wasm library
+
+import {add, parse} from './modules/wasm_lib/focus_lib.js'
+
+ipcMain.on('debug', async (event) => {
+  printMessage.printLog("debug");
+  printMessage.printLog(add(1,2).toString());
+  printMessage.printLog(parse("Hello"));
+});
