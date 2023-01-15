@@ -1,0 +1,11 @@
+{
+  "name": "focus-lib",
+  "version": "0.1.0",
+  "files": [
+    "focus_lib_bg.wasm",
+    "focus_lib.js",
+    "focus_lib.d.ts"
+  ],
+  "main": "focus_lib.js",
+  "types": "focus_lib.d.ts"
+}

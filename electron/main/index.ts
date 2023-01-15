@@ -354,3 +354,13 @@ ipcMain.handle('open-win', (event, arg) => {
     childWindow.loadURL(`${urlProd}#${arg}`)
   }
 })
+
+// import wasm library
+
+import {add, parse} from './modules/wasm_lib/focus_lib.js'
+
+ipcMain.on('debug', async (event) => {
+  printMessage.printLog("debug");
+  printMessage.printLog(add(1,2).toString());
+  printMessage.printLog(parse("Hello"));
+});
