@@ -1,6 +1,6 @@
 import {useEffect} from 'react';
 
-import styles from "styles/editor.module.scss";
+import styles from "styles/components/editor/editor.module.scss";
 
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
@@ -8,11 +8,10 @@ import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
 
 import {ListPlugin} from '@lexical/react/LexicalListPlugin';
-import CodeHighlightPlugin from './plugins/CodeHightlightPlugin/index';
 
 import editorConfig from "../../config/editor/editorConfig";
 
-import Toolbar from './Toolbar';
+import Toolbar from './toolbar/Toolbar';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 
 const { ipcRenderer } = window.require('electron')
@@ -60,12 +59,12 @@ function RestoreFromJSONPlugin() {
 export default function Editor() {
     return (
         <LexicalComposer initialConfig={editorConfig}>
-            <div className={styles.editorContainer}>
+            <div className={styles.editor_container}>
                 <Toolbar />
 
-                <div className={styles.editorInner}>
+                <div className={styles.editor_inner}>
                     <RichTextPlugin
-                        contentEditable={<ContentEditable className={styles.editorInput} />}
+                        contentEditable={<ContentEditable className={styles.editor_inner_input} />}
                         placeholder={<Placeholder />}
                         ErrorBoundary={LexicalErrorBoundary}
                     />

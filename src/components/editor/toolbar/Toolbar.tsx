@@ -34,8 +34,10 @@ import {
 } from "lexical";
 import { mergeRegister } from "@lexical/utils";
 
-import styles from "styles/editor.toolbar.module.scss";
-import Dropdown from "../generic/Dropdown";
+import styles from "styles/components/editor/toolbar/editor.toolbar.module.scss";
+import Dropdown from "../../generic/Dropdown";
+
+import Button from "./Button";
 
 const LowPriority = 1;
 
@@ -266,25 +268,14 @@ export default function Toolbar() {
     }
 
     return (
-        <div className={styles.editorToolbar}>
+        <div className={styles.editor_toolbar}>
             <div className={styles.toolbarItem + " " + styles.spaced} onClick={handleTextFormatBtnClick} ref={dropdownTextFormatRef}>
                 <p>Normal</p>
                 <Dropdown items={dropdownTextFormatItems} onItemSelect={handleDropdownTextFormatItemCLick} hidden={dropdownTextFormatClosed} />
             </div>
-            <button onClick={() => { editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold"); }}
-                className={styles.toolbarItem + " " + styles.spaced + " " + (isBold ? styles.active : "")}
-                aria-label="Format Bold">B
-            </button>
-
-            <button onClick={() => { editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic"); }}
-                className={styles.toolbarItem + " " + styles.spaced + " " + (isItalic ? styles.active : "")}
-                aria-label="Format Italics">I
-            </button>
-
-            <button onClick={() => { editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline"); }}
-                className={styles.toolbarItem + " " + styles.spaced + " " + (isUnderline ? styles.active : "")}
-                aria-label="Format Underline">U
-            </button>
+            <Button onClick={() => { editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold"); }} alt="Bold (Ctrl+B)" active={isBold}>B</Button>
+            <Button onClick={() => { editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic"); }} alt="Italic (Ctrl+I)" active={isItalic}>I</Button>
+            <Button onClick={() => { editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline"); }} alt="Underline (Ctrl+U)" active={isUnderline}>U</Button>
         </div>
     )
 }

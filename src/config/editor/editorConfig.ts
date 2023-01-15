@@ -1,29 +1,29 @@
-import styles from "../../assets/styles/editor.module.scss";
+import styles from "../../assets/styles/components/editor/editor.module.scss";
 
 import EditorNodes from "../../components/editor/nodes/EditorNodes";
 
 const theme = {
   ltr: "ltr",
   rtl: "rtl",
-  placeholder: styles.editorPlaceholder,
-  paragraph: styles.editorParagraph,
+  placeholder: styles.editor_inner_placeholder,
+  paragraph: styles.editor_inner_paragraph,
   quote: styles.editorQuote,
   heading: {
-    h1: styles.editorHeading1,
-    h2: styles.editorHeading2,
-    h3: styles.editorHeading3,
-    h4: styles.editorHeading4,
-    h5: styles.editorHeading5,
-    h6: styles.editorHeading6
+    h1: styles.editor_inner_heading1,
+    h2: styles.editor_inner_heading2,
+    h3: styles.editor_inner_heading3,
+    h4: styles.editor_inner_heading4,
+    h5: styles.editor_inner_heading5,
+    h6: styles.editor_inner_heading6
   },
   list: {
-    ol: styles.editorListOl,
-    ul: styles.editorListUl
+    ol: styles.editor_inner_list_ol,
+    ul: styles.editor_inner_list_ul
   },
   text: {
-      bold: styles.editorTextBold,
-      italic: styles.editorTextItalic,
-      underline: styles.editorTextUnderline
+      bold: styles.editor_inner_text_bold,
+      italic: styles.editor_inner_text_italic,
+      underline: styles.editor_inner_text_underline
   }
 }
 

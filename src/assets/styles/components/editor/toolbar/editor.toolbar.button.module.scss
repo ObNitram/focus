@@ -1,0 +1,17 @@
+.editor_toolbar_button {
+    border: 0;
+    background: none;
+    border-radius: 10px;
+    padding: 8px;
+    margin: 10px 2px;
+    cursor: pointer;
+
+    &:hover {
+        background-color: #eee;
+    }
+
+    &.active {
+        background-color: rgba(223, 232, 250, 0.3);
+        font-weight: bold;
+    }
+}
