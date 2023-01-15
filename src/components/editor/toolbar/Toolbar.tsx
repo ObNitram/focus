@@ -38,6 +38,7 @@ import styles from "styles/components/editor/toolbar/editor.toolbar.module.scss"
 import Dropdown from "../../generic/Dropdown";
 
 import Button from "./Button";
+import Selector from "./Selector";
 
 const LowPriority = 1;
 
@@ -99,7 +100,8 @@ const dropdownTextFormatItems = [
     },
 ]
 
-let currTextFormat = 'normal';
+let currTextFormatKey = 'normal';
+let currTextFormatTitle = 'Normal';
 
 export default function Toolbar() {
     const [editor] = useLexicalComposerContext();
@@ -203,8 +205,8 @@ export default function Toolbar() {
     };
 
     function handleDropdownTextFormatItemCLick(item: any) {
-        if (item.key === currTextFormat) {
-            if (currTextFormat === 'bullet-list' || currTextFormat === 'numbered-list') {
+        if (item.key === currTextFormatKey) {
+            if (currTextFormatKey === 'bullet-list' || currTextFormatKey === 'numbered-list') {
                 console.log('remove list');
                 editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
             }
@@ -248,13 +250,8 @@ export default function Toolbar() {
                 break;
         }
 
-        currTextFormat = item.key;
-
-        // update Text format text
-        const textFormatText = dropdownTextFormatRef.current?.querySelector('p');
-        if (textFormatText) {
-            textFormatText.textContent = item.title;
-        }
+        currTextFormatKey = item.key;
+        currTextFormatTitle = item.title;
     }
 
     function handleTextFormatBtnClick(event: any) {
@@ -269,10 +266,7 @@ export default function Toolbar() {
 
     return (
         <div className={styles.editor_toolbar}>
-            <div className={styles.toolbarItem + " " + styles.spaced} onClick={handleTextFormatBtnClick} ref={dropdownTextFormatRef}>
-                <p>Normal</p>
-                <Dropdown items={dropdownTextFormatItems} onItemSelect={handleDropdownTextFormatItemCLick} hidden={dropdownTextFormatClosed} />
-            </div>
+            <Selector title={currTextFormatTitle} closed={dropdownTextFormatClosed} items={dropdownTextFormatItems} onItemSelect={handleDropdownTextFormatItemCLick} onClick={handleTextFormatBtnClick} alt="Text format" ref={dropdownTextFormatRef} />
             <Button onClick={() => { editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold"); }} alt="Bold (Ctrl+B)" active={isBold}>B</Button>
             <Button onClick={() => { editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic"); }} alt="Italic (Ctrl+I)" active={isItalic}>I</Button>
             <Button onClick={() => { editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline"); }} alt="Underline (Ctrl+U)" active={isUnderline}>U</Button>
