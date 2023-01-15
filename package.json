@@ -9,13 +9,18 @@
   "main": "dist-electron/electron/main/index.js",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && electron-builder"
+    "build": "tsc && vite build && electron-builder",
+    "build-wasm": "cd ./wasm_lib/ && ./build.sh && cd ../"
   },
   "engines": {
     "node": "^14.18.0 || >=16.0.0"
   },
   "dependencies": {
+    "@lexical/code": "^0.7.6",
+    "@lexical/list": "^0.7.6",
     "@lexical/react": "^0.7.6",
+    "@lexical/rich-text": "^0.7.6",
+    "@lexical/selection": "^0.7.6",
     "@lexical/utils": "^0.7.6",
     "chokidar": "^3.5.3",
     "colors": "^1.4.0",
