@@ -1,5 +1,5 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 import {
     HeadingTagType,
@@ -19,7 +19,7 @@ import {
 
 import {
     $createCodeNode
-  } from '@lexical/code';
+} from '@lexical/code';
 
 import {
     $getSelection,
@@ -97,6 +97,8 @@ const dropdownTextFormatItems = [
     },
 ]
 
+let currTextFormat = 'normal';
+
 export default function Toolbar() {
     const [editor] = useLexicalComposerContext();
 
@@ -104,7 +106,9 @@ export default function Toolbar() {
     const [isItalic, setIsItalic] = useState(false);
     const [isUnderline, setIsUnderline] = useState(false);
 
-    let currTextFormat = 'normal';
+    const [dropdownTextFormatClosed, setDropdownTextFormatClosed] = useState(true);
+
+    const dropdownTextFormatRef = useRef<HTMLDivElement>(null);
 
     const updateToolbar = useCallback(() => {
         const selection: null | RangeSelection | NodeSelection | GridSelection = $getSelection();
@@ -119,21 +123,27 @@ export default function Toolbar() {
     }, [editor]);
 
     useEffect(() => {
-        return mergeRegister(
-            editor.registerUpdateListener(({ editorState }) => {
-                editorState.read(() => {
-                    updateToolbar();
-                });
-            }),
-            editor.registerCommand(
-                SELECTION_CHANGE_COMMAND,
-                (_payload, newEditor) => {
-                    updateToolbar();
-                    return false;
-                },
-                LowPriority
-            )
-        );
+        document.addEventListener('mousedown', clickOutsideDropdownTextFormat);
+
+        return () => {
+            mergeRegister(
+                editor.registerUpdateListener(({ editorState }) => {
+                    editorState.read(() => {
+                        updateToolbar();
+                    });
+                }),
+                editor.registerCommand(
+                    SELECTION_CHANGE_COMMAND,
+                    (_payload, newEditor) => {
+                        updateToolbar();
+                        return false;
+                    },
+                    LowPriority
+                )
+            );
+
+            document.removeEventListener('mousedown', clickOutsideDropdownTextFormat);
+        }
     }, [editor, updateToolbar]);
 
     const formatParagraph = () => {
@@ -237,13 +247,29 @@ export default function Toolbar() {
         }
 
         currTextFormat = item.key;
+
+        // update Text format text
+        const textFormatText = dropdownTextFormatRef.current?.querySelector('p');
+        if (textFormatText) {
+            textFormatText.textContent = item.title;
+        }
+    }
+
+    function handleTextFormatBtnClick(event: any) {
+        setDropdownTextFormatClosed(!dropdownTextFormatClosed);
+    }
+
+    const clickOutsideDropdownTextFormat = (e: MouseEvent) => {
+        if (dropdownTextFormatRef.current && !dropdownTextFormatRef.current.contains(e.target as Node)) {
+            setDropdownTextFormatClosed(true);
+        }
     }
 
     return (
         <div className={styles.editorToolbar}>
-            <div className={styles.toolbarItem + " " + styles.spaced}>
-                <p>Text Format</p>
-                <Dropdown items={dropdownTextFormatItems} onItemSelect={handleDropdownTextFormatItemCLick} hidden={false} />
+            <div className={styles.toolbarItem + " " + styles.spaced} onClick={handleTextFormatBtnClick} ref={dropdownTextFormatRef}>
+                <p>Normal</p>
+                <Dropdown items={dropdownTextFormatItems} onItemSelect={handleDropdownTextFormatItemCLick} hidden={dropdownTextFormatClosed} />
             </div>
             <button onClick={() => { editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold"); }}
                 className={styles.toolbarItem + " " + styles.spaced + " " + (isBold ? styles.active : "")}

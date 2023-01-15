@@ -19,6 +19,8 @@
         padding: 0.5rem 0.5rem 0.5rem 1rem;
         display: flex;
         border-radius: 0.5rem;
+        color: $text-color;
+        font-weight: bold;
 
         &:hover {
             background-color: $main-color;

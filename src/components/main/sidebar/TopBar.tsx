@@ -61,6 +61,10 @@ export default function TopBar(props: TopBarProps) {
 
     useEffect(() => {
         document.addEventListener('click', clickOutside)
+
+        return () => {
+            document.removeEventListener('click', clickOutside)
+        }
     }, [])
 
     function collapseOrExpandAll(collapse: boolean = !collapsed) {
