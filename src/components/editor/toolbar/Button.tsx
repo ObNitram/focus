@@ -8,7 +8,7 @@
 
 import styles from "styles/components/editor/toolbar/editor.toolbar.button.module.scss";
 
-import {ReactNode} from 'react';
+import {ReactNode, useEffect, useState} from 'react';
 
 export interface ButtonProps {
     icon?: ReactNode;
@@ -20,9 +20,14 @@ export interface ButtonProps {
 
 export default function Button(props: ButtonProps) {
     const {icon, onClick, alt} = props;
+    const [isActive, setIsActive] = useState(false);
+
+    useEffect(() => {
+        setIsActive(props.active || false);
+    }, [props.active]);
 
     return (
-        <button className={`${styles.editor_toolbar_button} ${props.active ? styles.active : ''}`} onClick={onClick} title={alt}>
+        <button className={`${styles.editor_toolbar_button} ${isActive ? styles.editor_toolbar_button_active : ''}`} onClick={onClick} title={alt}>
             {icon}
             {props.children}
         </button>

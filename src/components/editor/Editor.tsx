@@ -17,7 +17,7 @@ import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext
 const { ipcRenderer } = window.require('electron')
 
 function Placeholder() {
-    return <div className={styles.editorPlaceholder}>Enter some plain text...</div>;
+    return <div className={styles.editor_inner_placeholder}>Enter some plain text...</div>;
 }
 
 function RestoreFromJSONPlugin() {

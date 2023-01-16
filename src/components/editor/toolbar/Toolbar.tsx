@@ -30,12 +30,12 @@ import {
     SELECTION_CHANGE_COMMAND,
     $isRangeSelection,
     DEPRECATED_$isGridSelection,
-    $createParagraphNode
+    $createParagraphNode,
+    COMMAND_PRIORITY_CRITICAL
 } from "lexical";
 import { mergeRegister } from "@lexical/utils";
 
 import styles from "styles/components/editor/toolbar/editor.toolbar.module.scss";
-import Dropdown from "../../generic/Dropdown";
 
 import Button from "./Button";
 import Selector from "./Selector";
@@ -105,6 +105,7 @@ let currTextFormatTitle = 'Normal';
 
 export default function Toolbar() {
     const [editor] = useLexicalComposerContext();
+    const [activeEditor, setActiveEditor] = useState(editor);
 
     const [isBold, setIsBold] = useState(false);
     const [isItalic, setIsItalic] = useState(false);
@@ -124,31 +125,29 @@ export default function Toolbar() {
             setIsItalic(temp.hasFormat("italic"));
             setIsUnderline(temp.hasFormat("underline"));
         }
-    }, [editor]);
+    }, [activeEditor]);
 
     useEffect(() => {
-        document.addEventListener('mousedown', clickOutsideDropdownTextFormat);
+        return editor.registerCommand(
+          SELECTION_CHANGE_COMMAND,
+          (_payload, newEditor) => {
+            updateToolbar();
+            setActiveEditor(newEditor);
+            return false;
+          },
+          COMMAND_PRIORITY_CRITICAL,
+        );
+      }, [editor, updateToolbar]);
 
-        return () => {
-            mergeRegister(
-                editor.registerUpdateListener(({ editorState }) => {
-                    editorState.read(() => {
-                        updateToolbar();
-                    });
-                }),
-                editor.registerCommand(
-                    SELECTION_CHANGE_COMMAND,
-                    (_payload, newEditor) => {
-                        updateToolbar();
-                        return false;
-                    },
-                    LowPriority
-                )
-            );
-
-            document.removeEventListener('mousedown', clickOutsideDropdownTextFormat);
-        }
-    }, [editor, updateToolbar]);
+      useEffect(() => {
+        return mergeRegister(
+          activeEditor.registerUpdateListener(({editorState}) => {
+            editorState.read(() => {
+              updateToolbar();
+            });
+          })
+        );
+      }, [activeEditor, editor, updateToolbar]);
 
     const formatParagraph = () => {
         editor.update(() => {
