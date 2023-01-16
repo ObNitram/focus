@@ -31,7 +31,10 @@ import {
     $isRangeSelection,
     DEPRECATED_$isGridSelection,
     $createParagraphNode,
-    COMMAND_PRIORITY_CRITICAL
+    COMMAND_PRIORITY_CRITICAL,
+    FORMAT_ELEMENT_COMMAND,
+    INDENT_CONTENT_COMMAND,
+    OUTDENT_CONTENT_COMMAND
 } from "lexical";
 import { mergeRegister } from "@lexical/utils";
 
@@ -39,8 +42,9 @@ import styles from "styles/components/editor/toolbar/editor.toolbar.module.scss"
 
 import Button from "./Button";
 import Selector from "./Selector";
+import Divider from "./Divider";
 
-const LowPriority = 1;
+import { FaIndent, FaOutdent } from "react-icons/fa";
 
 const dropdownTextFormatItems = [
     {
@@ -100,8 +104,34 @@ const dropdownTextFormatItems = [
     },
 ]
 
+const dropdownTextAlignItems = [
+    {
+        title: 'Left',
+        selected: false,
+        key: 'left'
+    },
+    {
+        title: 'Center',
+        selected: false,
+        key: 'center'
+    },
+    {
+        title: 'Right',
+        selected: false,
+        key: 'right'
+    },
+    {
+        title: 'Justify',
+        selected: false,
+        key: 'justify'
+    }
+]
+
 let currTextFormatKey = 'normal';
 let currTextFormatTitle = 'Normal';
+
+let currTextAlignKey = 'left';
+let currTextAlignTitle = 'Left';
 
 export default function Toolbar() {
     const [editor] = useLexicalComposerContext();
@@ -112,8 +142,10 @@ export default function Toolbar() {
     const [isUnderline, setIsUnderline] = useState(false);
 
     const [dropdownTextFormatClosed, setDropdownTextFormatClosed] = useState(true);
+    const [dropdownTextAlignClosed, setDropdownTextAlignClosed] = useState(true);
 
     const dropdownTextFormatRef = useRef<HTMLDivElement>(null);
+    const dropdownTextAlignRef = useRef<HTMLDivElement>(null);
 
     const updateToolbar = useCallback(() => {
         const selection: null | RangeSelection | NodeSelection | GridSelection = $getSelection();
@@ -129,25 +161,40 @@ export default function Toolbar() {
 
     useEffect(() => {
         return editor.registerCommand(
-          SELECTION_CHANGE_COMMAND,
-          (_payload, newEditor) => {
-            updateToolbar();
-            setActiveEditor(newEditor);
-            return false;
-          },
-          COMMAND_PRIORITY_CRITICAL,
+            SELECTION_CHANGE_COMMAND,
+            (_payload, newEditor) => {
+                updateToolbar();
+                setActiveEditor(newEditor);
+                return false;
+            },
+            COMMAND_PRIORITY_CRITICAL,
         );
-      }, [editor, updateToolbar]);
+    }, [editor, updateToolbar]);
 
-      useEffect(() => {
-        return mergeRegister(
-          activeEditor.registerUpdateListener(({editorState}) => {
-            editorState.read(() => {
-              updateToolbar();
-            });
-          })
-        );
-      }, [activeEditor, editor, updateToolbar]);
+    useEffect(() => {
+        document.addEventListener('mousedown', clickOutsideDropdown);
+
+        return () => {
+            mergeRegister(
+                activeEditor.registerUpdateListener(({ editorState }) => {
+                    editorState.read(() => {
+                        updateToolbar();
+                    });
+                })
+            );
+
+            document.removeEventListener('mousedown', clickOutsideDropdown);
+        }
+    }, [activeEditor, editor, updateToolbar]);
+
+    const clickOutsideDropdown = (e: MouseEvent) => {
+        if (dropdownTextFormatRef.current && !dropdownTextFormatRef.current.contains(e.target as Node)) {
+            setDropdownTextFormatClosed(true);
+        }
+        if (dropdownTextAlignRef.current && !dropdownTextAlignRef.current.contains(e.target as Node)) {
+            setDropdownTextAlignClosed(true);
+        }
+    }
 
     const formatParagraph = () => {
         editor.update(() => {
@@ -253,14 +300,42 @@ export default function Toolbar() {
         currTextFormatTitle = item.title;
     }
 
+    function handleDropdownTextAlignItemCLick(item: any) {
+        if (item.key === currTextAlignKey) {
+            return;
+        }
+
+        switch (item.key) {
+            case 'left':
+                editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "left");
+                break;
+            case 'center':
+                editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "center");
+                break;
+            case 'right':
+                editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "right");
+                break;
+            case 'justify':
+                editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "justify");
+                break;
+            case 'indent':
+                editor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined);
+                break;
+            case 'outdent':
+                editor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined);
+                break;
+        }
+
+        currTextAlignKey = item.key;
+        currTextAlignTitle = item.title;
+    }
+
     function handleTextFormatBtnClick(event: any) {
         setDropdownTextFormatClosed(!dropdownTextFormatClosed);
     }
 
-    const clickOutsideDropdownTextFormat = (e: MouseEvent) => {
-        if (dropdownTextFormatRef.current && !dropdownTextFormatRef.current.contains(e.target as Node)) {
-            setDropdownTextFormatClosed(true);
-        }
+    function handleTextAlignBtnClick(event: any) {
+        setDropdownTextAlignClosed(!dropdownTextAlignClosed);
     }
 
     return (
@@ -269,6 +344,10 @@ export default function Toolbar() {
             <Button onClick={() => { editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold"); }} alt="Bold (Ctrl+B)" active={isBold}>B</Button>
             <Button onClick={() => { editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic"); }} alt="Italic (Ctrl+I)" active={isItalic}>I</Button>
             <Button onClick={() => { editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline"); }} alt="Underline (Ctrl+U)" active={isUnderline}>U</Button>
+            <Divider />
+            <Selector title={currTextAlignTitle} closed={dropdownTextAlignClosed} items={dropdownTextAlignItems} onItemSelect={handleDropdownTextAlignItemCLick} onClick={handleTextAlignBtnClick} alt="Text align" ref={dropdownTextAlignRef} />
+            <Button onClick={() => { editor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined); }} alt="Indent" active={false} icon={<FaIndent/>} />
+            <Button onClick={() => { editor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined); }} alt="Outdent" active={false} icon={<FaOutdent/>} />
         </div>
     )
 }
