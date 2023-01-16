@@ -1,5 +1,7 @@
+@import '../../../variables';
+
 .editor_toolbar_divider {
     width: 1px;
-    background-color: #eee;
+    background-color: $editor_toolbar_divider_color;
     margin: 0 4px;
 }

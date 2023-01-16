@@ -1,3 +1,5 @@
+@import '../../../variables';
+
 .editor_toolbar_selector {
     border: 0;
     background: none;
@@ -14,6 +16,6 @@
     }
 
     &:hover {
-        background-color: #eee;
+        background-color: $editor_toolbar_selector_hover_color;
     }
 }

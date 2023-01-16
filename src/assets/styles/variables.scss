@@ -16,3 +16,11 @@ $height_menubar: 40px;
 
 //SIDE_BAR
 $heigt_sidebar: calc(100% - $height_menubar);
+
+//EDITOR TOOLBAR
+$editor_toolbar_divider_color: #eee;
+$editor_toolbar_button_hover_color: #eee;
+$editor_toolbar_button_active_color: rgba(223, 232, 250, 0.3);
+$editor_toolbar_selector_hover_color: #eee;
+
+$editor_toolbar_background_color: #fff;

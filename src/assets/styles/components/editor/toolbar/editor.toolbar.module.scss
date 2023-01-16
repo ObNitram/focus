@@ -1,7 +1,9 @@
+@import '../../../variables';
+
 .editor_toolbar {
     display: flex;
     margin-bottom: 1px;
-    background: #fff;
+    background: $editor_toolbar_background_color;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     justify-content: center;
