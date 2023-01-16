@@ -405,6 +405,36 @@ export async function openFileAndReadData(filePath: string): Promise<string> {
     })
 
 }
+
+export async function saveFile(filePath: string, data: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        try {
+            stat(filePath, (err, stats) => {
+                if (err) {
+                    reject("Error while getting file info: " + err)
+                    return
+                }
+
+                if (stats.isDirectory()) {
+                    reject("Error while getting file info: " + filePath + " is a folder")
+                    return
+                }
+
+                writeFile(filePath, data, (err) => {
+                    if (err) {
+                        reject("Error while writing file: " + err)
+                        return
+                    }
+                    resolve()
+                })
+            })
+        }
+        catch (e) {
+            reject("Error while writing file: " + e)
+        }
+    })
+}
+
 export function removeMD(file: File): File {
     if (file.name.endsWith('.md')) {
         file.name = file.name.slice(0, -3);

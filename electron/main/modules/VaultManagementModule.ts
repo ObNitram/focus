@@ -1,6 +1,7 @@
 import * as FileSystemModule from './FileSystemModule'
 
 let pathVault:string|null = null;
+let currentOpenedNotePath:string|null = null;
 
 export function getPathVault(){
     return pathVault
@@ -65,7 +66,27 @@ export function showInExplorer(folderPath: string): void {
 }
 
 export function openFile(filePath: string): Promise<string> {
-    return FileSystemModule.openFileAndReadData(filePath)
+    return new Promise<string>((resolve, reject) => {
+        if (currentOpenedNotePath) {
+            // TODO: save current note
+            currentOpenedNotePath = null
+        }
+        FileSystemModule.openFileAndReadData(filePath).then((value) => {
+            currentOpenedNotePath = filePath
+            resolve(value)
+        }).catch((reason) => reject(reason))
+    })
+}
+
+export function saveOpenedFile(data: string, closeFile: boolean = false): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+        FileSystemModule.saveFile(currentOpenedNotePath, data).then(() => {
+            if (closeFile) {
+                currentOpenedNotePath = null
+            }
+            resolve()
+        }).catch((reason) => reject(reason))
+    })
 }
 
 export default FileSystemModule.File
