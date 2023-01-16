@@ -48,11 +48,11 @@ class ParagraphNodeV1 implements Node {
     type: string;
     version: number;
 
-    constructor() {
+    constructor(indent: number = 0) {
         this.children = [];
         this.direction = 'ltr';
         this.format = '';
-        this.indent = 0;
+        this.indent = indent;
         this.type = 'paragraph';
         this.version = 1;
     }
@@ -227,12 +227,26 @@ class CodeNodeV1 implements Node {
 }
 
 /**
+ * get the number of indents in a line
+ * @param line the line to be processed
+ * @returns the number of indents
+ */
+function getNbIndentsInLine(line: string): number {
+    let spacesAndTabs = line.match(/^(\t| {1,10})/);
+    let indent = 0;
+    if (spacesAndTabs) {
+        indent = spacesAndTabs[0].length;
+    }
+    return indent;
+}
+
+/**
  * create text nodes, separated by bold, italic and normal text
  * @param text the text to be processed
  * @returns the created text nodes
  */
 function proceedText(text: string): Array<TextNodeV1> {
-    let textParts = text.split(' ');
+    let textParts = text.trim().split(' ');
     let currentText = '';
     let currentFormat = textFormat.normal;
 
@@ -467,7 +481,8 @@ export function convertMarkdownToJSON(markdown: string): Promise<string> {
                     let textNode = proceedText(part);
                     if (textNode) {
                         if (!currentParagraph) {
-                            currentParagraph = new ParagraphNodeV1();
+                            let indent = getNbIndentsInLine(part);
+                            currentParagraph = new ParagraphNodeV1(indent);
                         }
                         else {
                             currentParagraph.children.push(new LineBreakNodeV1());
