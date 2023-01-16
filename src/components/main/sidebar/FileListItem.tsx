@@ -56,6 +56,11 @@ export default function FileListItem(this: any, props: FileListItemProps) {
         title: 'Create folder',
         selected: false,
         key: 'create-folder'
+    },
+    {
+        title: 'Select all children',
+        selected: false,
+        key: 'select-all-child'
     }
     ]
 
@@ -75,6 +80,10 @@ export default function FileListItem(this: any, props: FileListItemProps) {
         else if (props.collapsedAll !== null) {
             setDirCollapsedAll(props.collapsedAll);
             setDirCollapsed(props.collapsedAll);
+        }
+        if(dirCollapsed != null && dirCollapsed !== false){
+            console.log(item.name + 'is collapased!');
+            
         }
         // Event listeners
         document.addEventListener('click', handleClickOutside);
@@ -188,15 +197,21 @@ export default function FileListItem(this: any, props: FileListItemProps) {
         }
     }
 
-    function handleDropdownItemClickFolder(item: any, fileOrFolderPath: string) {
-        if (handleDropdownItemClickCommon(item, fileOrFolderPath)) {
+    function handleDropdownItemClickFolder(dropDownItem: any, fileOrFolderPath: string) {
+        if (handleDropdownItemClickCommon(dropDownItem, fileOrFolderPath)) {
             return;
         }
-        if (item.key === 'create-note') {
+        setDirCollapsed(false)
+        if (dropDownItem.key === 'create-note') {
             ipcRenderer.send('create-note', fileOrFolderPath)
         }
-        else if (item.key === 'create-folder') {
+        else if (dropDownItem.key === 'create-folder') {
             ipcRenderer.send('create-folder', fileOrFolderPath)
+        }else if(dropDownItem.key === 'select-all-child'){
+            let newSelected:string[] = item.children.map((file:any) => {
+                return file.path
+            })
+            selectedFilesContext?.[1](newSelected)
         }
     }
 
