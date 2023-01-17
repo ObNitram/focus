@@ -1,5 +1,6 @@
 import { ipcRenderer } from "electron";
 import React, { useContext, useEffect, useRef } from "react";
+import {gsap} from 'gsap'
 import styles from 'styles/components/main/sidebar.module.scss'
 
 import { SelectedFilesContext } from "@/context/selectedFilesContext";
@@ -24,6 +25,7 @@ export default function FileListItem(this: any, props: FileListItemProps) {
     const [dragOver, setDragOver] = React.useState(false);
 
     const refItem = useRef<HTMLDivElement>(null);
+    const refSubList = useRef<HTMLUListElement>(null)
 
     let selectedFilesContext = useContext(SelectedFilesContext);
 
@@ -67,6 +69,13 @@ export default function FileListItem(this: any, props: FileListItemProps) {
     useEffect(() => {
         setItem(props.item);
     }, [])
+
+    useEffect(() => {
+        document.addEventListener('keydown', handleKeyDown)
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown)
+        }
+    }, [selectedFilesContext])
     
     
     useEffect(() => {
@@ -81,25 +90,24 @@ export default function FileListItem(this: any, props: FileListItemProps) {
             setDirCollapsedAll(props.collapsedAll);
             setDirCollapsed(props.collapsedAll);
         }
-        if(dirCollapsed != null && dirCollapsed !== false){
-            console.log(item.name + 'is collapased!');
+        // if(dirCollapsed != null && dirCollapsed !== false){
+            //     console.log(item.name + 'is collapased!');
             
-        }
+        // }
+        
         // Event listeners
         document.addEventListener('click', handleClickOutside);
         document.addEventListener('keydown', handleEnterKeyPressed);
         document.addEventListener('contextmenu', handleRightClick);
         document.addEventListener('drop', handleDrop);
 
-        document.addEventListener('keydown', handleKeyDown)
         return () => {
             document.removeEventListener('click', handleClickOutside);
             document.removeEventListener('keydown', handleEnterKeyPressed);
             document.removeEventListener('contextmenu', handleRightClick);
             document.removeEventListener('drop', handleDrop);
-            document.removeEventListener('keydown', handleKeyDown)
         }
-    }, [item, props.collapsedAll, props.folderToExpand, dropdownHidden, selectedFilesContext])
+    }, [item, props.collapsedAll, props.folderToExpand, dropdownHidden])
 
     const handleKeyDown = (event:KeyboardEvent) => {
         if(event.key == 'F2'){
@@ -159,7 +167,24 @@ export default function FileListItem(this: any, props: FileListItemProps) {
         ipcRenderer.send('rename-note-or-folder', item.path, refItem.current?.querySelector('input')?.value)
     }
 
+    useEffect(() => {
+        if(!item.isDirectory) return
+        if(!dirCollapsed){
+            gsap.to(refSubList.current, {
+                height: 'auto',
+                duration: 0.2
+            })
+        }else{
+            gsap.to(refSubList.current, {
+                height: 0,
+                duration: 0.2
+            })
+        }
+        console.log('dirCollapsed change')
+    }, [dirCollapsed])
+
     function handleClickDirectory(e:React.MouseEvent) {
+        console.log('click directory')
         e.stopPropagation()
         setDirCollapsed(!dirCollapsed)
         setDirCollapsedAll(null)
@@ -300,7 +325,7 @@ export default function FileListItem(this: any, props: FileListItemProps) {
                     </span>
                     <Dropdown items={dropdownRightClickFolderItems} onItemSelect={(dropdownItem: any) => { handleDropdownItemClickFolder(dropdownItem, item.path) }} hidden={dropdownHidden} />
                 </div>
-                <ul className={styles.sidebar_list_folder_children}>
+                <ul className={styles.sidebar_list_folder_children} ref={refSubList}>
                     {item.children.map((item: any) => (
                         <FileListItem key={item.path} item={item} collapsedAll={dirCollapsedAll} renaming={false} folderToExpand={folderToExpand} />
                     ))}
