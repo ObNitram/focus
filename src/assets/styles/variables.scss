@@ -17,10 +17,36 @@ $height_menubar: 40px;
 //SIDE_BAR
 $heigt_sidebar: calc(100% - $height_menubar);
 
+
+//EDITOR
+$editor_text_color: #000;
+$editor_inner_background_color: #fff;
+$editor_inner_input_caret_color: #444;
+$editor_inner_placeholder_color: #999;
+
+//EDITOR QUOTE BLOCK
+$editor_inner_quote_color: rgb(101, 103, 107);
+$editor_inner_quote_border_color: rgb(206, 208, 212);
+
+//EDITOR CODE BLOCK
+$editor_inner_code_background_color: rgb(240, 242, 245);
+$editor_inner_code_gutter_background_color: #eee;
+$editor_inner_code_gutter_border_color: #ddd;
+$editor_inner_code_gutter_color: #777;
+
+//CODE HIGHLIGHT
+$editor_codeHighlight_tokenComment_color: slategray;
+$editor_codeHighlight_tokenPunctuation_color: #999;
+$editor_codeHighlight_tokenProperty_color: #905;
+$editor_codeHighlight_tokenSelector_color: #690;
+$editor_codeHighlight_tokenOperator_color: #9a6e3a;
+$editor_codeHighlight_tokenAttr_color: #07a;
+$editor_codeHighlight_tokenVariable_color: #e90;
+$editor_codeHighlight_tokenFunction_color: #DD4A68;
+
 //EDITOR TOOLBAR
 $editor_toolbar_divider_color: #eee;
 $editor_toolbar_button_hover_color: #eee;
 $editor_toolbar_button_active_color: rgba(223, 232, 250, 0.3);
 $editor_toolbar_selector_hover_color: #eee;
-
 $editor_toolbar_background_color: #fff;

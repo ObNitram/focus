@@ -1,60 +1,128 @@
-.editor_container {
-    margin: 20px auto 20px auto;
-    border-radius: 2px;
-    max-width: 600px;
-    color: #000;
-    position: relative;
-    line-height: 20px;
-    font-weight: 400;
-    text-align: left;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
+@import '../../variables';
 
-    .editor_inner {
-      background: #fff;
+.editor_container {
+  margin: 20px auto 20px auto;
+  border-radius: 2px;
+  max-width: 600px;
+  color: $editor_text_color;
+  position: relative;
+  line-height: 20px;
+  font-weight: 400;
+  text-align: left;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+
+  .editor_inner {
+    background: $editor_inner_background_color;
+    position: relative;
+
+    .editor_inner_input {
+      min-height: 150px;
+      resize: none;
+      font-size: 15px;
+      position: relative;
+      tab-size: 1;
+      outline: 0;
+      padding: 15px 10px;
+      caret-color: $editor_inner_input_caret_color;
+    }
+
+    .editor_inner_placeholder {
+      color: $editor_inner_placeholder_color;
+      overflow: hidden;
+      position: absolute;
+      text-overflow: ellipsis;
+      top: 15px;
+      left: 10px;
+      font-size: 15px;
+      user-select: none;
+      display: inline-block;
+      pointer-events: none;
+    }
+
+    .editor_inner_paragraph {
+      margin: 0;
+      margin-bottom: 8px;
       position: relative;
 
-      .editor_inner_input {
-        min-height: 150px;
-        resize: none;
-        font-size: 15px;
-        caret-color: rgb(5, 5, 5);
-        position: relative;
-        tab-size: 1;
-        outline: 0;
-        padding: 15px 10px;
-        caret-color: #444;
+      .editor_inner_text_bold {
+        font-weight: bold;
       }
 
-      .editor_inner_placeholder {
-        color: #999;
-        overflow: hidden;
+      .editor_inner_text_italic {
+        font-style: italic;
+      }
+
+      .editor_inner_text_underline {
+        text-decoration: underline;
+      }
+    }
+
+    .editor_inner_quote {
+      margin: 0;
+      margin-left: 20px;
+      margin-bottom: 10px;
+      font-size: 15px;
+      color: $editor_inner_quote_color;
+      border-left-color: $editor_inner_quote_border_color;
+      border-left-width: 4px;
+      border-left-style: solid;
+      padding-left: 16px;
+    }
+
+    .editor_inner_code {
+      background-color: $editor_inner_code_background_color;
+      font-family: Menlo, Consolas, Monaco, monospace;
+      display: block;
+      padding: 8px 8px 8px 52px;
+      line-height: 1.53;
+      font-size: 13px;
+      margin: 0;
+      margin-top: 8px;
+      margin-bottom: 8px;
+      tab-size: 2;
+      /* white-space: pre; */
+      overflow-x: auto;
+      position: relative;
+
+      &::before {
+        content: attr(data-gutter);
         position: absolute;
-        text-overflow: ellipsis;
-        top: 15px;
-        left: 10px;
-        font-size: 15px;
-        user-select: none;
-        display: inline-block;
-        pointer-events: none;
+        background-color: $editor_inner_code_gutter_background_color;
+        left: 0;
+        top: 0;
+        border-right: 1px solid $editor_inner_code_gutter_border_color;
+        padding: 8px;
+        color: $editor_inner_code_gutter_color;
+        white-space: pre-wrap;
+        text-align: right;
+        min-width: 25px;
       }
 
-      .editor_inner_paragraph {
-        margin: 0;
-        margin-bottom: 8px;
-        position: relative;
-
-        .editor_inner_text_bold {
-          font-weight: bold;
-        }
-
-        .editor_inner_text_italic {
-          font-style: italic;
-        }
-
-        .editor_inner_text_underline {
-          text-decoration: underline;
-        }
+      .editor_inner_codeHighlight_tokenComment {
+        color: $editor_codeHighlight_tokenComment_color;
+      }
+      .editor_inner_codeHighlight_tokenPunctuation {
+        color: $editor_codeHighlight_tokenPunctuation_color;
+      }
+      .editor_inner_codeHighlight_tokenProperty {
+        color: $editor_codeHighlight_tokenProperty_color;
+      }
+      .editor_inner_codeHighlight_tokenSelector {
+        color: $editor_codeHighlight_tokenSelector_color;
+      }
+      .editor_inner_codeHighlight_tokenOperator {
+        color: $editor_codeHighlight_tokenOperator_color;
+      }
+      .editor_inner_codeHighlight_tokenAttr {
+        color: $editor_codeHighlight_tokenAttr_color;
+      }
+      .editor_inner_codeHighlight_tokenVariable {
+        color: $editor_codeHighlight_tokenVariable_color;
+      }
+      .editor_inner_codeHighlight_tokenFunction {
+        color: $editor_codeHighlight_tokenFunction_color;
       }
     }
   }
+}
