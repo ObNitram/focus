@@ -9,6 +9,8 @@ import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
 import {ListPlugin} from '@lexical/react/LexicalListPlugin';
 
 import CodeHighlightPlugin from './plugins/CodeHighlightPlugin';
+import { MARKDOWN_TRANSFORMERS } from './plugins/MarkdownTransformersPlugin';
+import {MarkdownShortcutPlugin} from '@lexical/react/LexicalMarkdownShortcutPlugin';
 
 import editorConfig from "../../config/editor/editorConfig";
 
@@ -73,6 +75,7 @@ export default function Editor() {
                     <RestoreFromJSONPlugin />
                     <ListPlugin />
                     <CodeHighlightPlugin />
+                    <MarkdownShortcutPlugin transformers={MARKDOWN_TRANSFORMERS} />
                 </div>
             </div>
         </LexicalComposer>
