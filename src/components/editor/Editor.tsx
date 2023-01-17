@@ -34,7 +34,7 @@ function RestoreFromJSONPlugin() {
 
     useEffect(() => {
         setupEvents()
-        ipcRenderer.send('open-note', '/home/logan/Documents/myVault/aNote.md')
+        ipcRenderer.send('open-note', '/home/obnitram/Documents/test/debug.md')
 
         return () => {
             ipcRenderer.removeAllListeners('note-opened')
@@ -45,8 +45,9 @@ function RestoreFromJSONPlugin() {
         const editorState = editor.getEditorState()
         const json = editorState.toJSON()
 
-        console.log(json)
-        console.log('Hey!')
+        console.log(json);
+        console.log(JSON.stringify(json).toString());
+        console.log('Hey!');
     }
 
     return (
