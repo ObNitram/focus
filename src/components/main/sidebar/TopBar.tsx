@@ -1,6 +1,6 @@
 import styles from 'styles/components/main/sidebar.module.scss'
 
-import { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 
 import { MdOutlineEditNote } from 'react-icons/md'
 import { AiFillFolderAdd } from 'react-icons/ai'
@@ -10,6 +10,7 @@ import { BiChevronsLeft, BiChevronsRight} from 'react-icons/bi'
 
 import Dropdown, { DropdownItem } from '../../generic/Dropdown'
 import IconButton from '../../generic/buttons/IconButton'
+import { SelectedFilesContext } from '@/context/selectedFilesContext'
 
 const { ipcRenderer } = window.require('electron')
 
@@ -59,13 +60,15 @@ export default function TopBar(props: TopBarProps) {
 
     const changeSortOrderButtonRef = useRef<HTMLButtonElement>(null)
 
+    const selectionedItem = useContext(SelectedFilesContext)
+
     useEffect(() => {
         document.addEventListener('click', clickOutside)
-
+        
         return () => {
             document.removeEventListener('click', clickOutside)
         }
-    }, [])
+    }, [selectionedItem])
 
     function collapseOrExpandAll(collapse: boolean = !collapsed) {
         setCollapsed(collapse)
@@ -73,22 +76,34 @@ export default function TopBar(props: TopBarProps) {
     }
 
 
-    function handleCollapseAll() {
+    function handleCollapseAll(event:React.MouseEvent) {
+        event.stopPropagation()
         collapseOrExpandAll()
     }
 
-    function handleChangeSortOrder() {
+    function handleChangeSortOrder(event:React.MouseEvent) {
+        event.stopPropagation()
         setChangeSortOrderHidden(!changeSortOrderHidden)
     }
 
-    function handleCreateNote() {
-        collapseOrExpandAll(true)
-        ipcRenderer.send('create-note')
+    function handleCreateNote(event:React.MouseEvent) {
+        event.stopPropagation()
+        // collapseOrExpandAll(true)
+        if(selectionedItem?.[0].length == 1 && !selectionedItem[0][0].endsWith('.md')) {
+            ipcRenderer.send('create-note', selectionedItem[0][0])
+        }else if(selectionedItem?.[0].length == 0) {
+            ipcRenderer.send('create-note')
+        }
     }
 
-    function handleCreateFolder() {
-        collapseOrExpandAll(true)
-        ipcRenderer.send('create-folder')
+    function handleCreateFolder(event:React.MouseEvent) {
+        event.stopPropagation()
+        // collapseOrExpandAll(true)
+        if(selectionedItem?.[0].length == 1 && !selectionedItem[0][0].endsWith('.md')) {
+            ipcRenderer.send('create-folder', selectionedItem[0][0])
+        }else if(selectionedItem?.[0].length == 0) {
+            ipcRenderer.send('create-folder')
+        }
     }
 
     const clickOutside = (e: MouseEvent) => {

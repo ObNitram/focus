@@ -178,10 +178,14 @@ export default function Sidebar(props: any) {
     }
   }
 
-  return (
-    <div className={styles.sidebar} ref={refBar}>
+  const handleUnselect = (event:React.MouseEvent) => {
+    selectedFilesContext?.[1]([])
+  }
 
-      <div className={styles.sidebar_header + ' test'}>
+  return (
+    <div className={styles.sidebar} ref={refBar} onClick={handleUnselect}>
+
+      <div className={styles.sidebar_header}>
         <TopBar onCollapseAll={handleCollapseAll} onSortOrderChange={handleSortOrderChange} onHiddenBar={handleHiddenBar} isHidden={isHidden} />
         <h2>{folderName}</h2>
       </div>

@@ -1,5 +1,6 @@
 import { ipcRenderer } from "electron";
 import React, { useContext, useEffect, useRef } from "react";
+import {gsap} from 'gsap'
 import styles from 'styles/components/main/sidebar.module.scss'
 
 import { SelectedFilesContext } from "@/context/selectedFilesContext";
@@ -24,6 +25,7 @@ export default function FileListItem(this: any, props: FileListItemProps) {
     const [dragOver, setDragOver] = React.useState(false);
 
     const refItem = useRef<HTMLDivElement>(null);
+    const refSubList = useRef<HTMLUListElement>(null)
 
     let selectedFilesContext = useContext(SelectedFilesContext);
 
@@ -56,12 +58,24 @@ export default function FileListItem(this: any, props: FileListItemProps) {
         title: 'Create folder',
         selected: false,
         key: 'create-folder'
+    },
+    {
+        title: 'Select all children',
+        selected: false,
+        key: 'select-all-child'
     }
     ]
 
     useEffect(() => {
         setItem(props.item);
     }, [])
+
+    useEffect(() => {
+        document.addEventListener('keydown', handleKeyDown)
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown)
+        }
+    }, [selectedFilesContext])
     
     
     useEffect(() => {
@@ -76,23 +90,24 @@ export default function FileListItem(this: any, props: FileListItemProps) {
             setDirCollapsedAll(props.collapsedAll);
             setDirCollapsed(props.collapsedAll);
         }
-        console.log('first useEffect apply')
-        console.log(item)
+        // if(dirCollapsed != null && dirCollapsed !== false){
+            //     console.log(item.name + 'is collapased!');
+            
+        // }
+        
         // Event listeners
         document.addEventListener('click', handleClickOutside);
         document.addEventListener('keydown', handleEnterKeyPressed);
         document.addEventListener('contextmenu', handleRightClick);
         document.addEventListener('drop', handleDrop);
 
-        document.addEventListener('keydown', handleKeyDown)
         return () => {
             document.removeEventListener('click', handleClickOutside);
             document.removeEventListener('keydown', handleEnterKeyPressed);
             document.removeEventListener('contextmenu', handleRightClick);
             document.removeEventListener('drop', handleDrop);
-            document.removeEventListener('keydown', handleKeyDown)
         }
-    }, [item, props.collapsedAll, props.folderToExpand, dropdownHidden, selectedFilesContext])
+    }, [item, props.collapsedAll, props.folderToExpand, dropdownHidden])
 
     const handleKeyDown = (event:KeyboardEvent) => {
         if(event.key == 'F2'){
@@ -152,7 +167,25 @@ export default function FileListItem(this: any, props: FileListItemProps) {
         ipcRenderer.send('rename-note-or-folder', item.path, refItem.current?.querySelector('input')?.value)
     }
 
-    function handleClickDirectory() {
+    useEffect(() => {
+        if(!item.isDirectory) return
+        if(!dirCollapsed){
+            gsap.to(refSubList.current, {
+                height: 'auto',
+                duration: 0.2
+            })
+        }else{
+            gsap.to(refSubList.current, {
+                height: 0,
+                duration: 0.2
+            })
+        }
+        console.log('dirCollapsed change')
+    }, [dirCollapsed])
+
+    function handleClickDirectory(e:React.MouseEvent) {
+        console.log('click directory')
+        e.stopPropagation()
         setDirCollapsed(!dirCollapsed)
         setDirCollapsedAll(null)
         setDropdownHidden(true)
@@ -189,15 +222,21 @@ export default function FileListItem(this: any, props: FileListItemProps) {
         }
     }
 
-    function handleDropdownItemClickFolder(item: any, fileOrFolderPath: string) {
-        if (handleDropdownItemClickCommon(item, fileOrFolderPath)) {
+    function handleDropdownItemClickFolder(dropDownItem: any, fileOrFolderPath: string) {
+        if (handleDropdownItemClickCommon(dropDownItem, fileOrFolderPath)) {
             return;
         }
-        if (item.key === 'create-note') {
+        setDirCollapsed(false)
+        if (dropDownItem.key === 'create-note') {
             ipcRenderer.send('create-note', fileOrFolderPath)
         }
-        else if (item.key === 'create-folder') {
+        else if (dropDownItem.key === 'create-folder') {
             ipcRenderer.send('create-folder', fileOrFolderPath)
+        }else if(dropDownItem.key === 'select-all-child'){
+            let newSelected:string[] = item.children.map((file:any) => {
+                return file.path
+            })
+            selectedFilesContext?.[1](newSelected)
         }
     }
 
@@ -205,17 +244,18 @@ export default function FileListItem(this: any, props: FileListItemProps) {
     // Drag n drop
     function dragStartHandler(event: React.DragEvent<HTMLDivElement>) {
         event.dataTransfer.setData("text/plain", item.path);
+        console.log('Item path is ' + item.path)
         event.dataTransfer.dropEffect = "move";
 
-        const dragImage = document.createElement('div');
-        dragImage.className = styles.sidebar_list_drag_image;
-        dragImage.textContent = item.name;
+        // const dragImage = document.createElement('div');
+        // dragImage.className = styles.sidebar_list_drag_image;
+        // dragImage.textContent = item.name;
 
-        document.body.appendChild(dragImage);
-        event.dataTransfer.setDragImage(dragImage, 0, 0);
+        // document.body.appendChild(dragImage);
+        // event.dataTransfer.setDragImage(dragImage, 0, 0);
 
         // Remove the element when the drag n drop operation is done
-        setTimeout(() => document.body.removeChild(dragImage), 0);
+        // setTimeout(() => document.body.removeChild(dragImage), 0);
     }
 
     function dragOverHandler(event: React.DragEvent<HTMLDivElement>) {
@@ -240,7 +280,6 @@ export default function FileListItem(this: any, props: FileListItemProps) {
     function dropHandler(event: React.DragEvent<HTMLDivElement>) {
         event.preventDefault();
         const data = event.dataTransfer.getData("text/plain");
-
         // if ctrl key pressed, copy the file
         if (event.ctrlKey) {
             ipcRenderer.send('copy-note-or-folder', data, item.path)
@@ -252,12 +291,21 @@ export default function FileListItem(this: any, props: FileListItemProps) {
 
 
     function handleSelectFile(event: React.MouseEvent, path: string) {
+        event.stopPropagation()
         if (event.ctrlKey) {
-            selectedFilesContext?.[1]([...selectedFilesContext[0]].concat([path]))
+            if(selectedFilesContext?.[0].includes(path)){
+                selectedFilesContext?.[1]([...selectedFilesContext[0]].filter((value) => {
+                    return value != path
+                } ))
+            }else{
+                selectedFilesContext?.[1]([...selectedFilesContext[0].concat(path)])
+            }
         } else {
-            console.log("1" + selectedFilesContext?.[0])
-            selectedFilesContext?.[1]([path])
-            console.log("2" + selectedFilesContext?.[0])
+            if(selectedFilesContext?.[0].includes(path) && selectedFilesContext?.[0].length == 1){
+                selectedFilesContext?.[1]([])
+            }else{
+                selectedFilesContext?.[1]([path])
+            }
         }
     }
 
@@ -277,7 +325,7 @@ export default function FileListItem(this: any, props: FileListItemProps) {
                     </span>
                     <Dropdown items={dropdownRightClickFolderItems} onItemSelect={(dropdownItem: any) => { handleDropdownItemClickFolder(dropdownItem, item.path) }} hidden={dropdownHidden} />
                 </div>
-                <ul className={styles.sidebar_list_folder_children}>
+                <ul className={styles.sidebar_list_folder_children} ref={refSubList}>
                     {item.children.map((item: any) => (
                         <FileListItem key={item.path} item={item} collapsedAll={dirCollapsedAll} renaming={false} folderToExpand={folderToExpand} />
                     ))}
@@ -288,8 +336,8 @@ export default function FileListItem(this: any, props: FileListItemProps) {
 
     else {
         return (
-            <li className={styles.sidebar_list_file} draggable={true}>
-                <div ref={refItem} onDragStart={dragStartHandler}>
+            <li className={styles.sidebar_list_file}>
+                <div ref={refItem} onDragStart={dragStartHandler} draggable={true}>
                     <Dropdown items={dropdownRightClickCommonItems} onItemSelect={(dropdownItem: any) => { handleDropdownItemClickCommon(dropdownItem, item.path) }} hidden={dropdownHidden} />
                     <input className={isSelected(item.path) ? styles.selected : ''} type="text" value={item.name} readOnly={!renaming} onChange={(e) => setItem({ ...item, name: e.target.value })} onClick={(event: React.MouseEvent) => handleSelectFile(event, item.path)} />
                 </div>
