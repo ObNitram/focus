@@ -245,24 +245,27 @@ export default function FileListItem(this: any, props: FileListItemProps) {
     // Drag n drop
     function dragStartHandler(event: React.DragEvent<HTMLDivElement>) {
         event.stopPropagation()
+        const dragImage = document.createElement('div');
+        dragImage.className = styles.sidebar_list_drag_image;
         if (selectedFilesContext?.[0].length == 0 || !selectedFilesContext?.[0].includes(item.path)) {
             event.dataTransfer.setData("text/plain", JSON.stringify([item.path]));
             console.log('Item path is ' + item.path)
             event.dataTransfer.dropEffect = "move";
+            dragImage.textContent = item.name;
             selectedFilesContext?.[1]([item.path])
         } else if (selectedFilesContext?.[0].includes(item.path)) {
             event.dataTransfer.setData("text/plain", JSON.stringify(selectedFilesContext[0]));
             event.dataTransfer.dropEffect = "move";
+            dragImage.textContent = selectedFilesContext[0].length + ' files';
+        }else{
+            return
         }
-        // const dragImage = document.createElement('div');
-        // dragImage.className = styles.sidebar_list_drag_image;
-        // dragImage.textContent = item.name;
 
-        // document.body.appendChild(dragImage);
-        // event.dataTransfer.setDragImage(dragImage, 0, 0);
+        document.body.appendChild(dragImage);
+        event.dataTransfer.setDragImage(dragImage, 0, 0);
 
         // Remove the element when the drag n drop operation is done
-        // setTimeout(() => document.body.removeChild(dragImage), 0);
+        setTimeout(() => document.body.removeChild(dragImage), 0);
     }
 
     function dragOverHandler(event: React.DragEvent<HTMLDivElement>) {
@@ -293,9 +296,7 @@ export default function FileListItem(this: any, props: FileListItemProps) {
             if (event.ctrlKey) {
                 ipcRenderer.send('copy-note-or-folder', element, item.path)
             } else {
-                data.forEach((element: string) => {
-                    ipcRenderer.send('move-note-or-folder', element, item.path)
-                });
+                ipcRenderer.send('move-note-or-folder', element, item.path)
             }
         });
     }
