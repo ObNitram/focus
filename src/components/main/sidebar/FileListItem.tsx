@@ -12,6 +12,7 @@ export interface FileListItemProps {
     folderToExpand: string | null; // this is the path of the folder to expand (used when creating a new note or folder)
     collapsedAll: boolean | null;  // this is used when collapsing/expanding all folders
     renaming: boolean;
+    files:any;
 }
 
 export default function FileListItem(this: any, props: FileListItemProps) {
@@ -300,6 +301,37 @@ export default function FileListItem(this: any, props: FileListItemProps) {
             }else{
                 selectedFilesContext?.[1]([...selectedFilesContext[0].concat(path)])
             }
+        }else if(event.shiftKey){
+            if(!selectedFilesContext) return
+            let actualFiles = props.files
+            let newSelectedFiles:string[] = []
+            let needSelect = false;
+            let stop = false
+            const getPathBetween = (folder:any) => {
+                if(stop) return
+                if(folder.path == item.path || folder.path == selectedFilesContext?.[0][0]){
+                    newSelectedFiles.push(folder.path)
+                    if(needSelect == false){
+                        needSelect = true;
+                    }else{
+                        stop = true;
+                    }
+                }else if(needSelect){
+                    newSelectedFiles.push(folder.path)
+                }
+                folder.children.forEach((element:any) => {
+                    getPathBetween(element)
+                });
+            }
+            getPathBetween(actualFiles)
+            if(selectedFilesContext?.[0].length == 1 ){
+                selectedFilesContext[1](newSelectedFiles)
+            }else if(selectedFilesContext[0].length > 1){
+                selectedFilesContext[1](Array.from(new Set(selectedFilesContext[0].concat(newSelectedFiles))))
+            }else{
+                selectedFilesContext[1]([item.path])
+            }
+
         } else {
             if(selectedFilesContext?.[0].includes(path) && selectedFilesContext?.[0].length == 1){
                 selectedFilesContext?.[1]([])
@@ -327,7 +359,7 @@ export default function FileListItem(this: any, props: FileListItemProps) {
                 </div>
                 <ul className={styles.sidebar_list_folder_children} ref={refSubList}>
                     {item.children.map((item: any) => (
-                        <FileListItem key={item.path} item={item} collapsedAll={dirCollapsedAll} renaming={false} folderToExpand={folderToExpand} />
+                        <FileListItem key={item.path} item={item} collapsedAll={dirCollapsedAll} renaming={false} folderToExpand={folderToExpand} files={props.files}/>
                     ))}
                 </ul>
             </li>

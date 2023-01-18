@@ -59,7 +59,7 @@ export default function FileList(props: FileListProps) {
     return (
         <ul className={styles.sidebar_list} onDragOver={handleDragOver} onDrop={dropHandler}>
             {files?.children.map((item: any) => (
-                <FileListItem  key={item.path} item={item} collapsedAll={collapsedAll} renaming={false} folderToExpand={folderToExpand} />
+                <FileListItem  key={item.path} item={item} collapsedAll={collapsedAll} renaming={false} folderToExpand={folderToExpand} files={files}/>
             ))}
         </ul>
     )
