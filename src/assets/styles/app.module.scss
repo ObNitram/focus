@@ -1,3 +1,14 @@
+@import './variables';
+
 .app {
   text-align: center;
+
+  .appContenair{
+    position: absolute;
+    top: $height_menubar;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+  }
 }

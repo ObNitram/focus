@@ -12,11 +12,12 @@ body {
 .sidebar {
     background-color: $main-color;
     width: 300px;
-    height: $heigt_sidebar;
-    position: fixed;
-    top: $height_menubar;
+    height: 100%;
+    position: relative;
+    // top: $height_menubar;
     overflow-x: hidden;
     overflow-y: hidden;
+    flex-shrink: 0;
 
     .left_border{
         position: absolute;

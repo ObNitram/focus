@@ -22,8 +22,10 @@ const App: React.FC = () => {
     <div className={styles.app}>
       <SelectedFilesContext.Provider value={[selectedFiles, setSelectedFiles]}>
         <MenuBar/>
-        <Sidebar />
-        <Editor/>
+        <div className={styles.appContenair}>
+          <Sidebar  />
+          <Editor />
+        </div>
       </SelectedFilesContext.Provider>
     </div>
   )

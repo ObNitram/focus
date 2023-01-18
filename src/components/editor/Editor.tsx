@@ -1,4 +1,4 @@
-import {useEffect} from 'react';
+import {useEffect, useRef} from 'react';
 
 import styles from "styles/components/editor/editor.module.scss";
 
@@ -60,16 +60,26 @@ function RestoreFromJSONPlugin() {
     }
 
     return (
-        <div>
+        <div className={styles.buttonGetData}>
             <button onClick={() => { getData() }} >Get Data</button>
         </div>
     )
 }
 
-export default function Editor() {
+export default function Editor(props:any) {
+    const refEditorContenair = useRef<HTMLDivElement>(null)
+
+    // useEffect(() => {
+    //     if(!refEditorContenair || !refEditorContenair.current) return
+    //     console.log(props.widthSideBar)
+    //     refEditorContenair.current.style.left = props.widthSideBar
+    //     refEditorContenair.current.style.width = 'calc(100% - ' + props.widthSideBar +')'
+    //     console.log('calc(100% - ' + props.widthSideBar +')')
+    // }, [refEditorContenair, props.widthSideBar])
+
     return (
         <LexicalComposer initialConfig={editorConfig}>
-            <div className={styles.editor_container}>
+            <div className={styles.editor_container} ref={refEditorContenair}>
                 <Toolbar />
 
                 <div className={styles.editor_inner}>
