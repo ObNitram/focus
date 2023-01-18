@@ -21,7 +21,7 @@ $heigt_sidebar: calc(100% - $height_menubar);
 //EDITOR
 $editor_text_color: $text_color;
 $editor_inner_background_color: #1e1e1e;
-$editor_inner_input_caret_color: #444;
+$editor_inner_input_caret_color: $text_color;
 $editor_inner_placeholder_color: #999;
 
 //EDITOR QUOTE BLOCK
