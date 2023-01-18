@@ -173,12 +173,14 @@ export default function FileListItem(this: any, props: FileListItemProps) {
         if (!dirCollapsed) {
             gsap.to(refSubList.current, {
                 height: 'auto',
+                overflowY: 'visible',
                 duration: 0.2
             })
         } else {
             gsap.to(refSubList.current, {
                 height: 0,
-                duration: 0.2
+                duration: 0.2,
+                overflowY: 'hidden'
             })
         }
         console.log('dirCollapsed change')
