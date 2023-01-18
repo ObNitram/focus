@@ -1,6 +1,6 @@
 import { ipcRenderer } from "electron";
 import React, { useContext, useEffect, useRef } from "react";
-import {gsap} from 'gsap'
+import { gsap } from 'gsap'
 import styles from 'styles/components/main/sidebar.module.scss'
 
 import { SelectedFilesContext } from "@/context/selectedFilesContext";
@@ -12,6 +12,7 @@ export interface FileListItemProps {
     folderToExpand: string | null; // this is the path of the folder to expand (used when creating a new note or folder)
     collapsedAll: boolean | null;  // this is used when collapsing/expanding all folders
     renaming: boolean;
+    files: any;
 }
 
 export default function FileListItem(this: any, props: FileListItemProps) {
@@ -76,12 +77,12 @@ export default function FileListItem(this: any, props: FileListItemProps) {
             document.removeEventListener('keydown', handleKeyDown)
         }
     }, [selectedFilesContext])
-    
-    
+
+
     useEffect(() => {
         if (props.folderToExpand !== null) {
             setFolderToExpand(props.folderToExpand);
-            
+
             if (props.folderToExpand === item.path) {
                 setDirCollapsed(false);
             }
@@ -91,10 +92,10 @@ export default function FileListItem(this: any, props: FileListItemProps) {
             setDirCollapsed(props.collapsedAll);
         }
         // if(dirCollapsed != null && dirCollapsed !== false){
-            //     console.log(item.name + 'is collapased!');
-            
+        //     console.log(item.name + 'is collapased!');
+
         // }
-        
+
         // Event listeners
         document.addEventListener('click', handleClickOutside);
         document.addEventListener('keydown', handleEnterKeyPressed);
@@ -109,12 +110,12 @@ export default function FileListItem(this: any, props: FileListItemProps) {
         }
     }, [item, props.collapsedAll, props.folderToExpand, dropdownHidden])
 
-    const handleKeyDown = (event:KeyboardEvent) => {
-        if(event.key == 'F2'){
+    const handleKeyDown = (event: KeyboardEvent) => {
+        if (event.key == 'F2') {
             console.log('f2')
-            console.log('selected is ' +selectedFilesContext?.[0])
+            console.log('selected is ' + selectedFilesContext?.[0])
             console.log('item path is ' + item.path)
-            if(selectedFilesContext?.[0].length == 1 && selectedFilesContext?.[0][0] == item.path){
+            if (selectedFilesContext?.[0].length == 1 && selectedFilesContext?.[0][0] == item.path) {
                 console.log('je dois rename')
                 handleRename()
             }
@@ -161,29 +162,31 @@ export default function FileListItem(this: any, props: FileListItemProps) {
     }
 
     function doRenaming() {
-        if(refItem == null || !refItem.current == null) return
+        if (refItem == null || !refItem.current == null) return
         setRenaming(false);
         selectedFilesContext?.[1]([])
         ipcRenderer.send('rename-note-or-folder', item.path, refItem.current?.querySelector('input')?.value)
     }
 
     useEffect(() => {
-        if(!item.isDirectory) return
-        if(!dirCollapsed){
+        if (!item.isDirectory) return
+        if (!dirCollapsed) {
             gsap.to(refSubList.current, {
                 height: 'auto',
+                overflowY: 'visible',
                 duration: 0.2
             })
-        }else{
+        } else {
             gsap.to(refSubList.current, {
                 height: 0,
-                duration: 0.2
+                duration: 0.2,
+                overflowY: 'hidden'
             })
         }
         console.log('dirCollapsed change')
     }, [dirCollapsed])
 
-    function handleClickDirectory(e:React.MouseEvent) {
+    function handleClickDirectory(e: React.MouseEvent) {
         console.log('click directory')
         e.stopPropagation()
         setDirCollapsed(!dirCollapsed)
@@ -232,8 +235,8 @@ export default function FileListItem(this: any, props: FileListItemProps) {
         }
         else if (dropDownItem.key === 'create-folder') {
             ipcRenderer.send('create-folder', fileOrFolderPath)
-        }else if(dropDownItem.key === 'select-all-child'){
-            let newSelected:string[] = item.children.map((file:any) => {
+        } else if (dropDownItem.key === 'select-all-child') {
+            let newSelected: string[] = item.children.map((file: any) => {
                 return file.path
             })
             selectedFilesContext?.[1](newSelected)
@@ -243,19 +246,28 @@ export default function FileListItem(this: any, props: FileListItemProps) {
 
     // Drag n drop
     function dragStartHandler(event: React.DragEvent<HTMLDivElement>) {
-        event.dataTransfer.setData("text/plain", item.path);
-        console.log('Item path is ' + item.path)
-        event.dataTransfer.dropEffect = "move";
+        event.stopPropagation()
+        const dragImage = document.createElement('div');
+        dragImage.className = styles.sidebar_list_drag_image;
+        if (selectedFilesContext?.[0].length == 0 || !selectedFilesContext?.[0].includes(item.path)) {
+            event.dataTransfer.setData("text/plain", JSON.stringify([item.path]));
+            console.log('Item path is ' + item.path)
+            event.dataTransfer.dropEffect = "move";
+            dragImage.textContent = item.name;
+            selectedFilesContext?.[1]([item.path])
+        } else if (selectedFilesContext?.[0].includes(item.path)) {
+            event.dataTransfer.setData("text/plain", JSON.stringify(selectedFilesContext[0]));
+            event.dataTransfer.dropEffect = "move";
+            dragImage.textContent = selectedFilesContext[0].length + ' files';
+        }else{
+            return
+        }
 
-        // const dragImage = document.createElement('div');
-        // dragImage.className = styles.sidebar_list_drag_image;
-        // dragImage.textContent = item.name;
-
-        // document.body.appendChild(dragImage);
-        // event.dataTransfer.setDragImage(dragImage, 0, 0);
+        document.body.appendChild(dragImage);
+        event.dataTransfer.setDragImage(dragImage, 0, 0);
 
         // Remove the element when the drag n drop operation is done
-        // setTimeout(() => document.body.removeChild(dragImage), 0);
+        setTimeout(() => document.body.removeChild(dragImage), 0);
     }
 
     function dragOverHandler(event: React.DragEvent<HTMLDivElement>) {
@@ -273,37 +285,70 @@ export default function FileListItem(this: any, props: FileListItemProps) {
         setDragOver(true);
     }
 
-    function handleDragLeave (event: React.DragEvent<HTMLDivElement>) {
+    function handleDragLeave(event: React.DragEvent<HTMLDivElement>) {
         setDragOver(false);
     }
 
     function dropHandler(event: React.DragEvent<HTMLDivElement>) {
         event.preventDefault();
-        const data = event.dataTransfer.getData("text/plain");
+        const data = JSON.parse(event.dataTransfer.getData("text/plain"));
         // if ctrl key pressed, copy the file
-        if (event.ctrlKey) {
-            ipcRenderer.send('copy-note-or-folder', data, item.path)
-        }
-        else {
-            ipcRenderer.send('move-note-or-folder', data, item.path)
-        }
+
+        data.forEach((element: string) => {
+            if (event.ctrlKey) {
+                ipcRenderer.send('copy-note-or-folder', element, item.path)
+            } else {
+                ipcRenderer.send('move-note-or-folder', element, item.path)
+            }
+        });
     }
 
 
     function handleSelectFile(event: React.MouseEvent, path: string) {
         event.stopPropagation()
         if (event.ctrlKey) {
-            if(selectedFilesContext?.[0].includes(path)){
+            if (selectedFilesContext?.[0].includes(path)) {
                 selectedFilesContext?.[1]([...selectedFilesContext[0]].filter((value) => {
                     return value != path
-                } ))
-            }else{
+                }))
+            } else {
                 selectedFilesContext?.[1]([...selectedFilesContext[0].concat(path)])
             }
+        } else if (event.shiftKey) {
+            if (!selectedFilesContext) return
+            let actualFiles = props.files
+            let newSelectedFiles: string[] = []
+            let needSelect = false;
+            let stop = false
+            const getPathBetween = (folder: any) => {
+                if (stop) return
+                if (folder.path == item.path || folder.path == selectedFilesContext?.[0][0]) {
+                    newSelectedFiles.push(folder.path)
+                    if (needSelect == false) {
+                        needSelect = true;
+                    } else {
+                        stop = true;
+                    }
+                } else if (needSelect) {
+                    newSelectedFiles.push(folder.path)
+                }
+                folder.children.forEach((element: any) => {
+                    getPathBetween(element)
+                });
+            }
+            getPathBetween(actualFiles)
+            if (selectedFilesContext?.[0].length == 1) {
+                selectedFilesContext[1](newSelectedFiles)
+            } else if (selectedFilesContext[0].length > 1) {
+                selectedFilesContext[1](Array.from(new Set(selectedFilesContext[0].concat(newSelectedFiles))))
+            } else {
+                selectedFilesContext[1]([item.path])
+            }
+
         } else {
-            if(selectedFilesContext?.[0].includes(path) && selectedFilesContext?.[0].length == 1){
+            if (selectedFilesContext?.[0].includes(path) && selectedFilesContext?.[0].length == 1) {
                 selectedFilesContext?.[1]([])
-            }else{
+            } else {
                 selectedFilesContext?.[1]([path])
             }
         }
@@ -327,7 +372,7 @@ export default function FileListItem(this: any, props: FileListItemProps) {
                 </div>
                 <ul className={styles.sidebar_list_folder_children} ref={refSubList}>
                     {item.children.map((item: any) => (
-                        <FileListItem key={item.path} item={item} collapsedAll={dirCollapsedAll} renaming={false} folderToExpand={folderToExpand} />
+                        <FileListItem key={item.path} item={item} collapsedAll={dirCollapsedAll} renaming={false} folderToExpand={folderToExpand} files={props.files} />
                     ))}
                 </ul>
             </li>
