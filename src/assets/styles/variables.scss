@@ -19,8 +19,8 @@ $heigt_sidebar: calc(100% - $height_menubar);
 
 
 //EDITOR
-$editor_text_color: #000;
-$editor_inner_background_color: #fff;
+$editor_text_color: $text_color;
+$editor_inner_background_color: #1e1e1e;
 $editor_inner_input_caret_color: #444;
 $editor_inner_placeholder_color: #999;
 
@@ -45,8 +45,8 @@ $editor_codeHighlight_tokenVariable_color: #e90;
 $editor_codeHighlight_tokenFunction_color: #DD4A68;
 
 //EDITOR TOOLBAR
-$editor_toolbar_divider_color: #eee;
-$editor_toolbar_button_hover_color: #eee;
+$editor_toolbar_divider_color: $text_color;
+$editor_toolbar_button_hover_color: $hover;
 $editor_toolbar_button_active_color: rgba(223, 232, 250, 0.3);
-$editor_toolbar_selector_hover_color: #eee;
-$editor_toolbar_background_color: #fff;
+$editor_toolbar_selector_hover_color: $hover;
+$editor_toolbar_background_color: $main_color;

@@ -23,6 +23,7 @@ export default function Sidebar(props: any) {
 
   const selectedFilesContext = useContext(SelectedFilesContext)
 
+
   function setupEvents() {
     ipcRenderer.on('folder-content', (event, folderContent) => {
       FileListLogic.changeSortOrderRecursive(folderContent)
@@ -109,6 +110,7 @@ export default function Sidebar(props: any) {
       return
     }
     refBar.current.style.width = `${refBar.current.offsetWidth + e.movementX}px`
+    // props.setWidthSideBar(`${refBar.current.offsetWidth + e.movementX}px`)
   }, [])
 
   const handleMouseUp = () => {
@@ -183,7 +185,7 @@ export default function Sidebar(props: any) {
   }
 
   return (
-    <div className={styles.sidebar} ref={refBar} onClick={handleUnselect}>
+    <div className={styles.sidebar} ref={refBar} onClick={handleUnselect} id='sidebar'>
 
       <div className={styles.sidebar_header}>
         <TopBar onCollapseAll={handleCollapseAll} onSortOrderChange={handleSortOrderChange} onHiddenBar={handleHiddenBar} isHidden={isHidden} />
