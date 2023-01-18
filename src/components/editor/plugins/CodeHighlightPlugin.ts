@@ -6,6 +6,8 @@
  *
  */
 
+// Change the color of various elements in code blocks
+
 import {registerCodeHighlighting} from '@lexical/code';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import {useEffect} from 'react';

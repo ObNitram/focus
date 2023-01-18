@@ -6,6 +6,8 @@
  *
  */
 
+// Convert recognized markdown syntax to Lexical elements
+
 import type {
     Transformer,
 } from '@lexical/markdown';

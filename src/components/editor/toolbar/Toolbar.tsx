@@ -37,6 +37,9 @@ import {
     OUTDENT_CONTENT_COMMAND
 } from "lexical";
 import { mergeRegister } from "@lexical/utils";
+import { $isLinkNode, TOGGLE_LINK_COMMAND } from '@lexical/link';
+
+import { getSelectedNode } from '../utils/getSelectedNode';
 
 import styles from "styles/components/editor/toolbar/editor.toolbar.module.scss";
 
@@ -44,7 +47,8 @@ import Button from "./Button";
 import Selector from "./Selector";
 import Divider from "./Divider";
 
-import { FaIndent, FaOutdent } from "react-icons/fa";
+import { FaIndent, FaLink, FaOutdent } from "react-icons/fa";
+import { sanitizeUrl } from "../utils/url";
 
 const dropdownTextFormatItems = [
     {
@@ -140,6 +144,7 @@ export default function Toolbar() {
     const [isBold, setIsBold] = useState(false);
     const [isItalic, setIsItalic] = useState(false);
     const [isUnderline, setIsUnderline] = useState(false);
+    const [isLink, setIsLink] = useState(false);
 
     const [dropdownTextFormatClosed, setDropdownTextFormatClosed] = useState(true);
     const [dropdownTextAlignClosed, setDropdownTextAlignClosed] = useState(true);
@@ -150,12 +155,20 @@ export default function Toolbar() {
     const updateToolbar = useCallback(() => {
         const selection: null | RangeSelection | NodeSelection | GridSelection = $getSelection();
 
-        const temp: RangeSelection = selection as RangeSelection;
+        if ($isRangeSelection(selection)) {
+            setIsBold(selection.hasFormat("bold"));
+            setIsItalic(selection.hasFormat("italic"));
+            setIsUnderline(selection.hasFormat("underline"));
 
-        if (temp) {
-            setIsBold(temp.hasFormat("bold"));
-            setIsItalic(temp.hasFormat("italic"));
-            setIsUnderline(temp.hasFormat("underline"));
+            // Update links
+            const node = getSelectedNode(selection)
+            //console.log(node);
+            const parent = node.getParent();
+            if ($isLinkNode(parent) || $isLinkNode(node)) {
+                setIsLink(true);
+            } else {
+                setIsLink(false);
+            }
         }
     }, [activeEditor]);
 
@@ -249,6 +262,14 @@ export default function Toolbar() {
             }
         });
     };
+
+    const insertLink = useCallback(() => {
+        if (!isLink) {
+            editor.dispatchCommand(TOGGLE_LINK_COMMAND, sanitizeUrl('https://'));
+        } else {
+            editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
+        }
+    }, [editor, isLink]);
 
     function handleDropdownTextFormatItemCLick(item: any) {
         if (item.key === currTextFormatKey) {
@@ -345,9 +366,11 @@ export default function Toolbar() {
             <Button onClick={() => { editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic"); }} alt="Italic (Ctrl+I)" active={isItalic}>I</Button>
             <Button onClick={() => { editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline"); }} alt="Underline (Ctrl+U)" active={isUnderline}>U</Button>
             <Divider />
+            <Button onClick={insertLink} alt="Link (Ctrl+K)" active={isLink}><FaLink /></Button>
+            <Divider />
             <Selector title={currTextAlignTitle} closed={dropdownTextAlignClosed} items={dropdownTextAlignItems} onItemSelect={handleDropdownTextAlignItemCLick} onClick={handleTextAlignBtnClick} alt="Text align" ref={dropdownTextAlignRef} />
-            <Button onClick={() => { editor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined); }} alt="Indent" active={false} icon={<FaIndent/>} />
-            <Button onClick={() => { editor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined); }} alt="Outdent" active={false} icon={<FaOutdent/>} />
+            <Button onClick={() => { editor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined); }} alt="Indent" active={false} icon={<FaIndent />} />
+            <Button onClick={() => { editor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined); }} alt="Outdent" active={false} icon={<FaOutdent />} />
         </div>
     )
 }

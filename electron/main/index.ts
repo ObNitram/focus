@@ -287,6 +287,13 @@ function setupEvents() {
     printMessage.printLog('Save size of sidebar asked')
     saveSizeSideBar(number).then((value) => printMessage.printOK(value)).catch((reason) => printMessage.printError(reason))
   })
+
+  ipcMain.on('open-link', (event, link) => {
+    link = link.replace(/['"]+/g, '')
+    printMessage.printLog('Open link asked: ' + link)
+
+    shell.openExternal(link)
+  })
 }
 
 
