@@ -43,7 +43,6 @@ function RestoreFromJSONPlugin() {
 
     useEffect(() => {
         setupEvents()
-        ipcRenderer.send('open-note', '/home/obnitram/Documents/test/debug.md')
 
         return () => {
             ipcRenderer.removeAllListeners('note-opened')
