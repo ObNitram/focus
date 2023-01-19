@@ -140,5 +140,15 @@
         color: $editor_codeHighlight_tokenFunction_color;
       }
     }
+
+    .editor_inner_link {
+      color: $editor_inner_link_color;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+        cursor: pointer;
+      }
+    }
   }
 }

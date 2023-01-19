@@ -57,7 +57,8 @@ const theme = {
     bold: styles.editor_inner_text_bold,
     italic: styles.editor_inner_text_italic,
     underline: styles.editor_inner_text_underline
-  }
+  },
+  link: styles.editor_inner_link
 }
 
 const editorConfig = {
