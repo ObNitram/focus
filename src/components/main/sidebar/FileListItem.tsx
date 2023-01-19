@@ -22,7 +22,7 @@ export default function FileListItem(this: any, props: FileListItemProps) {
     const [dirCollapsedAll, setDirCollapsedAll] = React.useState<boolean | null>(null);
     const [renaming, setRenaming] = React.useState(false);
     const [dropdownHidden, setDropdownHidden] = React.useState(true);
-
+    const [isNoteOpened, setIsNoteOpened] = React.useState(false);
     const [dragOver, setDragOver] = React.useState(false);
 
     const refItem = useRef<HTMLDivElement>(null);
@@ -47,6 +47,14 @@ export default function FileListItem(this: any, props: FileListItemProps) {
             selected: false,
             key: 'show-in-explorer'
         }
+    ]
+
+    const dropdownRightClickNoteItems = [...dropdownRightClickCommonItems,
+    {
+        title: 'Open',
+        selected: false,
+        key: 'open'
+    }
     ]
 
     const dropdownRightClickFolderItems = [...dropdownRightClickCommonItems,
@@ -98,12 +106,14 @@ export default function FileListItem(this: any, props: FileListItemProps) {
 
         // Event listeners
         document.addEventListener('click', handleClickOutside);
+        document.addEventListener('dblclick', handleDoubleClickOutside);
         document.addEventListener('keydown', handleEnterKeyPressed);
         document.addEventListener('contextmenu', handleRightClick);
         document.addEventListener('drop', handleDrop);
 
         return () => {
             document.removeEventListener('click', handleClickOutside);
+            document.removeEventListener('dblclick', handleDoubleClickOutside);
             document.removeEventListener('keydown', handleEnterKeyPressed);
             document.removeEventListener('contextmenu', handleRightClick);
             document.removeEventListener('drop', handleDrop);
@@ -134,6 +144,17 @@ export default function FileListItem(this: any, props: FileListItemProps) {
             doRenaming();
         }
     };
+
+    const handleDoubleClickOutside = (event: MouseEvent) => {
+        const itemInclick = refItem.current && refItem.current.contains(event.target as Node);
+        if (itemInclick) {
+            return;
+        }
+        if (item.isDirectory) {
+            return;
+        }
+        setIsNoteOpened(false);
+    }
 
     const handleDrop = (event: MouseEvent) => {
         const itemDropOn = refItem.current && refItem.current.contains(event.target as Node);
@@ -212,6 +233,15 @@ export default function FileListItem(this: any, props: FileListItemProps) {
         return false;
     }
 
+    function handleDropdownItemClickNote(dropDownItem: any, fileOrFolderPath: string) {
+        if (handleDropdownItemClickCommon(dropDownItem, fileOrFolderPath)) {
+            return;
+        }
+        if (dropDownItem.key === 'open') {
+            openNote()
+        }
+    }
+
     function handleRename() {
         setRenaming(true);
 
@@ -259,7 +289,7 @@ export default function FileListItem(this: any, props: FileListItemProps) {
             event.dataTransfer.setData("text/plain", JSON.stringify(selectedFilesContext[0]));
             event.dataTransfer.dropEffect = "move";
             dragImage.textContent = selectedFilesContext[0].length + ' files';
-        }else{
+        } else {
             return
         }
 
@@ -359,6 +389,12 @@ export default function FileListItem(this: any, props: FileListItemProps) {
         return selectedFilesContext?.[0].includes(path)
     }
 
+    function openNote() {
+        if (item.isDirectory || isNoteOpened) return
+        ipcRenderer.send('open-note', item.path)
+        setIsNoteOpened(true)
+    }
+
     if (!item) return null;
 
     if (item.isDirectory) {
@@ -381,9 +417,9 @@ export default function FileListItem(this: any, props: FileListItemProps) {
 
     else {
         return (
-            <li className={styles.sidebar_list_file}>
+            <li className={`${styles.sidebar_list_note} ${isNoteOpened ? styles.sidebar_list_note_opened : ''}`} onDoubleClick={openNote}>
                 <div ref={refItem} onDragStart={dragStartHandler} draggable={true}>
-                    <Dropdown items={dropdownRightClickCommonItems} onItemSelect={(dropdownItem: any) => { handleDropdownItemClickCommon(dropdownItem, item.path) }} hidden={dropdownHidden} />
+                    <Dropdown items={dropdownRightClickNoteItems} onItemSelect={(dropdownItem: any) => { handleDropdownItemClickNote(dropdownItem, item.path) }} hidden={dropdownHidden} />
                     <input className={isSelected(item.path) ? styles.selected : ''} type="text" value={item.name} readOnly={!renaming} onChange={(e) => setItem({ ...item, name: e.target.value })} onClick={(event: React.MouseEvent) => handleSelectFile(event, item.path)} />
                 </div>
             </li>

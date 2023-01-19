@@ -80,6 +80,15 @@ body {
             flex-direction: column;
             position: relative;
 
+            .sidebar_list_note_opened {
+                background-color: $sidebar_list_note_opened_background_color;
+
+                div:hover,
+                &.sidebar_list_file:hover {
+                    background-color: unset;
+                }
+            }
+
             div {
                 border-radius: 0.5rem;
             }
@@ -113,7 +122,7 @@ body {
 
             &.sidebar_list_folder {
                 font-weight: bold;
-                
+
                 .sidebar_list_folder_children {
                     height: 0;
                     overflow-y: hidden;
@@ -132,7 +141,7 @@ body {
                 }
 
                 &.sidebar_list_folder_expanded {
-                    
+
                     .children {
                         display: block;
                         height: auto;
@@ -146,7 +155,7 @@ body {
                 }
 
                 &.sidebar_list_folder_collapsed {
-                    
+
                     .sidebar_list_folder_children {
                         display: block;
                         height: 0;

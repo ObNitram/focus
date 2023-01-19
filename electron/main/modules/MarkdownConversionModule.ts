@@ -493,6 +493,10 @@ export function convertMarkdownToJSON(markdown: string): Promise<string> {
             }
         }
 
+        // the root node should always have at least one child
+        if (jsonObject.root.children.length === 0) {
+            jsonObject.root.children.push(new ParagraphNodeV1());
+        }
         resolve(JSON.stringify(jsonObject));
     });
 }
