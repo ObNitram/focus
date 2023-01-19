@@ -20,7 +20,7 @@ import chokidar from 'chokidar'
 import * as VaultManagement from './modules/VaultManagementModule'
 import * as WindowsManagement from './modules/WindowsManagement'
 import * as printMessage from './modules/OutputModule'
-import * as MarkdownConverter from './modules/MarkdownConversionModule'
+import * as MarkdownConverter from './modules/markdownConversion/MarkdownConversionModule'
 import { initConfig, saveInSettingPathVault, initGeneralConfig, saveSizeSideBar, getSizeSidebar } from './modules/ManageConfig'
 import { removeMD } from './modules/FileSystemModule'
 
