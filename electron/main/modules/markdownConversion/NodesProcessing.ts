@@ -20,37 +20,41 @@ export function getNbIndentsInLine(line: string): number {
  * @returns the created text nodes
  */
 export function proceedText(text: string): Array<TextNodeV1> {
-    let textParts = text.trim().split(' ');
-    let currentText = '';
-    let currentFormat = textFormat.normal;
-
     let textNodes: Array<TextNodeV1> = [];
+    let textParts = text.split(/(\*\*|\*)/);
+    let currentText = '';
+    let currentFormat: textFormat = textFormat.normal;
 
     for (let i = 0; i < textParts.length; i++) {
-        let textPart = textParts[i];
-        let format = textFormat.normal;
-
-        if (textPart.startsWith('**') && textPart.endsWith('**')) {
-            format = textFormat.bold;
-            textPart = textPart.substring(2, textPart.length - 2);
-        } else if (textPart.startsWith('*') && textPart.endsWith('*')) {
-            format = textFormat.italic;
-            textPart = textPart.substring(1, textPart.length - 1);
-        }
-
-        currentText += ' '
-
-        if (format === currentFormat) {
-            currentText += textPart;
-        } else {
+        let part = textParts[i];
+        if (part === '**') {
             if (currentText !== '') {
                 textNodes.push(new TextNodeV1(currentText, currentFormat));
+                currentText = '';
             }
-            currentText = textPart;
-            currentFormat = format;
+            if (currentFormat === textFormat.normal) {
+                currentFormat = textFormat.bold;
+            }
+            else {
+                currentFormat = textFormat.normal;
+            }
+        }
+        else if (part === '*') {
+            if (currentText !== '') {
+                textNodes.push(new TextNodeV1(currentText, currentFormat));
+                currentText = '';
+            }
+            if (currentFormat === textFormat.normal) {
+                currentFormat = textFormat.italic;
+            }
+            else {
+                currentFormat = textFormat.normal;
+            }
+        }
+        else {
+            currentText += part;
         }
     }
-
     if (currentText !== '') {
         textNodes.push(new TextNodeV1(currentText, currentFormat));
     }
@@ -62,8 +66,8 @@ export function proceedText(text: string): Array<TextNodeV1> {
  * @param text the text to be processed
  * @returns the created heading node or null if the text is not a heading
  */
-export function proceedHeading(text: string): HeadingNodeV1|null {
-    let tag: headingLevel|null = null;
+export function proceedHeading(text: string): HeadingNodeV1 | null {
+    let tag: headingLevel | null = null;
     if (text.startsWith('#')) {
         tag = headingLevel.h1;
     } else if (text.startsWith('##')) {
@@ -82,7 +86,7 @@ export function proceedHeading(text: string): HeadingNodeV1|null {
     }
 
     let heading = new HeadingNodeV1(tag);
-    let textNodes = proceedText(text.substring(tag.length + 1));
+    let textNodes = proceedText(text.substring(tag.length));
     heading.children = textNodes;
     return heading;
 }
@@ -141,20 +145,23 @@ export function proceedList(text: string, currentList: BulletListNodeV1 | null =
  */
 export function proceedCode(text: string, currentCode: CodeNodeV1 | null = null): CodeNodeV1 {
     let code = currentCode;
+
     if (!code) {
         code = new CodeNodeV1();
     }
-    else {
-        code.children.push(new LineBreakNodeV1());
-    }
     if (text.startsWith('```')) {
-        code.language = text.substring(3);
-        text = '';
+        if (!currentCode) {
+            code.language = text.substring(3);
+            text = '';
+        }
     }
     if (text.endsWith('```')) {
         text = text.substring(0, text.length - 3);
     }
 
-    code.children.push(new TextNodeV1(text, textFormat.normal));
+    if (text) {
+        code.children.push(new TextNodeV1(text, textFormat.normal));
+            code.children.push(new LineBreakNodeV1());
+    }
     return code;
 }

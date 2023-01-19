@@ -1,6 +1,11 @@
 import { CodeNodeV1, LineBreakNodeV1, ListNode, ParagraphNodeV1, QuoteNodeV1, RootNodeV1 } from './LexicalNodes';
 import { getNbIndentsInLine, proceedCode, proceedHeading, proceedList, proceedQuote, proceedText } from './NodesProcessing';
 
+/**
+ * Converts a markdown string to a JSON string representing the lexical tree
+ * @param markdown The markdown string to convert
+ * @returns A promise that resolves to the JSON string
+ */
 export function convertMarkdownToJSON(markdown: string): Promise<string> {
     return new Promise((resolve, reject) => {
         const parts = markdown.split('\n');
@@ -64,6 +69,7 @@ export function convertMarkdownToJSON(markdown: string): Promise<string> {
                 }
                 else if (part.startsWith('```')) { // code (start or end)
                     if (currentCode) {
+                        currentCode.children.pop(); // remove the last line break
                         jsonObject.root.children.push(currentCode);
                         currentCode = null;
                         nodeCreated = true;
