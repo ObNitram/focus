@@ -82,10 +82,28 @@ body {
 
             .sidebar_list_note_opened {
                 background-color: $sidebar_list_note_opened_background_color;
+                position: relative;
+                display: flex;
 
                 div:hover,
                 &.sidebar_list_file:hover {
                     background-color: unset;
+                }
+
+                // add a round for non saved notes, centered vertically
+                .sidebar_list_note_unsaved {
+                    position: absolute;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    right: 0.5rem;
+                    width: 1rem;
+                    height: 1rem;
+                    border-radius: 50%;
+                    background-color: $sidebar_list_note_unsaved_background_color;
+
+                    &:hover {
+                        background-color: $sidebar_list_note_unsaved_background_color;
+                    }
                 }
             }
 

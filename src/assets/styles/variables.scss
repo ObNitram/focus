@@ -17,6 +17,7 @@ $height_menubar: 40px;
 //SIDE_BAR
 $heigt_sidebar: calc(100% - $height_menubar);
 $sidebar_list_note_opened_background_color: #777777;
+$sidebar_list_note_unsaved_background_color: #ff0000;
 
 
 //EDITOR
@@ -25,6 +26,10 @@ $editor_inner_background_color: #1e1e1e;
 $editor_inner_input_caret_color: $text_color;
 $editor_inner_placeholder_color: #999;
 $editor_inner_link_color: rgb(46 134 255);
+
+//EDITOR TITLE BAR
+$editor_container_notetitlebar_background_color: #787878;
+$editor_container_notetitlebar_indicator_color: #ff9800;
 
 //EDITOR QUOTE BLOCK
 $editor_inner_quote_color: rgb(193, 194, 196);

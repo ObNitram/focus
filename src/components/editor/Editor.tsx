@@ -1,4 +1,4 @@
-import {useEffect, useRef} from 'react';
+import {useEffect, useRef, useState} from 'react';
 
 import styles from "styles/components/editor/editor.module.scss";
 
@@ -21,6 +21,7 @@ import {validateUrl} from './utils/url';
 import editorConfig from "../../config/editor/editorConfig";
 
 import Toolbar from './toolbar/Toolbar';
+import NoteTitleBar from './NoteTitleBar';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 
 const { ipcRenderer } = window.require('electron')
@@ -33,8 +34,7 @@ function RestoreFromJSONPlugin() {
     const [editor] = useLexicalComposerContext()
 
     function setupEvents() {
-        ipcRenderer.on('note-opened', (event, noteData) => {
-            console.log(noteData)
+        ipcRenderer.on('note-opened', (event, noteName, noteData) => {
 
             const editorState = editor.parseEditorState(noteData)
             editor.setEditorState(editorState)
@@ -65,8 +65,37 @@ function RestoreFromJSONPlugin() {
     )
 }
 
-export default function Editor(props:any) {
+export default function Editor() {
     const refEditorContenair = useRef<HTMLDivElement>(null)
+
+    const [noteName, setNoteName] = useState('Untitled')
+    const [isNoteSaved, setIsNoteSaved] = useState(true)
+
+    function UnsavedNoteIndicatorPlugin() {
+        const [editor] = useLexicalComposerContext()
+
+        function setupEvents() {
+            ipcRenderer.on('note-opened', (event, noteName) => {
+                setNoteName(noteName)
+            })
+        }
+
+        useEffect(() => {
+            setupEvents()
+
+            const removeTextContentListener = editor.registerTextContentListener((textContent) => {
+                setIsNoteSaved(false)
+                console.log('Text content changed')
+            })
+
+            return () => {
+                ipcRenderer.removeAllListeners('note-opened')
+                removeTextContentListener()
+            }
+        }, [editor])
+
+        return null
+    }
 
     // useEffect(() => {
     //     if(!refEditorContenair || !refEditorContenair.current) return
@@ -79,6 +108,7 @@ export default function Editor(props:any) {
     return (
         <LexicalComposer initialConfig={editorConfig}>
             <div className={styles.editor_container} ref={refEditorContenair}>
+                <NoteTitleBar noteName={noteName} noteSaved={isNoteSaved} />
                 <Toolbar />
 
                 <div className={styles.editor_inner}>
@@ -94,6 +124,7 @@ export default function Editor(props:any) {
                     <AutoLinkPlugin matchers={LINK_MATCHERS} />
                     <ClickableLinkPlugin />
                     <LexicalLinkPlugin validateUrl={validateUrl} />
+                    <UnsavedNoteIndicatorPlugin />
                 </div>
             </div>
         </LexicalComposer>

@@ -1,0 +1,40 @@
+@import '../../variables.scss';
+
+.editor_container_notetitlebar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 0.5rem;
+    height: 2.5rem;
+    background-color: $editor_container_notetitlebar_background_color;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    z-index: 1;
+
+    p {
+        font-size: 1.25rem;
+        font-weight: 500;
+        color: $text_color;
+        margin: 0;
+        padding: 0;
+        line-height: 1.5;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .editor_container_notetitlebar_indicator {
+        // dot to indicate unsaved changes
+        width: 1rem;
+        height: 1rem;
+        border-radius: 50%;
+        background-color: $editor_container_notetitlebar_indicator_color;
+        margin-right: 0.5rem;
+    }
+
+    .editor_container_notetitlebar_indicator_hidden {
+        visibility: hidden;
+    }
+}

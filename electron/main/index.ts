@@ -240,7 +240,12 @@ function setupEvents() {
       printMessage.printOK(path + ' opened!')
 
       MarkdownConverter.convertMarkdownToJSON(noteData).then((noteData) => {
-        mainWindow?.webContents.send('note-opened', noteData)
+        VaultManagement.getNoteOrFolderInfo(path, false).then((note) => {
+          mainWindow?.webContents.send('note-opened', note.name, noteData)
+        })
+          .catch((err) => {
+            printMessage.printError(err)
+          })
       })
         .catch((err) => {
           printMessage.printError(err)
