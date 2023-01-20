@@ -8,6 +8,8 @@ import TopBar from "./TopBar"
 import * as FileListLogic from './FileListLogic'
 import { SelectedFilesContext } from '@/context/selectedFilesContext'
 
+const pathManage = require('pathmanage')
+
 const { ipcRenderer } = window.require('electron')
 
 let mainFolderPath: string = ''
@@ -27,29 +29,34 @@ export default function Sidebar(props: any) {
   function setupEvents() {
     ipcRenderer.on('folder-content', (event, folderContent) => {
       FileListLogic.changeSortOrderRecursive(folderContent)
+      FileListLogic.setRealName(folderContent)
       setFiles({ ...folderContent })
 
       // Retrieve folder name
-      setFolderName(folderContent.name)
+      setFolderName(pathManage.getName(folderContent.path))
       mainFolderPath = folderContent.path
     })
 
     ipcRenderer.on('note-created', (event, note) => {
+      FileListLogic.setRealName(note)
       setFiles({ ...FileListLogic.addNoteOrFolder(note, files, mainFolderPath) })
 
       setCollapsedAll(null)
-      setFolderToExpand(note.path.split('/').slice(0, note.path.split('/').length - 1).join('/'))
+      console.log(pathManage.getParentPath(note.path))
+      setFolderToExpand(pathManage.getParentPath(note.path))
     })
     ipcRenderer.on('folder-created', (event, folder) => {
+      FileListLogic.setRealName(folder)
       setFiles({ ...FileListLogic.addNoteOrFolder(folder, files, mainFolderPath) })
 
       setCollapsedAll(null)
-      setFolderToExpand(folder.path.split('/').slice(0, folder.path.split('/').length - 1).join('/'))
+      setFolderToExpand(pathManage.getParentPath(folder.path))
     })
     ipcRenderer.on('note-or-folder-deleted', (event, path) => {
       setFiles({ ...FileListLogic.deleteNoteOrFolder(files, path) })
     })
     ipcRenderer.on('note-updated', (event, note) => {
+      FileListLogic.setRealName(note)
       setFiles({ ...FileListLogic.modifyNoteOrFolder(note, files, mainFolderPath) })
     })
 
@@ -60,6 +67,7 @@ export default function Sidebar(props: any) {
 
   useEffect(() => {
     setupEvents()
+    console.log(files)
 
     if (files === null) {
         getSizeSideBar()

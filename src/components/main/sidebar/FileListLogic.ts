@@ -1,3 +1,6 @@
+const pathManage = require('pathmanage')
+
+
 export enum SORT_ORDER {
     NAME_ASC = 'name-asc',
     NAME_DESC = 'name-desc',
@@ -59,7 +62,7 @@ function getParentFolder(path: string, files: any, mainFolderPath: string): any 
         return null
     }
 
-    let parentFolderPath = path.substring(0, path.lastIndexOf('/'))
+    let parentFolderPath = path.substring(0, path.lastIndexOf(pathManage.getSeperatorOfSystem()))
     if (parentFolderPath === mainFolderPath) {
         return files
     }
@@ -86,6 +89,7 @@ function getParentFolder(path: string, files: any, mainFolderPath: string): any 
  * @returns               the tree of files and folders with the new note or folder added
  */
 export function addNoteOrFolder(newNoteOrFolder: any, files: any, mainFolderPath: string) {
+    newNoteOrFolder.name = pathManage.getName(newNoteOrFolder.name)
     let folderWhereToInsert = getParentFolder(newNoteOrFolder.path, files, mainFolderPath)
     if (!folderWhereToInsert) {
         return files
@@ -134,4 +138,11 @@ export function deleteNoteOrFolder(theFiles: any, path: string) {
     folderContainingNoteOrFolder.children.splice(noteOrFolderIndex, 1)
 
     return theFiles
+}
+
+export function setRealName(theFiles:any){
+    theFiles.name = pathManage.getName(theFiles.name)
+    theFiles.children.forEach((child:any) => {
+        setRealName(child)
+    })
 }

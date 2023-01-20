@@ -230,6 +230,7 @@ export async function createFolder(dir: string, folderName: string): Promise<Fil
 }
 
 export async function renameFileOrFolder(oldPath: string, newPath: string): Promise<void> {
+    printMessage.printLog('In rename File or folder, oldPath is ' + oldPath + ' And new Path is ' + newPath)
     return new Promise((resolve, reject) => {
         if(oldPath == newPath){
             resolve()

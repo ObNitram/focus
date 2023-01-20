@@ -1,4 +1,7 @@
 import * as FileSystemModule from './FileSystemModule'
+import { printLog } from './OutputModule';
+
+import * as pathManage from 'pathmanage'
 
 let pathVault:string|null = null;
 let currentOpenedNotePath:string|null = null;
@@ -39,7 +42,7 @@ export async function renameFileOrFolder(oldPath: string, newName: string): Prom
         return Promise.resolve()
     }
 
-    let newPath = oldPath.replace(/[^\/]*$/, newName)
+    let newPath = pathManage.joinPath(pathManage.getParentPath(oldPath), newName)
     if (oldPath.endsWith('.md')) {
         newPath += '.md'
     }
