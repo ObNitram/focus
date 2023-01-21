@@ -24,3 +24,19 @@ export function joinPath(path1:string, path2:string):string{
     return Path.join(path1, path2)
 }
 
+export function repairEndOfPath(path:string, isDirectory:boolean):string{
+    if(isDirectory){
+        if(!path.endsWith(getSeperatorOfSystem())){
+            return path.concat(getSeperatorOfSystem())
+        }else{
+            return path
+        }
+    }else{
+        if(path.endsWith(getSeperatorOfSystem())){
+            return path.slice(0, -1)
+        }else{
+            return path
+        }
+    }
+}
+
