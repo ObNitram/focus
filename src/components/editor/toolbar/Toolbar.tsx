@@ -38,7 +38,11 @@ import {
     COMMAND_PRIORITY_CRITICAL,
     FORMAT_ELEMENT_COMMAND,
     INDENT_CONTENT_COMMAND,
-    OUTDENT_CONTENT_COMMAND
+    OUTDENT_CONTENT_COMMAND,
+    TextNode,
+    ElementNode,
+    $isParagraphNode,
+    ParagraphNode
 } from "lexical";
 import { mergeRegister } from "@lexical/utils";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from '@lexical/link';
@@ -154,9 +158,88 @@ export default function Toolbar() {
     const [dropdownTextAlignClosed, setDropdownTextAlignClosed] = useState(true);
 
     const [currTextFormat, setCurrTextFormat] = useState('Normal');
+    const [currTextAlign, setCurrTextAlign] = useState('Left');
 
     const dropdownTextFormatRef = useRef<HTMLDivElement>(null);
     const dropdownTextAlignRef = useRef<HTMLDivElement>(null);
+
+    function updateCurrentTextFormatSelection(node: TextNode|ElementNode, parent: ElementNode|null) {
+        if ($isHeadingNode(parent) || $isHeadingNode(node)) {
+            let headingLevel = $isHeadingNode(parent) ? parent.getTag() : node.getTag();
+            headingLevel = headingLevel.replace('h', '');
+
+            currTextFormatKey = 'heading-' + headingLevel;
+            currTextFormatTitle = 'Heading ' + headingLevel;
+
+            setCurrTextFormat(currTextFormatTitle);
+        }
+        else if ($isListNode(parent) || $isListNode(node)) {
+            let isNumbered = $isListNode(parent) ? parent.getListType() === 'number' : node.getListType() === 'number';
+
+            currTextFormatKey = isNumbered ? 'numbered-list' : 'bullet-list';
+            currTextFormatTitle = isNumbered ? 'Numbered List' : 'Bullet List';
+
+            setCurrTextFormat(currTextFormatTitle);
+        }
+        else if ($isQuoteNode(parent) || $isQuoteNode(node)) {
+            currTextFormatKey = 'quote';
+            currTextFormatTitle = 'Quote';
+
+            setCurrTextFormat(currTextFormatTitle);
+        }
+        else if ($isCodeNode(parent) || $isCodeNode(node)) {
+            currTextFormatKey = 'code';
+            currTextFormatTitle = 'Code';
+
+            setCurrTextFormat(currTextFormatTitle);
+        }
+        else {
+            currTextFormatKey = 'normal';
+            currTextFormatTitle = 'Normal';
+
+            setCurrTextFormat(currTextFormatTitle);
+        }
+    }
+
+    function getAlignmentFromNumber(num: number) {
+        switch (num) {
+            case 1:
+                return 'left';
+            case 2:
+                return 'center';
+            case 3:
+                return 'right';
+            case 4:
+                return 'justify';
+            default:
+                return 'left';
+        }
+    }
+
+    function updateCurrentTextAlignSelection(node: TextNode|ElementNode, parent: ElementNode|null) {
+        if ($isParagraphNode(parent) || $isParagraphNode(node)) {
+            let textAlign = $isParagraphNode(parent) ? getAlignmentFromNumber(parent.getFormat()) : getAlignmentFromNumber(node.getFormat());
+
+            currTextAlignKey = textAlign;
+            currTextAlignTitle = textAlign;
+
+            setCurrTextAlign(currTextAlignTitle);
+        }
+        else if ($isHeadingNode(parent) || $isHeadingNode(node)) {
+            let textAlign = $isHeadingNode(parent) ? getAlignmentFromNumber(parent.getFormat()) : getAlignmentFromNumber(node.getFormat());
+
+            currTextAlignKey = textAlign;
+            currTextAlignTitle = textAlign;
+
+            setCurrTextAlign(currTextAlignTitle);
+        }
+        else {
+            currTextAlignKey = 'left';
+            currTextAlignTitle = 'Left';
+
+            setCurrTextAlign(currTextAlignTitle);
+        }
+    }
 
     const updateToolbar = useCallback(() => {
         const selection: null | RangeSelection | NodeSelection | GridSelection = $getSelection();
@@ -170,41 +253,10 @@ export default function Toolbar() {
             const parent = node.getParent();
 
             // update text format selector title
-            if ($isHeadingNode(parent) || $isHeadingNode(node)) {
-                let headingLevel = $isHeadingNode(parent) ? parent.getTag() : node.getTag();
-                headingLevel = headingLevel.replace('h', '');
+            updateCurrentTextFormatSelection(node, parent);
 
-                currTextFormatKey = 'heading-' + headingLevel;
-                currTextFormatTitle = 'Heading ' + headingLevel;
-
-                setCurrTextFormat(currTextFormatTitle);
-            }
-            else if ($isListNode(parent) || $isListNode(node)) {
-                let isNumbered = $isListNode(parent) ? parent.getListType() === 'number' : node.getListType() === 'number';
-
-                currTextFormatKey = isNumbered ? 'numbered-list' : 'bullet-list';
-                currTextFormatTitle = isNumbered ? 'Numbered List' : 'Bullet List';
-
-                setCurrTextFormat(currTextFormatTitle);
-            }
-            else if ($isQuoteNode(parent) || $isQuoteNode(node)) {
-                currTextFormatKey = 'quote';
-                currTextFormatTitle = 'Quote';
-
-                setCurrTextFormat(currTextFormatTitle);
-            }
-            else if ($isCodeNode(parent) || $isCodeNode(node)) {
-                currTextFormatKey = 'code';
-                currTextFormatTitle = 'Code';
-
-                setCurrTextFormat(currTextFormatTitle);
-            }
-            else {
-                currTextFormatKey = 'normal';
-                currTextFormatTitle = 'Normal';
-
-                setCurrTextFormat(currTextFormatTitle);
-            }
+            // update text align selector title
+            updateCurrentTextAlignSelection(node, parent);
 
             // Update links
             if ($isLinkNode(parent) || $isLinkNode(node)) {
@@ -411,7 +463,7 @@ export default function Toolbar() {
             <Divider />
             <Button onClick={insertLink} alt="Link (Ctrl+K)" active={isLink}><FaLink /></Button>
             <Divider />
-            <Selector title={currTextAlignTitle} closed={dropdownTextAlignClosed} items={dropdownTextAlignItems} onItemSelect={handleDropdownTextAlignItemCLick} onClick={handleTextAlignBtnClick} alt="Text align" ref={dropdownTextAlignRef} />
+            <Selector title={currTextAlign} closed={dropdownTextAlignClosed} items={dropdownTextAlignItems} onItemSelect={handleDropdownTextAlignItemCLick} onClick={handleTextAlignBtnClick} alt="Text align" ref={dropdownTextAlignRef} />
             <Button onClick={() => { editor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined); }} alt="Indent" active={false} icon={<FaIndent />} />
             <Button onClick={() => { editor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined); }} alt="Outdent" active={false} icon={<FaOutdent />} />
         </div>
