@@ -1,10 +1,10 @@
-import { BulletListNodeV1, CodeNodeV1, headingLevel, HeadingNodeV1, LineBreakNodeV1, ListItemNodeV1, ListNode, OrderedListNodeV1, QuoteNodeV1, textFormat, TextNodeV1 } from './LexicalNodes';
+import { BulletListNodeV1, CodeNodeV1, headingLevel, HeadingNodeV1, LineBreakNodeV1, ListItemNodeV1, ListNode, OrderedListNodeV1, QuoteNodeV1, textFormat, TextNodeV1 } from '../LexicalNodes';
 
 /**
- * get the number of indents in a line
- * @param line the line to be processed
- * @returns the number of indents
- */
+* get the number of indents in a line
+* @param line the line to be processed
+* @returns the number of indents
+*/
 export function getNbIndentsInLine(line: string): number {
     let spacesAndTabs = line.match(/^(\t| {1,10})/);
     let indent = 0;
@@ -19,7 +19,7 @@ export function getNbIndentsInLine(line: string): number {
  * @param text the text to be processed
  * @returns the created text nodes
  */
-export function proceedText(text: string): Array<TextNodeV1> {
+export function proceedText(text: string): TextNodeV1[] {
     let textNodes: Array<TextNodeV1> = [];
     let textParts = text.split(/(\*\*|\*)/);
     let currentText = '';
@@ -86,55 +86,9 @@ export function proceedHeading(text: string): HeadingNodeV1 | null {
     }
 
     let heading = new HeadingNodeV1(tag);
-    let textNodes = proceedText(text.substring(tag.length));
+    let textNodes = this.proceedText(text.substring(tag.length));
     heading.children = textNodes;
     return heading;
-}
-
-/**
- * create a quote node
- * @param text the text to be processed
- * @param currentQuote the current quote node
- * @returns the created quote node
- */
-export function proceedQuote(text: string, currentQuote: QuoteNodeV1 | null = null): QuoteNodeV1 {
-    let textNodes = proceedText(text.substring(1));
-
-    let quote = currentQuote;
-    if (!quote) {
-        quote = new QuoteNodeV1();
-    }
-    else {
-        quote.children.push(new LineBreakNodeV1());
-    }
-    quote.children = quote.children.concat(textNodes);
-    return quote;
-}
-
-/**
- * create a list node
- * @param text the text to be processed
- * @param currentList the current list node
- * @param orderedList true if the list is ordered, false if it is unordered
- * @returns the created list node
- */
-export function proceedList(text: string, currentList: BulletListNodeV1 | null = null, orderedList: boolean = false): ListNode {
-    let textNodes = proceedText(text.substring(2));
-
-    let list = currentList;
-    if (!list) {
-        if (orderedList) {
-            list = new OrderedListNodeV1();
-        }
-        else {
-            list = new BulletListNodeV1();
-        }
-    }
-    let listItem = new ListItemNodeV1(list.children.length + 1);
-    listItem.children = textNodes;
-    list.children.push(listItem);
-
-    return list;
 }
 
 /**
@@ -161,7 +115,53 @@ export function proceedCode(text: string, currentCode: CodeNodeV1 | null = null)
 
     if (text) {
         code.children.push(new TextNodeV1(text, textFormat.normal));
-            code.children.push(new LineBreakNodeV1());
+        code.children.push(new LineBreakNodeV1());
     }
     return code;
+}
+
+/**
+ * create a quote node
+ * @param text the text to be processed
+ * @param currentQuote the current quote node
+ * @returns the created quote node
+ */
+export function proceedQuote(text: string, currentQuote: QuoteNodeV1 | null = null): QuoteNodeV1 {
+    let textNodes = this.proceedText(text.substring(1));
+
+    let quote = currentQuote;
+    if (!quote) {
+        quote = new QuoteNodeV1();
+    }
+    else {
+        quote.children.push(new LineBreakNodeV1());
+    }
+    quote.children = quote.children.concat(textNodes);
+    return quote;
+}
+
+/**
+ * create a list node
+ * @param text the text to be processed
+ * @param currentList the current list node
+ * @param orderedList true if the list is ordered, false if it is unordered
+ * @returns the created list node
+ */
+export function proceedList(text: string, currentList: BulletListNodeV1 | null = null, orderedList: boolean = false): ListNode {
+    let textNodes = this.proceedText(text.substring(2));
+
+    let list = currentList;
+    if (!list) {
+        if (orderedList) {
+            list = new OrderedListNodeV1();
+        }
+        else {
+            list = new BulletListNodeV1();
+        }
+    }
+    let listItem = new ListItemNodeV1(list.children.length + 1);
+    listItem.children = textNodes;
+    list.children.push(listItem);
+
+    return list;
 }

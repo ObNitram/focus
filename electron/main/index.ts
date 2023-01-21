@@ -237,15 +237,32 @@ function setupEvents() {
   ipcMain.on('open-note', (event, path: string) => {
     printMessage.printINFO('Request to open : ' + path)
     VaultManagement.openFile(path).then((noteData: string) => {
-      printMessage.printOK(path + ' opened!')
-
       MarkdownConverter.convertMarkdownToJSON(noteData).then((noteData) => {
         VaultManagement.getNoteOrFolderInfo(path, false).then((note) => {
+          printMessage.printOK(path + ' opened!')
           mainWindow?.webContents.send('note-opened', note.name, noteData)
         })
           .catch((err) => {
             printMessage.printError(err)
           })
+      })
+        .catch((err) => {
+          printMessage.printError(err)
+        })
+    })
+      .catch((err) => {
+        printMessage.printError(err)
+      })
+  })
+
+  ipcMain.on('save-note', (event, noteData: string) => {
+    const path = VaultManagement.getOpenedFilePath()
+    printMessage.printINFO('Request to save : ' + path)
+    modificationsInVaultFromApp++
+
+    MarkdownConverter.convertJSONToMarkdown(noteData).then((noteData) => {
+      VaultManagement.saveOpenedFile(noteData).then(() => {
+        printMessage.printOK(path + ' saved!')
       })
         .catch((err) => {
           printMessage.printError(err)

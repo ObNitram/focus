@@ -23,46 +23,12 @@ import editorConfig from "../../config/editor/editorConfig";
 import Toolbar from './toolbar/Toolbar';
 import NoteTitleBar from './NoteTitleBar';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import { json } from 'react-router-dom';
 
 const { ipcRenderer } = window.require('electron')
 
 function Placeholder() {
     return <div className={styles.editor_inner_placeholder}>Enter some plain text...</div>;
-}
-
-function RestoreFromJSONPlugin() {
-    const [editor] = useLexicalComposerContext()
-
-    function setupEvents() {
-        ipcRenderer.on('note-opened', (event, noteName, noteData) => {
-
-            const editorState = editor.parseEditorState(noteData)
-            editor.setEditorState(editorState)
-        })
-    }
-
-    useEffect(() => {
-        setupEvents()
-
-        return () => {
-            ipcRenderer.removeAllListeners('note-opened')
-        }
-    }, [editor])
-
-    function getData() {
-        const editorState = editor.getEditorState()
-        const json = editorState.toJSON()
-
-        console.log(json);
-        console.log(JSON.stringify(json).toString());
-        console.log('Hey!');
-    }
-
-    return (
-        <div className={styles.buttonGetData}>
-            <button onClick={() => { getData() }} >Get Data</button>
-        </div>
-    )
 }
 
 export default function Editor() {
@@ -71,30 +37,64 @@ export default function Editor() {
     const [noteName, setNoteName] = useState('Untitled')
     const [isNoteSaved, setIsNoteSaved] = useState(true)
 
-    function UnsavedNoteIndicatorPlugin() {
+    function OpenedNoteManagementPlugin() {
         const [editor] = useLexicalComposerContext()
 
+        let data: string|null = null
+
         function setupEvents() {
-            ipcRenderer.on('note-opened', (event, noteName) => {
+            ipcRenderer.on('note-opened', (event, noteName, noteData) => {
                 setNoteName(noteName)
+
+                const editorState = editor.parseEditorState(noteData)
+                editor.setEditorState(editorState)
             })
         }
 
         useEffect(() => {
             setupEvents()
 
+            document.addEventListener('keydown', handleKeyDown)
+
             const removeTextContentListener = editor.registerTextContentListener((textContent) => {
                 setIsNoteSaved(false)
-                console.log('Text content changed')
+                data = JSON.stringify(editor.getEditorState().toJSON())
             })
 
             return () => {
                 ipcRenderer.removeAllListeners('note-opened')
                 removeTextContentListener()
+
+                document.removeEventListener('keydown', handleKeyDown)
             }
         }, [editor])
 
-        return null
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 's' && (event.ctrlKey || event.metaKey)) {
+                event.preventDefault()
+                saveNote()
+            }
+        }
+
+        function saveNote() {
+            if(!data) return
+            ipcRenderer.send('save-note', data)
+            setIsNoteSaved(true)
+        }
+
+        function getData() {
+            const editorState = editor.getEditorState()
+            const data = editorState.toJSON()
+            console.log(data)
+        }
+
+        return (
+            <div className={styles.buttonGetData}>
+                {/* TODO: Remove these debug btns */}
+                <button onClick={() => { getData() }} >Get data</button>
+                <button onClick={() => { saveNote() }} >Save Note</button>
+            </div>
+        )
     }
 
     // useEffect(() => {
@@ -117,14 +117,13 @@ export default function Editor() {
                         placeholder={<Placeholder />}
                         ErrorBoundary={LexicalErrorBoundary}
                     />
-                    <RestoreFromJSONPlugin />
+                    <OpenedNoteManagementPlugin />
                     <ListPlugin />
                     <CodeHighlightPlugin />
                     <MarkdownShortcutPlugin transformers={MARKDOWN_TRANSFORMERS} />
                     <AutoLinkPlugin matchers={LINK_MATCHERS} />
                     <ClickableLinkPlugin />
                     <LexicalLinkPlugin validateUrl={validateUrl} />
-                    <UnsavedNoteIndicatorPlugin />
                 </div>
             </div>
         </LexicalComposer>

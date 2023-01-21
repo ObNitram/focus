@@ -86,4 +86,8 @@ export function saveOpenedFile(data: string, closeFile: boolean = false): Promis
     })
 }
 
+export function getOpenedFilePath(): string|null {
+    return currentOpenedNotePath
+}
+
 export default FileSystemModule.File

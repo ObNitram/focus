@@ -13,7 +13,16 @@ export enum headingLevel {
     h6 = "h6"
 }
 
-interface Node {
+export enum headingLevelNumber {
+    h1 = 1,
+    h2 = 2,
+    h3 = 3,
+    h4 = 4,
+    h5 = 5,
+    h6 = 6
+}
+
+export interface Node {
     children?: Node[];
     direction?: 'ltr' | 'rtl';
     format?: string | number;
