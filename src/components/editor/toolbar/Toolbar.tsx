@@ -4,7 +4,9 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import {
     HeadingTagType,
     $createHeadingNode,
-    $createQuoteNode
+    $createQuoteNode,
+    $isHeadingNode,
+    $isQuoteNode,
 } from '@lexical/rich-text';
 
 import {
@@ -15,10 +17,12 @@ import {
     INSERT_ORDERED_LIST_COMMAND,
     INSERT_UNORDERED_LIST_COMMAND,
     REMOVE_LIST_COMMAND,
+    $isListNode,
 } from '@lexical/list';
 
 import {
-    $createCodeNode
+    $createCodeNode,
+    $isCodeNode,
 } from '@lexical/code';
 
 import {
@@ -149,6 +153,8 @@ export default function Toolbar() {
     const [dropdownTextFormatClosed, setDropdownTextFormatClosed] = useState(true);
     const [dropdownTextAlignClosed, setDropdownTextAlignClosed] = useState(true);
 
+    const [currTextFormat, setCurrTextFormat] = useState('Normal');
+
     const dropdownTextFormatRef = useRef<HTMLDivElement>(null);
     const dropdownTextAlignRef = useRef<HTMLDivElement>(null);
 
@@ -160,10 +166,47 @@ export default function Toolbar() {
             setIsItalic(selection.hasFormat("italic"));
             setIsUnderline(selection.hasFormat("underline"));
 
-            // Update links
             const node = getSelectedNode(selection)
-            //console.log(node);
             const parent = node.getParent();
+
+            // update text format selector title
+            if ($isHeadingNode(parent) || $isHeadingNode(node)) {
+                let headingLevel = $isHeadingNode(parent) ? parent.getTag() : node.getTag();
+                headingLevel = headingLevel.replace('h', '');
+
+                currTextFormatKey = 'heading-' + headingLevel;
+                currTextFormatTitle = 'Heading ' + headingLevel;
+
+                setCurrTextFormat(currTextFormatTitle);
+            }
+            else if ($isListNode(parent) || $isListNode(node)) {
+                let isNumbered = $isListNode(parent) ? parent.getListType() === 'number' : node.getListType() === 'number';
+
+                currTextFormatKey = isNumbered ? 'numbered-list' : 'bullet-list';
+                currTextFormatTitle = isNumbered ? 'Numbered List' : 'Bullet List';
+
+                setCurrTextFormat(currTextFormatTitle);
+            }
+            else if ($isQuoteNode(parent) || $isQuoteNode(node)) {
+                currTextFormatKey = 'quote';
+                currTextFormatTitle = 'Quote';
+
+                setCurrTextFormat(currTextFormatTitle);
+            }
+            else if ($isCodeNode(parent) || $isCodeNode(node)) {
+                currTextFormatKey = 'code';
+                currTextFormatTitle = 'Code';
+
+                setCurrTextFormat(currTextFormatTitle);
+            }
+            else {
+                currTextFormatKey = 'normal';
+                currTextFormatTitle = 'Normal';
+
+                setCurrTextFormat(currTextFormatTitle);
+            }
+
+            // Update links
             if ($isLinkNode(parent) || $isLinkNode(node)) {
                 setIsLink(true);
             } else {
@@ -361,7 +404,7 @@ export default function Toolbar() {
 
     return (
         <div className={styles.editor_toolbar}>
-            <Selector title={currTextFormatTitle} closed={dropdownTextFormatClosed} items={dropdownTextFormatItems} onItemSelect={handleDropdownTextFormatItemCLick} onClick={handleTextFormatBtnClick} alt="Text format" ref={dropdownTextFormatRef} />
+            <Selector title={currTextFormat} closed={dropdownTextFormatClosed} items={dropdownTextFormatItems} onItemSelect={handleDropdownTextFormatItemCLick} onClick={handleTextFormatBtnClick} alt="Text format" ref={dropdownTextFormatRef} />
             <Button onClick={() => { editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold"); }} alt="Bold (Ctrl+B)" active={isBold}>B</Button>
             <Button onClick={() => { editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic"); }} alt="Italic (Ctrl+I)" active={isItalic}>I</Button>
             <Button onClick={() => { editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline"); }} alt="Underline (Ctrl+U)" active={isUnderline}>U</Button>

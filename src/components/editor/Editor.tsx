@@ -23,7 +23,6 @@ import editorConfig from "../../config/editor/editorConfig";
 import Toolbar from './toolbar/Toolbar';
 import NoteTitleBar from './NoteTitleBar';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { json } from 'react-router-dom';
 
 const { ipcRenderer } = window.require('electron')
 
@@ -45,6 +44,7 @@ export default function Editor() {
         function setupEvents() {
             ipcRenderer.on('note-opened', (event, noteName, noteData) => {
                 setNoteName(noteName)
+                setIsNoteSaved(true)
 
                 const editorState = editor.parseEditorState(noteData)
                 editor.setEditorState(editorState)
