@@ -1,17 +1,18 @@
+import { dialog } from 'electron';
 import * as FileSystemModule from './FileSystemModule'
 
-let pathVault:string|null = null;
-let currentOpenedNotePath:string|null = null;
+let pathVault: string | null = null;
+let currentOpenedNotePath: string | null = null;
 
-export function getPathVault(){
+export function getPathVault() {
     return pathVault
 }
 
-export function setPath(path:string){
+export function setPath(path: string) {
     pathVault = path
 }
 
-export async function createFolder(dir: string, folderName: string):Promise<FileSystemModule.File> {
+export async function createFolder(dir: string, folderName: string): Promise<FileSystemModule.File> {
     return FileSystemModule.createFolder(dir, folderName)
 }
 
@@ -86,8 +87,34 @@ export function saveOpenedFile(data: string, closeFile: boolean = false): Promis
     })
 }
 
-export function getOpenedFilePath(): string|null {
+export function getOpenedFilePath(): string | null {
     return currentOpenedNotePath
+}
+
+/**
+ * Show a dialog to the user to confirm if he wants to continue without saving the current note
+ * @returns {boolean} true if the user wants to continue, false otherwise
+ */
+export function alertUserNoteNotSaved(): Promise<boolean> {
+    return new Promise<boolean>((resolve, reject) => {
+        if (currentOpenedNotePath) {
+            dialog.showMessageBox({
+                type: 'warning',
+                title: 'Note not saved',
+                message: 'You have unsaved changes in your note. Do you really want to continue?\nIf you continue, your changes will be lost.',
+                buttons: ['Cancel', 'Continue']
+            }).then((value) => {
+                if (value.response === 1) {
+                    currentOpenedNotePath = null
+                    resolve(true)
+                }
+                resolve(false)
+            })
+        }
+        else {
+            resolve(false)
+        }
+    })
 }
 
 export default FileSystemModule.File

@@ -54,9 +54,9 @@ function sendVaultContent() {
     console.log(content)
     mainWindow?.webContents.send('folder-content', content)
   })
-  .catch((err) => {
-    printMessage.printError(err)
-  })
+    .catch((err) => {
+      printMessage.printError(err)
+    })
 }
 
 function setupWatcher() {
@@ -288,7 +288,32 @@ function setupEvents() {
 
   ipcMain.on('closeApp', () => {
     printMessage.printLog('Close application is asked')
-    closeApp();
+
+    if (VaultManagement.getOpenedFilePath() !== null) {
+      mainWindow?.webContents.send('is-note-saved')
+
+      ipcMain.once('is-note-saved-answer', (event, isSaved) => {
+        printMessage.printLog('Note is saved : ' + isSaved)
+        if (isSaved) {
+          closeApp();
+          return
+        }
+        printMessage.printLog('Note is not saved, ask user if he wants to continue')
+        VaultManagement.alertUserNoteNotSaved().then((userWantsToContinue) => {
+          if (!userWantsToContinue) {
+            printMessage.printLog('User canceled the action')
+            return
+          }
+          printMessage.printLog('User wants to continue, close application')
+          closeApp();
+        })
+          .catch((err) => {
+            printMessage.printError(err)
+          })
+      })
+    } else {
+      closeApp();
+    }
   })
 
   ipcMain.on('maximizeWindow', (event) => {
@@ -386,10 +411,10 @@ ipcMain.handle('open-win', (event, arg) => {
 
 // import wasm library
 
-import {add, parse} from './modules/wasm_lib/focus_lib.js'
+import { add, parse } from './modules/wasm_lib/focus_lib.js'
 
 ipcMain.on('debug', async (event) => {
   printMessage.printLog("debug");
-  printMessage.printLog(add(1,2).toString());
+  printMessage.printLog(add(1, 2).toString());
   printMessage.printLog(parse("Hello"));
 });

@@ -49,12 +49,16 @@ export default function Editor() {
                 const editorState = editor.parseEditorState(noteData)
                 editor.setEditorState(editorState)
             })
+            ipcRenderer.on('is-note-saved', (event) => {
+                ipcRenderer.send('is-note-saved-answer', isNoteSaved)
+            })
         }
 
         useEffect(() => {
             setupEvents()
 
             document.addEventListener('keydown', handleKeyDown)
+            data = JSON.stringify(editor.getEditorState().toJSON())
 
             const removeTextContentListener = editor.registerTextContentListener((textContent) => {
                 setIsNoteSaved(false)
@@ -63,6 +67,7 @@ export default function Editor() {
 
             return () => {
                 ipcRenderer.removeAllListeners('note-opened')
+                ipcRenderer.removeAllListeners('is-note-saved')
                 removeTextContentListener()
 
                 document.removeEventListener('keydown', handleKeyDown)
