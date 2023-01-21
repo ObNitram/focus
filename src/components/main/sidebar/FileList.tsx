@@ -45,15 +45,16 @@ export default function FileList(props: FileListProps) {
 
     function dropHandler(event: React.DragEvent<HTMLUListElement>) {
         event.preventDefault();
-        const data = event.dataTransfer.getData("text/plain");
-
-        // if ctrl key pressed, copy the file
-        if (event.ctrlKey) {
-            ipcRenderer.send('copy-note-or-folder', data)
-        }
-        else {
-            ipcRenderer.send('move-note-or-folder', data)
-        }
+        const data = JSON.parse(event.dataTransfer.getData("text/plain"));
+        data.forEach((element:string) => {
+            // if ctrl key pressed, copy the file
+            if (event.ctrlKey) {
+                ipcRenderer.send('copy-note-or-folder', element)
+            }
+            else {
+                ipcRenderer.send('move-note-or-folder', element)
+            }
+        });
     }
 
     return (
