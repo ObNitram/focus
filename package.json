@@ -8,6 +8,7 @@
   "license": "MIT",
   "main": "dist-electron/electron/main/index.js",
   "scripts": {
+    "install": "cd modules/pathManage && npm run build && cd ../../ && npm i && npm update pathmanage",
     "dev": "vite",
     "build": "tsc && vite build && electron-builder",
     "build-wasm": "cd ./wasm_lib/ && ./build.sh && cd ../"
