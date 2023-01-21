@@ -24,6 +24,8 @@ import * as MarkdownConverter from './modules/MarkdownConversionModule'
 import { initConfig, saveInSettingPathVault, initGeneralConfig, saveSizeSideBar, getSizeSidebar } from './modules/ManageConfig'
 import { removeMD } from './modules/FileSystemModule'
 
+import * as pathManage from 'pathmanage'
+
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration()
 
@@ -192,17 +194,18 @@ function setupEvents() {
 
   ipcMain.on('move-note-or-folder', (event, path: string, newParentFolder: string | null = null) => {
     if (newParentFolder === null) {
-      newParentFolder = VaultManagement.getPathVault()
+      newParentFolder = pathManage.repairEndOfPath(VaultManagement.getPathVault(), true)
     }
 
     printMessage.printINFO('Request to move : ' + path + ' to ' + newParentFolder)
-    if (path === newParentFolder || path === newParentFolder.concat('/', path.split('/').pop())) {
+    // printMessage.printLog('Parent of file to move is ' + pathManage.getParentPath(path) )
+    // printMessage.printLog('Parent of file to move is ' + pathManage.getParentPath(path) )
+    if (path === newParentFolder || newParentFolder == pathManage.getParentPath(path)) {
       printMessage.printINFO('No move needed')
       return
     }
 
-    let pathParts = path.split('/')
-    const newPath = join(newParentFolder, pathParts[pathParts.length - 1])
+    const newPath = join(newParentFolder, pathManage.getName(path))
 
     modificationsInVaultFromApp += 2
 
