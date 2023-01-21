@@ -19,6 +19,14 @@ function getHeadingLevelNumberFromString(headingLevel: string): number {
     }
 }
 
+function addIndentation(indentationLevel: number): string {
+    let indentation = '';
+    for (let i = 0; i < indentationLevel; i++) {
+        indentation += ' ';
+    }
+    return indentation;
+}
+
 /**
  * create a markdown heading from a heading node
  * @param headingNode the heading node to be processed
@@ -30,7 +38,7 @@ export function proceedHeading(headingNode: HeadingNodeV1): string {
     if (headingNode.type !== 'heading') {
         throw new Error('The node is not a heading node.');
     }
-    let headingText = '';
+    let headingText = addIndentation(headingNode.indent);
     for (let i = 0; i < headingNode.children.length; i++) {
         headingText += proceedText(headingNode.children[i]);
     }
@@ -75,7 +83,7 @@ export function proceedList(listNode: ListNode): string {
         throw new Error('The list type is not bullet or number.');
     }
 
-    let markdownList = '';
+    let markdownList = addIndentation(listNode.indent);
 
     for (let i = 0; i < listNode.children.length; i++) {
         markdownList += listNode.listType === 'bullet' ? '- ' : (i + 1) + '. ';
@@ -97,7 +105,7 @@ export function proceedQuote(quoteNode: QuoteNodeV1): string {
     if (quoteNode.type !== 'quote') {
         throw new Error('The node is not a quote node.');
     }
-    let quoteText = '';
+    let quoteText = addIndentation(quoteNode.indent);
     for (let i = 0; i < quoteNode.children.length; i++) {
         quoteText += '>' + proceedText(quoteNode.children[i]) + '\n';
     }
@@ -114,7 +122,7 @@ export function proceedParagraph(paragraphNode: ParagraphNodeV1): string {
     if (paragraphNode.type !== 'paragraph') {
         throw new Error('The node is not a paragraph node.');
     }
-    let paragraphText = '';
+    let paragraphText = addIndentation(paragraphNode.indent);
 
     for (let j = 0; j < paragraphNode.children.length; j++) {
         paragraphText += proceedText(paragraphNode.children[j]);

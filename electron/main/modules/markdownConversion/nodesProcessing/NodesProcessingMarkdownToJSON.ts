@@ -61,6 +61,25 @@ export function proceedText(text: string): TextNodeV1[] {
     return textNodes;
 }
 
+function getHeadingLevelNumberFromString(headingLevel: string): number {
+    switch (headingLevel) {
+        case 'h1':
+            return 1;
+        case 'h2':
+            return 2;
+        case 'h3':
+            return 3;
+        case 'h4':
+            return 4;
+        case 'h5':
+            return 5;
+        case 'h6':
+            return 6;
+        default:
+            throw new Error('The heading level is not between 1 and 6.');
+    }
+}
+
 /**
  * create a heading node
  * @param text the text to be processed
@@ -68,25 +87,27 @@ export function proceedText(text: string): TextNodeV1[] {
  */
 export function proceedHeading(text: string): HeadingNodeV1 | null {
     let tag: headingLevel | null = null;
-    if (text.startsWith('#')) {
-        tag = headingLevel.h1;
-    } else if (text.startsWith('##')) {
-        tag = headingLevel.h2;
-    } else if (text.startsWith('###')) {
-        tag = headingLevel.h3;
-    } else if (text.startsWith('####')) {
-        tag = headingLevel.h4;
-    } else if (text.startsWith('#####')) {
-        tag = headingLevel.h5;
-    } else if (text.startsWith('######')) {
+    if (text.startsWith('######')) {
         tag = headingLevel.h6;
     }
-    else {
-        return null;
+    else if (text.startsWith('#####')) {
+        tag = headingLevel.h5;
+    }
+    else if (text.startsWith('####')) {
+        tag = headingLevel.h4;
+    }
+    else if (text.startsWith('###')) {
+        tag = headingLevel.h3;
+    }
+    else if (text.startsWith('##')) {
+        tag = headingLevel.h2;
+    }
+    else if (text.startsWith('#')) {
+        tag = headingLevel.h1;
     }
 
     let heading = new HeadingNodeV1(tag);
-    let textNodes = this.proceedText(text.substring(tag.length));
+    let textNodes = this.proceedText(text.substring(getHeadingLevelNumberFromString(tag) + 1));
     heading.children = textNodes;
     return heading;
 }
