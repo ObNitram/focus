@@ -291,6 +291,7 @@ export default function FileListItem(this: any, props: FileListItemProps) {
 
     function dropHandler(event: React.DragEvent<HTMLDivElement>) {
         event.preventDefault();
+        event.stopPropagation();
         const data = JSON.parse(event.dataTransfer.getData("text/plain"));
         // if ctrl key pressed, copy the file
 
