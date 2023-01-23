@@ -176,7 +176,7 @@ function setupEvents() {
   })
 
   ipcMain.on('rename-note-or-folder', (event, path: string, newName: string) => {
-    printMessage.printINFO('Request to rename : ' + path)
+    printMessage.printINFO('Request to rename : ' + path +  ', new name is ' + newName)
     modificationsInVaultFromApp += 2
 
     VaultManagement.renameFileOrFolder(path, newName).then(() => {

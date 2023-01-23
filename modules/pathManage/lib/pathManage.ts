@@ -21,7 +21,7 @@ export function getSeperatorOfSystem():string{
 }
 
 export function joinPath(path1:string, path2:string):string{
-    return Path.join(path1, path2)
+    return convertCrossPath(Path.join(path1, path2))
 }
 
 export function repairEndOfPath(path:string, isDirectory:boolean):string{
