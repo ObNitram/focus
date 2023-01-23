@@ -24,6 +24,8 @@ import * as MarkdownConverter from './modules/markdownConversion/MarkdownConvers
 import { initConfig, saveInSettingPathVault, initGeneralConfig, saveSizeSideBar, getSizeSidebar } from './modules/ManageConfig'
 import { removeMD } from './modules/FileSystemModule'
 
+import * as pathManage from 'pathmanage'
+
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration()
 
@@ -75,6 +77,7 @@ function setupWatcher() {
   })
 
   watcher.on('all', (event, path) => {
+    path = pathManage.convertCrossPath(path)
     if (modificationsInVaultFromApp > 0) {
       modificationsInVaultFromApp--
 
@@ -173,7 +176,7 @@ function setupEvents() {
   })
 
   ipcMain.on('rename-note-or-folder', (event, path: string, newName: string) => {
-    printMessage.printINFO('Request to rename : ' + path)
+    printMessage.printINFO('Request to rename : ' + path +  ', new name is ' + newName)
     modificationsInVaultFromApp += 2
 
     VaultManagement.renameFileOrFolder(path, newName).then(() => {
@@ -192,17 +195,18 @@ function setupEvents() {
 
   ipcMain.on('move-note-or-folder', (event, path: string, newParentFolder: string | null = null) => {
     if (newParentFolder === null) {
-      newParentFolder = VaultManagement.getPathVault()
+      newParentFolder = pathManage.repairEndOfPath(VaultManagement.getPathVault(), true)
     }
 
     printMessage.printINFO('Request to move : ' + path + ' to ' + newParentFolder)
-    if (path === newParentFolder || path === newParentFolder.concat('/', path.split('/').pop())) {
+    // printMessage.printLog('Parent of file to move is ' + pathManage.getParentPath(path) )
+    // printMessage.printLog('Parent of file to move is ' + pathManage.getParentPath(path) )
+    if (path === newParentFolder || newParentFolder == pathManage.getParentPath(path)) {
       printMessage.printINFO('No move needed')
       return
     }
 
-    let pathParts = path.split('/')
-    const newPath = join(newParentFolder, pathParts[pathParts.length - 1])
+    const newPath = join(newParentFolder, pathManage.getName(path))
 
     modificationsInVaultFromApp += 2
 

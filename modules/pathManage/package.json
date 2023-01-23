@@ -1,0 +1,12 @@
+{
+  "name": "pathmanage",
+  "version": "1.0.0",
+  "description": "UseFull function for manage path, in a cross OS compatibility",
+  "main": "./dist/pathManage.js",
+  "types": "./dist/pathManage.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "author": "Thomas Graber",
+  "license": "ISC"
+}

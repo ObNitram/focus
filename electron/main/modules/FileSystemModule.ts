@@ -3,6 +3,8 @@ import { cp, mkdir, readdir, readFile, rename, rm, stat, writeFile } from 'origi
 import { join } from 'path'
 import * as printMessage from './OutputModule'
 
+const pathManage = require('pathmanage')
+
 export class File {
     name: string
     isDirectory: boolean
@@ -230,6 +232,7 @@ export async function createFolder(dir: string, folderName: string): Promise<Fil
 }
 
 export async function renameFileOrFolder(oldPath: string, newPath: string): Promise<void> {
+    printMessage.printLog('In rename File or folder, oldPath is ' + oldPath + ' And new Path is ' + newPath)
     return new Promise((resolve, reject) => {
         if(oldPath == newPath){
             resolve()
@@ -241,27 +244,17 @@ export async function renameFileOrFolder(oldPath: string, newPath: string): Prom
                     reject("Error while getting file or folder info: " + err)
                     return
                 }
-
-                if (stats.isDirectory()) {
-                    if (!newPath.endsWith('/')) {
-                        newPath += '/'
-                    }
-                }
-                else {
-                    if (newPath.endsWith('/')) {
-                        newPath = newPath.slice(0, -1)
-                    }
+                newPath =  pathManage.repairEndOfPath(newPath, stats.isDirectory())
+                if (!stats.isDirectory()) {
                     if (!newPath.endsWith('.md')) {
                         newPath += '.md'
                     }
                 }
-                let parts = newPath.split('/')
-                if (parts[parts.length - 1] == '') parts.pop()
-                let name = parts[parts.length - 1]
-                let dir = newPath.slice(0, -name.length - 1)
+                let name = pathManage.getName(newPath)
+                let dir = pathManage.getParentPath(newPath)
                 printMessage.printLog('New name is ' + newPath)
                 findAvailableName(dir, name).then((availableName) => {
-                    newPath = join(dir, availableName)
+                    newPath = pathManage.joinPath(dir, availableName)
                     rename(oldPath, newPath, (err) => {
                         if (err) {
                             reject("Error while renaming file or folder: " + err)
@@ -283,6 +276,7 @@ export async function renameFileOrFolder(oldPath: string, newPath: string): Prom
 }
 
 export async function moveFileOrFolder(oldPath: string, newPath: string): Promise<void> {
+    printMessage.printLog('Enter in moveFileorFolder, oldpath is ' + oldPath + ' and newPath is ' + newPath)
     return new Promise((resolve, reject) => {
         try {
             stat(oldPath, (err, stats) => {
@@ -291,24 +285,17 @@ export async function moveFileOrFolder(oldPath: string, newPath: string): Promis
                     return
                 }
 
-                if (stats.isDirectory()) {
-                    if (!newPath.endsWith('/')) {
-                        newPath += '/'
-                    }
-                }
-                else {
-                    if (newPath.endsWith('/')) {
-                        newPath = newPath.slice(0, -1)
-                    }
+                printMessage.printLog('in moveFileorFolder, newPath is ' + newPath)
+                newPath =  pathManage.repairEndOfPath(newPath, stats.isDirectory())
+                printMessage.printLog('in moveFileorFolder, after modify,  newPath is ' + newPath)
+                if (!stats.isDirectory()) {
                     if (!newPath.endsWith('.md')) {
                         newPath += '.md'
                     }
                 }
-                let parts = newPath.split('/')
-                if (parts[parts.length - 1] == '') parts.pop()
-                let name = parts[parts.length - 1]
-                let dir = newPath.slice(0, -name.length - 1)
-                printMessage.printLog('New name is ' + newPath)
+                let name = pathManage.getName(newPath)
+                let dir = pathManage.getParentPath(newPath)
+                printMessage.printLog('in moveFileorFolder, name is ' + name + ' and dir is ' + dir)
                 findAvailableName(dir, name).then((availableName) => {
                     newPath = join(dir, availableName)
                     rename(oldPath, newPath, (err) => {
@@ -340,23 +327,14 @@ export async function copyFileOrFolder(oldPath: string, newPath: string): Promis
                     return
                 }
 
-                if (stats.isDirectory()) {
-                    if (!newPath.endsWith('/')) {
-                        newPath += '/'
-                    }
-                }
-                else {
-                    if (newPath.endsWith('/')) {
-                        newPath = newPath.slice(0, -1)
-                    }
+                newPath =  pathManage.repairEndOfPath(newPath, stats.isDirectory())
+                if (!stats.isDirectory()) {
                     if (!newPath.endsWith('.md')) {
                         newPath += '.md'
                     }
                 }
-                let parts = newPath.split('/')
-                if (parts[parts.length - 1] == '') parts.pop()
-                let name = parts[parts.length - 1]
-                let dir = newPath.slice(0, -name.length - 1)
+                let name = pathManage.getName(newPath)
+                let dir = pathManage.getParentPath(newPath)
                 printMessage.printLog('New name is ' + newPath)
                 findAvailableName(dir, name).then((availableName) => {
                     newPath = join(dir, availableName)
@@ -445,6 +423,14 @@ export function removeMD(file: File): File {
     }
     file.children = file.children.map((value:File) => {
         return removeMD(value)
+    })
+    return file
+}
+
+export function convertAllCrossPath(file:File){
+    file.path = pathManage.convertCrossPath(file.path)
+    file.children = file.children.map((value:File) => {
+        return convertAllCrossPath(value)
     })
     return file
 }
