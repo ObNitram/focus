@@ -26,11 +26,15 @@ import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext
 
 const { ipcRenderer } = window.require('electron')
 
+export interface Editor_Props {
+    active: boolean
+}
+
 function Placeholder() {
     return <div className={styles.editor_inner_placeholder}>Enter some plain text...</div>;
 }
 
-export default function Editor() {
+export default function Editor(this:any, props:Editor_Props) {
     const refEditorContenair = useRef<HTMLDivElement>(null)
 
     const [noteName, setNoteName] = useState('Untitled')
@@ -43,6 +47,7 @@ export default function Editor() {
 
         function setupEvents() {
             ipcRenderer.on('note-opened', (event, noteName, noteData) => {
+                console.log('opened file, noteName is '  + noteName)
                 setNoteName(noteName)
 
                 const editorState = editor.parseEditorState(noteData)
@@ -113,7 +118,7 @@ export default function Editor() {
 
     return (
         <LexicalComposer initialConfig={editorConfig}>
-            <div className={styles.editor_container} ref={refEditorContenair}>
+            <div className={`${styles.editor_container} ${props.active ? '' : styles.inactive}`} ref={refEditorContenair}>
                 <NoteTitleBar noteName={noteName} noteSaved={isNoteSaved} />
                 <Toolbar />
 
