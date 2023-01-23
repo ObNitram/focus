@@ -62,7 +62,7 @@ function getParentFolder(path: string, files: any, mainFolderPath: string): any 
         return null
     }
 
-    let parentFolderPath = path.substring(0, path.lastIndexOf(pathManage.getSeperatorOfSystem()))
+    let parentFolderPath = path.substring(0, path.lastIndexOf('/'))
     if (parentFolderPath === mainFolderPath) {
         return files
     }

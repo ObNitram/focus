@@ -52,7 +52,7 @@ export async function renameFileOrFolder(oldPath: string, newName: string): Prom
 export async function getVaultContent(): Promise<FileSystemModule.File> {
     return new Promise<FileSystemModule.File>((resolve, reject) => {
         FileSystemModule.getFolderContent(pathVault, true).then((value: FileSystemModule.File) => {
-            value.path = pathManage.removeDuplicate(value.path)
+            value = FileSystemModule.convertAllCrossPath(value)
             resolve(FileSystemModule.removeMD(value))
         }).catch((reason) => reject(reason))
     })

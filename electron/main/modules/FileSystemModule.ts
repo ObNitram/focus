@@ -426,3 +426,11 @@ export function removeMD(file: File): File {
     })
     return file
 }
+
+export function convertAllCrossPath(file:File){
+    file.path = pathManage.convertCrossPath(file.path)
+    file.children = file.children.map((value:File) => {
+        return convertAllCrossPath(value)
+    })
+    return file
+}

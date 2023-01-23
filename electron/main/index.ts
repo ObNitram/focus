@@ -77,6 +77,7 @@ function setupWatcher() {
   })
 
   watcher.on('all', (event, path) => {
+    path = pathManage.convertCrossPath(path)
     if (modificationsInVaultFromApp > 0) {
       modificationsInVaultFromApp--
 

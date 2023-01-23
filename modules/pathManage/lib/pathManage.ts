@@ -9,7 +9,7 @@ export function getName(path:string):string{
 
 export function getParentPath(path:string){
     let parentPath = Path.dirname(path)
-    return parentPath.concat(getSeperatorOfSystem())
+    return parentPath.concat('/')
 }
 
 export function convertCrossPath(path:string):string{
@@ -26,13 +26,13 @@ export function joinPath(path1:string, path2:string):string{
 
 export function repairEndOfPath(path:string, isDirectory:boolean):string{
     if(isDirectory){
-        if(!path.endsWith(getSeperatorOfSystem())){
-            return path.concat(getSeperatorOfSystem())
+        if(!path.endsWith('/')){
+            return path.concat('/')
         }else{
             return path
         }
     }else{
-        if(path.endsWith(getSeperatorOfSystem())){
+        if(path.endsWith('/')){
             return path.slice(0, -1)
         }else{
             return path
@@ -42,7 +42,7 @@ export function repairEndOfPath(path:string, isDirectory:boolean):string{
 
 export function renamePath(path:string, newName:string):string{
     path = removeDuplicate(path)
-    let parts = path.split(getSeperatorOfSystem())
+    let parts = path.split('/')
     let newPath =''
     if(parts[parts.length - 1] == ''){
         parts[parts.length - 2] = newName
@@ -56,7 +56,7 @@ export function removeDuplicate(path:string):string{
     let newPath = '';
     let remove:boolean = false;
     for(let char of path){
-        if(char == getSeperatorOfSystem()){
+        if(char == '/'){
             if(!remove){
                 remove = true 
                  newPath = newPath.concat(char)  
