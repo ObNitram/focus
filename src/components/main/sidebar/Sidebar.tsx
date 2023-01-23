@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
-import {gsap} from 'gsap'
+import { gsap } from 'gsap'
 import styles from 'styles/components/main/sidebar.module.scss'
 
 import FileList from "./FileList"
@@ -37,50 +37,23 @@ export default function Sidebar(props: any) {
       mainFolderPath = folderContent.path
     })
 
-    ipcRenderer.on('note-created', (event, note) => {
-      FileListLogic.setRealName(note)
-      setFiles({ ...FileListLogic.addNoteOrFolder(note, files, mainFolderPath) })
-
-      setCollapsedAll(null)
-      console.log(pathManage.getParentPath(note.path))
-      setFolderToExpand(pathManage.getParentPath(note.path))
-    })
-    ipcRenderer.on('folder-created', (event, folder) => {
-      FileListLogic.setRealName(folder)
-      setFiles({ ...FileListLogic.addNoteOrFolder(folder, files, mainFolderPath) })
-
-      setCollapsedAll(null)
-      setFolderToExpand(pathManage.getParentPath(folder.path))
-    })
-    ipcRenderer.on('note-or-folder-deleted', (event, path) => {
-      setFiles({ ...FileListLogic.deleteNoteOrFolder(files, path) })
-    })
-    ipcRenderer.on('note-updated', (event, note) => {
-      FileListLogic.setRealName(note)
-      setFiles({ ...FileListLogic.modifyNoteOrFolder(note, files, mainFolderPath) })
-    })
-
     ipcRenderer.on('size_sidebar', (event, size) => {
       if (refBar && refBar.current) refBar.current.style.width = '' + size + 'px'
     })
   }
 
   useEffect(() => {
-    setupEvents()
-    console.log(files)
+    getSizeSideBar()
+    getListOfFilesAndFolders()
+  }, [])
 
-    if (files === null) {
-        getSizeSideBar()
-        getListOfFilesAndFolders()
-    }
+  useEffect(() => {
+    setupEvents()
+
     document.addEventListener('keydown', handleSupprKey)
 
     return () => {
       ipcRenderer.removeAllListeners('folder-content')
-      ipcRenderer.removeAllListeners('note-created')
-      ipcRenderer.removeAllListeners('folder-created')
-      ipcRenderer.removeAllListeners('note-or-folder-deleted')
-      ipcRenderer.removeAllListeners('note-updated')
       ipcRenderer.removeAllListeners('size_sidebar')
       document.removeEventListener('keydown', handleSupprKey)
     }
@@ -179,16 +152,16 @@ export default function Sidebar(props: any) {
     refResizeBar.current.style.cursor = isHidden ? 'e-resize' : 'default'
   }
 
-  const handleSupprKey = (event:KeyboardEvent) => {
-    if(event.key == 'Delete'){
-      selectedFilesContext?.[0].forEach((path:string) => {
+  const handleSupprKey = (event: KeyboardEvent) => {
+    if (event.key == 'Delete') {
+      selectedFilesContext?.[0].forEach((path: string) => {
         ipcRenderer.send('delete-note-or-folder', path)
       })
       selectedFilesContext?.[1]([])
     }
   }
 
-  const handleUnselect = (event:React.MouseEvent) => {
+  const handleUnselect = (event: React.MouseEvent) => {
     selectedFilesContext?.[1]([])
   }
 

@@ -24,6 +24,7 @@ export default function FileListItem(this: any, props: FileListItemProps) {
     const [dropdownHidden, setDropdownHidden] = React.useState(true);
     const [isNoteOpened, setIsNoteOpened] = React.useState(false);
     const [dragOver, setDragOver] = React.useState(false);
+    const [files, setFiles] = React.useState(props.files);
 
     const refItem = useRef<HTMLDivElement>(null);
     const refSubList = useRef<HTMLUListElement>(null)
@@ -88,6 +89,8 @@ export default function FileListItem(this: any, props: FileListItemProps) {
 
 
     useEffect(() => {
+        setFiles(props.files);
+        setItem(props.item);
         if (props.folderToExpand !== null) {
             setFolderToExpand(props.folderToExpand);
 
@@ -118,7 +121,7 @@ export default function FileListItem(this: any, props: FileListItemProps) {
             document.removeEventListener('contextmenu', handleRightClick);
             document.removeEventListener('drop', handleDrop);
         }
-    }, [item, props.collapsedAll, props.folderToExpand, dropdownHidden])
+    }, [props.item, props.collapsedAll, props.folderToExpand, dropdownHidden, props.files])
 
     const handleKeyDown = (event: KeyboardEvent) => {
         if (event.key == 'F2') {
@@ -347,7 +350,7 @@ export default function FileListItem(this: any, props: FileListItemProps) {
             }
         } else if (event.shiftKey) {
             if (!selectedFilesContext) return
-            let actualFiles = props.files
+            let actualFiles = files
             let newSelectedFiles: string[] = []
             let needSelect = false;
             let stop = false
@@ -409,7 +412,7 @@ export default function FileListItem(this: any, props: FileListItemProps) {
                 </div>
                 <ul className={styles.sidebar_list_folder_children} ref={refSubList}>
                     {item.children.map((item: any) => (
-                        <FileListItem key={item.path} item={item} collapsedAll={dirCollapsedAll} renaming={false} folderToExpand={folderToExpand} files={props.files} />
+                        <FileListItem key={item.path} item={item} collapsedAll={dirCollapsedAll} renaming={false} folderToExpand={folderToExpand} files={files} />
                     ))}
                 </ul>
             </li>

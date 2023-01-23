@@ -1,5 +1,5 @@
 import { ipcRenderer } from "electron";
-import React, { useEffect, useContext } from "react";
+import React, { useEffect } from "react";
 import styles from 'styles/components/main/sidebar.module.scss'
 
 import FileListItem from "./FileListItem";

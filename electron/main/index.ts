@@ -47,13 +47,11 @@ let mainWindow: BrowserWindow | null = null
 
 let watcher: chokidar.FSWatcher | null = null
 
-let modificationsInVaultFromApp: number = 0
-let modificationsInVaultFromOutsideTimer: NodeJS.Timeout | null = null
+let modificationsInVaultTimer: NodeJS.Timeout | null = null
 
 function sendVaultContent() {
   printMessage.printINFO('Request to get folder content !')
   VaultManagement.getVaultContent().then((content) => {
-    console.log(content)
     mainWindow?.webContents.send('folder-content', content)
   })
     .catch((err) => {
@@ -77,50 +75,16 @@ function setupWatcher() {
   })
 
   watcher.on('all', (event, path) => {
-    path = pathManage.convertCrossPath(path)
-    if (modificationsInVaultFromApp > 0) {
-      modificationsInVaultFromApp--
+    printMessage.printINFO('File ' + path + ' has been ' + event)
 
-      switch (event) {
-        case 'add':
-          VaultManagement.getNoteOrFolderInfo(path).then((note) => {
-            printMessage.printLog('add ' + path)
-            mainWindow?.webContents.send('note-created', removeMD(note))
-          })
-          break
-        case 'addDir':
-          VaultManagement.getNoteOrFolderInfo(path).then((folder) => {
-            printMessage.printLog('addDir ' + path)
-            mainWindow?.webContents.send('note-created', folder)
-          })
-          break
-        case 'change':
-          VaultManagement.getNoteOrFolderInfo(path, true).then((note) => {
-            printMessage.printLog('change ' + path)
-            mainWindow?.webContents.send('note-updated', removeMD(note))
-          })
-          break
-        case 'unlink':
-          printMessage.printLog('remove ' + path)
-          mainWindow?.webContents.send('note-or-folder-deleted', path)
-          break
-        case 'unlinkDir':
-          printMessage.printLog('removeDir ' + path)
-          mainWindow?.webContents.send('note-or-folder-deleted', path)
-          break
-      }
+    if (modificationsInVaultTimer) {
+      clearTimeout(modificationsInVaultTimer)
     }
-
-    else {
-      if (modificationsInVaultFromOutsideTimer) {
-        clearTimeout(modificationsInVaultFromOutsideTimer)
-      }
-
-      modificationsInVaultFromOutsideTimer = setTimeout(() => {
-        printMessage.printLog('Vault modified from outside')
-        sendVaultContent()
-      }, 1000)
-    }
+    modificationsInVaultTimer = setTimeout(() => {
+      printMessage.printLog('Sending vault content to renderer')
+      sendVaultContent()
+    }, 1000)
+    sendVaultContent()
   })
 }
 
@@ -133,7 +97,6 @@ function setupEvents() {
 
   ipcMain.on('create-note', (event, pathVault: string | null = null) => {
     printMessage.printINFO('Request to add note !')
-    modificationsInVaultFromApp++
 
     VaultManagement.createNote(pathVault ? pathVault : VaultManagement.getPathVault()).then((note) => {
       if (note) {
@@ -149,7 +112,6 @@ function setupEvents() {
 
   ipcMain.on('create-folder', (event, pathVault: string | null = null) => {
     printMessage.printINFO('Request to add folder !')
-    modificationsInVaultFromApp++
 
     VaultManagement.createFolder(pathVault ? pathVault : VaultManagement.getPathVault(), 'Untitled').then((folder) => {
       if (folder) {
@@ -165,7 +127,6 @@ function setupEvents() {
 
   ipcMain.on('delete-note-or-folder', (event, arg) => {
     printMessage.printINFO('Request to remove : ' + arg)
-    modificationsInVaultFromApp++
 
     VaultManagement.deleteFileOrFolder(arg).then(() => {
       printMessage.printOK(arg + ' removed!')
@@ -176,8 +137,7 @@ function setupEvents() {
   })
 
   ipcMain.on('rename-note-or-folder', (event, path: string, newName: string) => {
-    printMessage.printINFO('Request to rename : ' + path +  ', new name is ' + newName)
-    modificationsInVaultFromApp += 2
+    printMessage.printINFO('Request to rename : ' + path + ', new name is ' + newName)
 
     VaultManagement.renameFileOrFolder(path, newName).then(() => {
       printMessage.printOK(path + ' renamed!')
@@ -208,8 +168,6 @@ function setupEvents() {
 
     const newPath = join(newParentFolder, pathManage.getName(path))
 
-    modificationsInVaultFromApp += 2
-
     VaultManagement.moveFileOrFolder(path, newPath).then(() => {
       printMessage.printOK(path + ' moved!')
     })
@@ -227,8 +185,6 @@ function setupEvents() {
 
     let pathParts = path.split('/')
     const newPath = join(newParentFolder, pathParts[pathParts.length - 1])
-
-    modificationsInVaultFromApp += 2
 
     VaultManagement.copyFileOrFolder(path, newPath).then(() => {
       printMessage.printOK(path + ' copied!')
@@ -262,7 +218,6 @@ function setupEvents() {
   ipcMain.on('save-note', (event, noteData: string) => {
     const path = VaultManagement.getOpenedFilePath()
     printMessage.printINFO('Request to save : ' + path)
-    modificationsInVaultFromApp++
 
     MarkdownConverter.convertJSONToMarkdown(noteData).then((noteData) => {
       VaultManagement.saveOpenedFile(noteData).then(() => {
