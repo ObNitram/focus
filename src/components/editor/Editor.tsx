@@ -44,10 +44,11 @@ export default function Editor() {
         function setupEvents() {
             ipcRenderer.on('note-opened', (event, noteName, noteData) => {
                 setNoteName(noteName)
-                setIsNoteSaved(true)
 
                 const editorState = editor.parseEditorState(noteData)
                 editor.setEditorState(editorState)
+
+                setIsNoteSaved(true)
             })
             ipcRenderer.on('is-note-saved', (event) => {
                 ipcRenderer.send('is-note-saved-answer', isNoteSaved)
