@@ -74,7 +74,7 @@ export default function Editor_contenair():JSX.Element {
             <ul className={styles.tabs_menu}>
                 {openedFiles.map((value:fileType, index:number) => {
                     return( <li className={isViewed(value) ? styles.tab_active :  ''}  key={index} onClick={()=>setViewedFile(value)} >
-                                <p>{value.name}</p>
+                                <p>{value.name.endsWith('.md') ? value.name.slice(0,-3) : value.name}</p>
                                 <IoClose onClick={() => onClose(value.path)}></IoClose>
                             </li> 
                           )
