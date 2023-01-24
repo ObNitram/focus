@@ -14,7 +14,9 @@ export type fileType = {
 export default function Editor_contenair():JSX.Element {
     const [openedFiles, setOpenedFiles] = useState<fileType[]>([])
     const [viewedFile, setViewedFile] = useState<fileType>()
+    const [unsavedFiles, setUnsavedFiles] = useState<Set<string>>(new Set())
 
+    
     const isViewed = (fileName:fileType) => {
         if(!viewedFile) return false
         return viewedFile.path == fileName.path
@@ -59,14 +61,47 @@ export default function Editor_contenair():JSX.Element {
 
     useEffect(() => {
         console.log(openedFiles)
+        console.log(unsavedFiles)
+    }, [openedFiles, unsavedFiles])
+
+    useEffect(() => {
+        if(viewedFile == undefined) return
+        if(openedFiles.length == 0) setViewedFile(undefined)
+        if(!openedFiles.includes(viewedFile)){
+            setViewedFile(openedFiles.at(-1))
+        }
     }, [openedFiles])
+
+    useEffect(() => {
+        console.log('viewed file has change')
+        console.log(viewedFile)
+    }, [viewedFile])
     
     const onClose = (path:string) => {
+        if(unsavedFiles.has(path)){
+            const choice = window.confirm('This note is not saved. Do you really want to close it?')
+            if(!choice){
+                return
+            }else{
+                removeUnsavedFiles(path)
+            }
+        }
         const newOpened = openedFiles.filter((value:fileType) => {
             return value.path != path
         })
-
         setOpenedFiles(newOpened)
+    }
+
+    const addUnsavedFiles = (path:string) => {
+        let newSet:Set<string> = new Set(unsavedFiles)
+        newSet.add(path)
+        setUnsavedFiles(newSet)
+    }
+
+    const removeUnsavedFiles = (path:string) => {
+        let newSet:Set<string> = new Set(unsavedFiles)
+        newSet.delete(path)
+        setUnsavedFiles(newSet) 
     }
 
     return (
@@ -82,7 +117,7 @@ export default function Editor_contenair():JSX.Element {
             </ul>
             { openedFiles.length != 0 ? 
                 openedFiles.map((value:fileType, index:number) => {
-                    return( <Editor key={index} active={isViewed(value)} file={value}></Editor>
+                    return( <Editor key={index} active={isViewed(value)} file={value} addUnsavedFiles={addUnsavedFiles} removeUnsavedFiles={removeUnsavedFiles}></Editor>
                           )
                 }) 
                 : (<p>Nothing</p>)}

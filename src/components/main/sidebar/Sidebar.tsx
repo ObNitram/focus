@@ -67,7 +67,6 @@ export default function Sidebar(props: any) {
 
   useEffect(() => {
     setupEvents()
-    console.log(files)
 
     if (files === null) {
         getSizeSideBar()

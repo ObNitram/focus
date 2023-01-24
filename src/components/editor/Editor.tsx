@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from 'react';
+import {Dispatch, SetStateAction, useEffect, useRef, useState} from 'react';
 
 import styles from "styles/components/editor/editor.module.scss";
 
@@ -30,7 +30,9 @@ const { ipcRenderer } = window.require('electron')
 
 export interface Editor_Props {
     active: boolean,
-    file:fileType
+    file:fileType,
+    addUnsavedFiles: (path:string) => void,
+    removeUnsavedFiles: (path:string) => void,
 }
 
 function Placeholder() {
@@ -53,13 +55,14 @@ export default function Editor(this:any, props:Editor_Props) {
         ipcRenderer.on('note_saved', (event, path:string) => {
             if(path == props.file.path){
                 setIsNoteSaved(true)
+                props.removeUnsavedFiles(props.file.path)
             }
         })
         return () => {
             document.removeEventListener('keydown', handleKeyDown)
             ipcRenderer.removeAllListeners('note_saved')
         }
-    }, [isNoteSaved])
+    }, [isNoteSaved, props.active])
 
     const handleKeyDown = (event: KeyboardEvent) => {
         if (event.key === 's' && (event.ctrlKey || event.metaKey)) {
@@ -69,13 +72,19 @@ export default function Editor(this:any, props:Editor_Props) {
     }
 
     function saveNote() {
-        if(isNoteSaved || !editorStateRef || !editorStateRef.current ) return
+        console.log('Save of ' + props.file.name + ' is asked !\n' + 
+    
+        ' isNoteSaved is ' + isNoteSaved +
+        ' IsActive  is ' + props.active );
+        if(isNoteSaved || !editorStateRef || !editorStateRef.current || !props.active ) return
+        console.log('Save of ' + props.file.name + ' is send to server')
         ipcRenderer.send('save-note', JSON.stringify(editorStateRef.current.toJSON()), props.file.path)
     }
 
     const handleChange = (editorState:EditorState) => {
         editorStateRef.current = editorState
         setIsNoteSaved(false)
+        props.addUnsavedFiles(props.file.path)
     }
 
     return (
