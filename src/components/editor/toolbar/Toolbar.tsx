@@ -145,7 +145,12 @@ let currTextFormatTitle = 'Normal';
 let currTextAlignKey = 'left';
 let currTextAlignTitle = 'Left';
 
-export default function Toolbar() {
+export interface ToolBarProps {
+    isSaved:boolean
+
+}
+
+export default function Toolbar(this:any, props:ToolBarProps) {
     const [editor] = useLexicalComposerContext();
     const [activeEditor, setActiveEditor] = useState(editor);
 
@@ -466,6 +471,7 @@ export default function Toolbar() {
             <Selector title={currTextAlign} closed={dropdownTextAlignClosed} items={dropdownTextAlignItems} onItemSelect={handleDropdownTextAlignItemCLick} onClick={handleTextAlignBtnClick} alt="Text align" ref={dropdownTextAlignRef} />
             <Button onClick={() => { editor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined); }} alt="Indent" active={false} icon={<FaIndent />} />
             <Button onClick={() => { editor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined); }} alt="Outdent" active={false} icon={<FaOutdent />} />
+            {!props.isSaved && <div className={styles.div_saved} title="This note is not saved"></div>}
         </div>
     )
 }

@@ -81,7 +81,7 @@ export default function Editor(this:any, props:Editor_Props) {
     return (
         <LexicalComposer initialConfig={editorConfig}>
             <div className={`${styles.editor_container} ${props.active ? '' : styles.inactive}`} ref={refEditorContenair}>
-                <Toolbar />
+                <Toolbar isSaved={isNoteSaved}/>
 
                 <div className={styles.editor_inner}>
                     <RichTextPlugin

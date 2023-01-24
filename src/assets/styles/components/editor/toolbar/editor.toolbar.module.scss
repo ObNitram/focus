@@ -6,4 +6,16 @@
     background: $editor_toolbar_background_color;
     justify-content: flex-start;
     height: 60px;
+    position: relative;
+
+    .div_saved{
+        height: 15px;
+        width: 15px;
+        border-radius: 50%;
+        background-color: red;
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
 }
