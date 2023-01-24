@@ -266,6 +266,7 @@ function setupEvents() {
     MarkdownConverter.convertJSONToMarkdown(noteData).then((noteData) => {
       VaultManagement.saveFile(noteData, path).then(() => {
         printMessage.printOK(path + ' saved!')
+        mainWindow?.webContents.send('note_saved', path)
       })
         .catch((err) => {
           printMessage.printError(err)

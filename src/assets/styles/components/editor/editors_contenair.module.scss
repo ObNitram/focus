@@ -17,6 +17,7 @@
     gap: 3px;
 
     li{
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: start;
@@ -26,10 +27,33 @@
       border-top-right-radius: 20px;
       cursor: pointer;
 
+      p{
+        text-overflow: ellipsis;
+        overflow: hidden;
+        // height: 100%;
+        margin: 0;
+        padding: 0;
+        // display: flex;
+        // justify-content: center;
+        // align-items: center;
+        max-width: 100px;
+        white-space: nowrap;
+      }
+
       &.tab_active{
         background-color: $sidebar_list_note_opened_background_color;
       }
 
+      svg{
+        width: 20px;
+        height: 20px;
+        position: absolute;
+        right: 10px;
+
+        &:hover{
+          background-color: $hover;
+        }
+      }
     }
   }
 }

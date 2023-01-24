@@ -22,7 +22,6 @@ import {validateUrl} from './utils/url';
 import editorConfig from "../../config/editor/editorConfig";
 
 import Toolbar from './toolbar/Toolbar';
-import NoteTitleBar from './NoteTitleBar';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { fileType } from '../main/editors_contenair/Editor_contenair';
 import { EditorState } from 'lexical';
@@ -51,8 +50,14 @@ export default function Editor(this:any, props:Editor_Props) {
     useEffect(() => {
         console.log('Editor of ' + props.file.name + ' is mounted !')
         document.addEventListener('keydown', handleKeyDown);
+        ipcRenderer.on('note_saved', (event, path:string) => {
+            if(path == props.file.path){
+                setIsNoteSaved(true)
+            }
+        })
         return () => {
             document.removeEventListener('keydown', handleKeyDown)
+            ipcRenderer.removeAllListeners('note_saved')
         }
     }, [isNoteSaved])
 
@@ -66,7 +71,6 @@ export default function Editor(this:any, props:Editor_Props) {
     function saveNote() {
         if(isNoteSaved || !editorStateRef || !editorStateRef.current ) return
         ipcRenderer.send('save-note', JSON.stringify(editorStateRef.current.toJSON()), props.file.path)
-        setIsNoteSaved(true)
     }
 
     const handleChange = (editorState:EditorState) => {
@@ -77,7 +81,6 @@ export default function Editor(this:any, props:Editor_Props) {
     return (
         <LexicalComposer initialConfig={editorConfig}>
             <div className={`${styles.editor_container} ${props.active ? '' : styles.inactive}`} ref={refEditorContenair}>
-                <NoteTitleBar noteName={noteName} noteSaved={isNoteSaved} />
                 <Toolbar />
 
                 <div className={styles.editor_inner}>
@@ -93,7 +96,7 @@ export default function Editor(this:any, props:Editor_Props) {
                     <AutoLinkPlugin matchers={LINK_MATCHERS} />
                     <ClickableLinkPlugin />
                     <LexicalLinkPlugin validateUrl={validateUrl} />
-                    <OnChangePlugin onChange={(editorState:EditorState) => handleChange(editorState)} />
+                    <OnChangePlugin onChange={(editorState:EditorState) => handleChange(editorState)} ignoreSelectionChange={true} />
                 </div>
             </div>
         </LexicalComposer>

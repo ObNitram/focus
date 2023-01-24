@@ -1,6 +1,8 @@
 import Editor from '@/components/editor/Editor'
 import { useState, useEffect } from 'react'
 import styles from 'styles/components/editor/editors_contenair.module.scss'
+import { IoClose } from 'react-icons/io5'
+import { BsCircleFill } from 'react-icons/bs'
 const { ipcRenderer } = window.require('electron')
 
 export type fileType = {
@@ -59,13 +61,21 @@ export default function Editor_contenair():JSX.Element {
         console.log(openedFiles)
     }, [openedFiles])
     
+    const onClose = (path:string) => {
+        const newOpened = openedFiles.filter((value:fileType) => {
+            return value.path != path
+        })
+
+        setOpenedFiles(newOpened)
+    }
 
     return (
         <div className={styles.editors_contenair}>
             <ul className={styles.tabs_menu}>
                 {openedFiles.map((value:fileType, index:number) => {
                     return( <li className={isViewed(value) ? styles.tab_active :  ''}  key={index} onClick={()=>setViewedFile(value)} >
-                                {value.name}
+                                <p>{value.name}</p>
+                                <IoClose onClick={() => onClose(value.path)}></IoClose>
                             </li> 
                           )
                 })}
