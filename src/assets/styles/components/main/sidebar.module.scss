@@ -63,6 +63,19 @@ body {
         overflow-y: auto;
         margin-top: 9rem;
 
+        &:hover::-webkit-scrollbar-thumb{
+            visibility: visible;
+        }
+
+        &::-webkit-scrollbar{
+            width: 10px;
+        }
+        
+        &::-webkit-scrollbar-thumb{
+            visibility: hidden;
+            background-color: $thumb_color;
+        }
+
         .sidebar_list_drag_over, &.sidebar_list_drag_over {
             background-color: rebeccapurple;
         }
@@ -79,6 +92,7 @@ body {
             display: flex;
             flex-direction: column;
             position: relative;
+
 
             &.sidebar_list_note_opened {
                 background-color: $sidebar_list_note_opened_background_color;
@@ -113,6 +127,7 @@ body {
                 text-align: left;
                 width: 90%;
                 cursor: unset;
+             text-overflow: ellipsis;
                 &:not(:read-only) {
                     cursor: text;
                 }

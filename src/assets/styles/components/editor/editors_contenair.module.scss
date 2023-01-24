@@ -6,6 +6,7 @@
   bottom: 0;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
 
   .tabs_menu{
     height: 40px;
@@ -14,17 +15,50 @@
     padding: 0;
     list-style: none;
     display: flex;
+    
+    align-items: flex-end;
     gap: 3px;
+    overflow-x: auto;
+    position: relative;
+
+    &:hover::-webkit-scrollbar-thumb{
+      visibility: visible;
+        cursor: pointer;
+    }
+    
+    &::-webkit-scrollbar{
+      height: 5px;
+      background-color: $main-color;
+      z-index: 5;
+      &:hover{
+        
+      }
+    }
+    
+    &::-webkit-scrollbar-thumb{
+      background-color: $thumb_color;
+      visibility: hidden;
+      // position: fixed;
+      // bottom: -100px;
+      z-index: 6;
+
+      &:hover{
+        visibility: visible;
+        cursor: pointer;
+      }
+    }
 
     li{
       position: relative;
       display: flex;
-      align-items: center;
+      align-items:center;
       justify-content: start;
       padding: 5px;
       width: 140px;
       background-color: $main_color;
       border-top-right-radius: 20px;
+      flex-shrink: 0;
+      height: 40px !important;
       cursor: pointer;
 
       p{
