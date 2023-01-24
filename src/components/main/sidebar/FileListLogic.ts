@@ -49,6 +49,20 @@ export function changeSortOrderRecursive(files: any, sortOrder: SORT_ORDER = cur
     })
 }
 
+export function pathIsInFiles(files:any, path:string) {
+    if (files.path === path) {
+        return true;
+    }
+    if (files.children) {
+        for (let i = 0; i < files.children.length; i++) {
+            if (pathIsInFiles(files.children[i], path)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 export function setRealName(theFiles:any){
     theFiles.name = pathManage.getName(theFiles.name)
     theFiles.children.forEach((child:any) => {

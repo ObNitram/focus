@@ -391,25 +391,32 @@ export async function openFileAndReadData(filePath: string): Promise<string> {
 export async function saveFile(filePath: string, data: string): Promise<void> {
     return new Promise((resolve, reject) => {
         try {
-            stat(filePath, (err, stats) => {
+            // stat(filePath, (err, stats) => {
+            //     if (err) {
+            //         reject("Error while getting file info: " + err)
+            //         return
+            //     }
+
+            //     if (stats.isDirectory()) {
+            //         reject("Error while getting file info: " + filePath + " is a folder")
+            //         return
+            //     }
+
+            //     writeFile(filePath, data, (err) => {
+            //         if (err) {
+            //             reject("Error while writing file: " + err)
+            //             return
+            //         }
+            //         resolve()
+            //     })
+            // })
+            writeFile(filePath, data, (err) => {
                 if (err) {
-                    reject("Error while getting file info: " + err)
+                    reject("Error while writing file: " + err)
                     return
                 }
-
-                if (stats.isDirectory()) {
-                    reject("Error while getting file info: " + filePath + " is a folder")
-                    return
-                }
-
-                writeFile(filePath, data, (err) => {
-                    if (err) {
-                        reject("Error while writing file: " + err)
-                        return
-                    }
-                    resolve()
+                resolve()
                 })
-            })
         }
         catch (e) {
             reject("Error while writing file: " + e)

@@ -2,13 +2,14 @@ import Editor from '@/components/editor/Editor'
 import { useState, useEffect } from 'react'
 import styles from 'styles/components/editor/editors_contenair.module.scss'
 import { IoClose } from 'react-icons/io5'
-import { BsCircleFill } from 'react-icons/bs'
+import { pathIsInFiles } from '../sidebar/FileListLogic'
 const { ipcRenderer } = window.require('electron')
 
 export type fileType = {
     name:string,
     data:string,
     path:string,
+    isRemoved:boolean
 }
 
 export default function Editor_contenair():JSX.Element {
@@ -37,7 +38,8 @@ export default function Editor_contenair():JSX.Element {
             let newFile:fileType = {
                 name: noteName,
                 data: noteData,
-                path: filePath
+                path: filePath,
+                isRemoved: false
             }
 
             setOpenedFiles([...openedFiles, newFile])
@@ -48,6 +50,17 @@ export default function Editor_contenair():JSX.Element {
             // editor.setEditorState(editorState)
 
             // setIsNoteSaved(true)
+        })
+        ipcRenderer.on('folder-content', (event, folderContent) => {
+            let newOpened:fileType[] = openedFiles.map((value:fileType) => {
+                if (!pathIsInFiles(folderContent, value.path)){
+                    value.isRemoved = true;
+                }else{
+                    value.isRemoved = false;
+                }
+                return value
+            })
+            setOpenedFiles(newOpened)
         })
     }
 
@@ -109,7 +122,7 @@ export default function Editor_contenair():JSX.Element {
             <ul className={styles.tabs_menu}>
                 {openedFiles.map((value:fileType, index:number) => {
                     return( <li className={isViewed(value) ? styles.tab_active :  ''}  key={index} onClick={()=>setViewedFile(value)} >
-                                <p>{value.name.endsWith('.md') ? value.name.slice(0,-3) : value.name}</p>
+                                <p className={value.isRemoved ? styles.p_removed : ''}>{value.name.endsWith('.md') ? value.name.slice(0,-3) : value.name}</p>
                                 <IoClose onClick={() => onClose(value.path)}></IoClose>
                             </li> 
                           )
