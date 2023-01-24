@@ -22,8 +22,6 @@ export default defineConfig({
   },
   plugins: [
     react(),
-    wasm(),
-    topLevelAwait(),
     electron({
       include: [
         'electron',
@@ -51,8 +49,6 @@ export default defineConfig({
   worker: {
     format: "es",
     plugins: [
-      wasm(),
-      topLevelAwait()
     ]
   },
   server: process.env.VSCODE_DEBUG ? (() => {
