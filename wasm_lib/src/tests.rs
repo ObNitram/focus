@@ -1,13 +1,14 @@
 #![cfg(target_arch = "wasm32")]
 
 mod json_data;
-module_path!(../lib);
+
 
 #[cfg(test)]
 mod tests {
   use wasm_bindgen_test::*;
   use crate::lib::*;
-  use crate::json_data::*;
+
+  use crate::tests::json_data::*;
 
 
   #[wasm_bindgen_test]
