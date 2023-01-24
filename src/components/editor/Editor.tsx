@@ -9,6 +9,7 @@ import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
 import {ListPlugin} from '@lexical/react/LexicalListPlugin';
 import {AutoLinkPlugin} from '@lexical/react/LexicalAutoLinkPlugin';
 import {LinkPlugin as LexicalLinkPlugin} from '@lexical/react/LexicalLinkPlugin';
+import {HistoryPlugin} from '@lexical/react/LexicalHistoryPlugin';
 
 import CodeHighlightPlugin from './plugins/CodeHighlightPlugin';
 import { MARKDOWN_TRANSFORMERS } from './plugins/MarkdownTransformersPlugin';
@@ -130,6 +131,7 @@ export default function Editor() {
                     <AutoLinkPlugin matchers={LINK_MATCHERS} />
                     <ClickableLinkPlugin />
                     <LexicalLinkPlugin validateUrl={validateUrl} />
+                    <HistoryPlugin />
                 </div>
             </div>
         </LexicalComposer>

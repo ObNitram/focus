@@ -16,18 +16,20 @@ export interface ButtonProps {
     alt?: string;
     children?: ReactNode;
     active?: boolean;
+    disabled?: boolean;
 }
 
 export default function Button(props: ButtonProps) {
     const {icon, onClick, alt} = props;
     const [isActive, setIsActive] = useState(false);
+    const [isDisabled, setIsDisabled] = useState(false);
 
     useEffect(() => {
         setIsActive(props.active || false);
     }, [props.active]);
 
     return (
-        <button className={`${styles.editor_toolbar_button} ${isActive ? styles.editor_toolbar_button_active : ''}`} onClick={onClick} title={alt}>
+        <button className={`${styles.editor_toolbar_button} ${isActive ? styles.editor_toolbar_button_active : ''} ${isDisabled ? styles.editor_toolbar_button_disabled : ''}`} onClick={onClick} title={alt}>
             {icon}
             {props.children}
         </button>

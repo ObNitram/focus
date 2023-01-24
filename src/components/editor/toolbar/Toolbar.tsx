@@ -42,7 +42,11 @@ import {
     TextNode,
     ElementNode,
     $isParagraphNode,
-    ParagraphNode
+    ParagraphNode,
+    CAN_UNDO_COMMAND,
+    CAN_REDO_COMMAND,
+    UNDO_COMMAND,
+    REDO_COMMAND
 } from "lexical";
 import { mergeRegister } from "@lexical/utils";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from '@lexical/link';
@@ -55,7 +59,7 @@ import Button from "./Button";
 import Selector from "./Selector";
 import Divider from "./Divider";
 
-import { FaIndent, FaLink, FaOutdent } from "react-icons/fa";
+import { FaIndent, FaLink, FaOutdent, FaRedo, FaUndo } from "react-icons/fa";
 import { sanitizeUrl } from "../utils/url";
 
 const dropdownTextFormatItems = [
@@ -160,10 +164,13 @@ export default function Toolbar() {
     const [currTextFormat, setCurrTextFormat] = useState('Normal');
     const [currTextAlign, setCurrTextAlign] = useState('Left');
 
+    const [canUndo, setCanUndo] = useState(false);
+    const [canRedo, setCanRedo] = useState(false);
+
     const dropdownTextFormatRef = useRef<HTMLDivElement>(null);
     const dropdownTextAlignRef = useRef<HTMLDivElement>(null);
 
-    function updateCurrentTextFormatSelection(node: TextNode|ElementNode, parent: ElementNode|null) {
+    function updateCurrentTextFormatSelection(node: TextNode | ElementNode, parent: ElementNode | null) {
         if ($isHeadingNode(parent) || $isHeadingNode(node)) {
             let headingLevel = $isHeadingNode(parent) ? parent.getTag() : node.getTag();
             headingLevel = headingLevel.replace('h', '');
@@ -216,7 +223,7 @@ export default function Toolbar() {
         }
     }
 
-    function updateCurrentTextAlignSelection(node: TextNode|ElementNode, parent: ElementNode|null) {
+    function updateCurrentTextAlignSelection(node: TextNode | ElementNode, parent: ElementNode | null) {
         if ($isParagraphNode(parent) || $isParagraphNode(node)) {
             let textAlign = $isParagraphNode(parent) ? getAlignmentFromNumber(parent.getFormat()) : getAlignmentFromNumber(node.getFormat());
 
@@ -268,14 +275,32 @@ export default function Toolbar() {
     }, [activeEditor]);
 
     useEffect(() => {
-        return editor.registerCommand(
-            SELECTION_CHANGE_COMMAND,
-            (_payload, newEditor) => {
-                updateToolbar();
-                setActiveEditor(newEditor);
-                return false;
-            },
-            COMMAND_PRIORITY_CRITICAL,
+        return mergeRegister(
+            editor.registerCommand(
+                SELECTION_CHANGE_COMMAND,
+                (_payload, newEditor) => {
+                    updateToolbar();
+                    setActiveEditor(newEditor);
+                    return false;
+                },
+                COMMAND_PRIORITY_CRITICAL,
+            ),
+            editor.registerCommand(
+                CAN_UNDO_COMMAND,
+                (payload) => {
+                    setCanUndo(payload);
+                    return false;
+                },
+                COMMAND_PRIORITY_CRITICAL,
+            ),
+            editor.registerCommand(
+                CAN_REDO_COMMAND,
+                (payload) => {
+                    setCanRedo(payload);
+                    return false;
+                },
+                COMMAND_PRIORITY_CRITICAL,
+            ),
         );
     }, [editor, updateToolbar]);
 
@@ -454,8 +479,20 @@ export default function Toolbar() {
         setDropdownTextAlignClosed(!dropdownTextAlignClosed);
     }
 
+    function handleUndo() {
+        activeEditor.dispatchCommand(UNDO_COMMAND, undefined);
+    }
+
+    function handleRedo() {
+        activeEditor.dispatchCommand(REDO_COMMAND, undefined);
+    }
+
     return (
         <div className={styles.editor_toolbar}>
+            <Button disabled={!canUndo} onClick={handleUndo} alt="Undo (Ctrl+Z)" icon={<FaUndo />} />
+            <Button disabled={!canRedo} onClick={handleRedo} alt="Redo (Ctrl+Y)" icon={<FaRedo />} />
+            <Divider />
+
             <Selector title={currTextFormat} closed={dropdownTextFormatClosed} items={dropdownTextFormatItems} onItemSelect={handleDropdownTextFormatItemCLick} onClick={handleTextFormatBtnClick} alt="Text format" ref={dropdownTextFormatRef} />
             <Button onClick={() => { editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold"); }} alt="Bold (Ctrl+B)" active={isBold}>B</Button>
             <Button onClick={() => { editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic"); }} alt="Italic (Ctrl+I)" active={isItalic}>I</Button>
