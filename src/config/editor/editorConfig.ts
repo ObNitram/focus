@@ -68,6 +68,7 @@ const editorConfig = {
   namespace: "my-editor",
   theme,
   nodes: [...EditorNodes],
+  editorState : ''
 };
 
 export default editorConfig;

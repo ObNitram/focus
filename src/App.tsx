@@ -7,6 +7,7 @@ import { SelectedFilesContext } from './context/selectedFilesContext'
 import Editor from "./components/editor/Editor"
 import Sidebar from "./components/main/sidebar/Sidebar"
 import MenuBar from './components/main/menubar/MenuBar'
+import Editor_contenair from './components/main/editors_contenair/Editor_contenair'
 
 
 const App: React.FC = () => {
@@ -24,7 +25,7 @@ const App: React.FC = () => {
         <MenuBar/>
         <div className={styles.appContenair}>
           <Sidebar  />
-          <Editor />
+          <Editor_contenair/>      
         </div>
       </SelectedFilesContext.Provider>
     </div>

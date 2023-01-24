@@ -67,25 +67,17 @@ export function showInExplorer(folderPath: string): void {
     return FileSystemModule.showInExplorer(folderPath)
 }
 
-export function openFile(filePath: string): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-        if (currentOpenedNotePath) {
-            // TODO: save current note
-            currentOpenedNotePath = null
-        }
+export function openFile(filePath: string): Promise<string[]> {
+    return new Promise<string[]>((resolve, reject) => {
         FileSystemModule.openFileAndReadData(filePath).then((value) => {
-            currentOpenedNotePath = filePath
-            resolve(value)
+            resolve([value, filePath])
         }).catch((reason) => reject(reason))
     })
 }
 
-export function saveOpenedFile(data: string, closeFile: boolean = false): Promise<void> {
+export function saveFile(data: string, path:string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-        FileSystemModule.saveFile(currentOpenedNotePath, data).then(() => {
-            if (closeFile) {
-                currentOpenedNotePath = null
-            }
+        FileSystemModule.saveFile(path, data).then(() => {
             resolve()
         }).catch((reason) => reject(reason))
     })

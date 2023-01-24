@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from 'react';
+import {Dispatch, SetStateAction, useEffect, useRef, useState} from 'react';
 
 import styles from "styles/components/editor/editor.module.scss";
 
@@ -10,6 +10,7 @@ import {ListPlugin} from '@lexical/react/LexicalListPlugin';
 import {AutoLinkPlugin} from '@lexical/react/LexicalAutoLinkPlugin';
 import {LinkPlugin as LexicalLinkPlugin} from '@lexical/react/LexicalLinkPlugin';
 import {HistoryPlugin} from '@lexical/react/LexicalHistoryPlugin';
+import {OnChangePlugin} from '@lexical/react/LexicalOnChangePlugin'
 
 import CodeHighlightPlugin from './plugins/CodeHighlightPlugin';
 import { MARKDOWN_TRANSFORMERS } from './plugins/MarkdownTransformersPlugin';
@@ -22,101 +23,75 @@ import {validateUrl} from './utils/url';
 import editorConfig from "../../config/editor/editorConfig";
 
 import Toolbar from './toolbar/Toolbar';
-import NoteTitleBar from './NoteTitleBar';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import { fileType } from '../main/editors_contenair/Editor_contenair';
+import { EditorState } from 'lexical';
 
 const { ipcRenderer } = window.require('electron')
+
+export interface Editor_Props {
+    active: boolean,
+    file:fileType,
+    addUnsavedFiles: (path:string) => void,
+    removeUnsavedFiles: (path:string) => void,
+}
 
 function Placeholder() {
     return <div className={styles.editor_inner_placeholder}>Enter some plain text...</div>;
 }
 
-export default function Editor() {
+export default function Editor(this:any, props:Editor_Props) {
     const refEditorContenair = useRef<HTMLDivElement>(null)
 
-    const [noteName, setNoteName] = useState('Untitled')
+    const [noteName, setNoteName] = useState(props.file.name)
     const [isNoteSaved, setIsNoteSaved] = useState(true)
 
-    function OpenedNoteManagementPlugin() {
-        const [editor] = useLexicalComposerContext()
+    const editorStateRef = useRef<EditorState>()
 
-        let data: string|null = null
+    editorConfig.editorState = props.file.data
 
-        function setupEvents() {
-            ipcRenderer.on('note-opened', (event, noteName, noteData) => {
-                setNoteName(noteName)
-
-                const editorState = editor.parseEditorState(noteData)
-                editor.setEditorState(editorState)
-
+    useEffect(() => {
+        console.log('Editor of ' + props.file.name + ' is mounted !')
+        document.addEventListener('keydown', handleKeyDown);
+        ipcRenderer.on('note_saved', (event, path:string) => {
+            if(path == props.file.path){
                 setIsNoteSaved(true)
-            })
-            ipcRenderer.on('is-note-saved', (event) => {
-                ipcRenderer.send('is-note-saved-answer', isNoteSaved)
-            })
-        }
-
-        useEffect(() => {
-            setupEvents()
-
-            document.addEventListener('keydown', handleKeyDown)
-            data = JSON.stringify(editor.getEditorState().toJSON())
-
-            const removeTextContentListener = editor.registerTextContentListener((textContent) => {
-                setIsNoteSaved(false)
-                data = JSON.stringify(editor.getEditorState().toJSON())
-            })
-
-            return () => {
-                ipcRenderer.removeAllListeners('note-opened')
-                ipcRenderer.removeAllListeners('is-note-saved')
-                removeTextContentListener()
-
-                document.removeEventListener('keydown', handleKeyDown)
+                props.removeUnsavedFiles(props.file.path)
             }
-        }, [editor])
-
-        const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === 's' && (event.ctrlKey || event.metaKey)) {
-                event.preventDefault()
-                saveNote()
-            }
+        })
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown)
+            ipcRenderer.removeAllListeners('note_saved')
         }
+    }, [isNoteSaved, props.active])
 
-        function saveNote() {
-            if(!data) return
-            ipcRenderer.send('save-note', data)
-            setIsNoteSaved(true)
+    const handleKeyDown = (event: KeyboardEvent) => {
+        if (event.key === 's' && (event.ctrlKey || event.metaKey)) {
+            event.preventDefault()
+            saveNote()
         }
-
-        function getData() {
-            const editorState = editor.getEditorState()
-            const data = editorState.toJSON()
-            console.log(data)
-        }
-
-        return (
-            <div className={styles.buttonGetData}>
-                {/* TODO: Remove these debug btns */}
-                <button onClick={() => { getData() }} >Get data</button>
-                <button onClick={() => { saveNote() }} >Save Note</button>
-            </div>
-        )
     }
 
-    // useEffect(() => {
-    //     if(!refEditorContenair || !refEditorContenair.current) return
-    //     console.log(props.widthSideBar)
-    //     refEditorContenair.current.style.left = props.widthSideBar
-    //     refEditorContenair.current.style.width = 'calc(100% - ' + props.widthSideBar +')'
-    //     console.log('calc(100% - ' + props.widthSideBar +')')
-    // }, [refEditorContenair, props.widthSideBar])
+    function saveNote() {
+        console.log('Save of ' + props.file.name + ' is asked !\n' + 
+    
+        ' isNoteSaved is ' + isNoteSaved +
+        ' IsActive  is ' + props.active );
+        if(isNoteSaved || !editorStateRef || !editorStateRef.current || !props.active ) return
+        console.log('Save of ' + props.file.name + ' is send to server')
+        ipcRenderer.send('save-note', JSON.stringify(editorStateRef.current.toJSON()), props.file.path)
+    }
+
+    const handleChange = (editorState:EditorState) => {
+        editorStateRef.current = editorState
+        setIsNoteSaved(false)
+        props.addUnsavedFiles(props.file.path)
+    }
 
     return (
         <LexicalComposer initialConfig={editorConfig}>
-            <div className={styles.editor_container} ref={refEditorContenair}>
-                <NoteTitleBar noteName={noteName} noteSaved={isNoteSaved} />
-                <Toolbar />
+            <div className={`${styles.editor_container} ${props.active ? '' : styles.inactive}`} ref={refEditorContenair}>
+                <Toolbar isSaved={isNoteSaved}/>
 
                 <div className={styles.editor_inner}>
                     <RichTextPlugin
@@ -124,7 +99,7 @@ export default function Editor() {
                         placeholder={<Placeholder />}
                         ErrorBoundary={LexicalErrorBoundary}
                     />
-                    <OpenedNoteManagementPlugin />
+                    {/* <OpenedNoteManagementPlugin /> */}
                     <ListPlugin />
                     <CodeHighlightPlugin />
                     <MarkdownShortcutPlugin transformers={MARKDOWN_TRANSFORMERS} />
@@ -132,6 +107,7 @@ export default function Editor() {
                     <ClickableLinkPlugin />
                     <LexicalLinkPlugin validateUrl={validateUrl} />
                     <HistoryPlugin />
+                    <OnChangePlugin onChange={(editorState:EditorState) => handleChange(editorState)} ignoreSelectionChange={true} />
                 </div>
             </div>
         </LexicalComposer>
