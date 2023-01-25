@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useLayoutEffect, useState } from 'react'
 const { ipcRenderer } = window.require('electron')
 import './assets/styles/index.scss'
 import styles from 'styles/app.module.scss'
@@ -13,10 +13,6 @@ import Editor_contenair from './components/main/editors_contenair/Editor_contena
 
 const App: React.FC = () => {
   const [selectedFiles, setSelectedFiles] = useState<string[]>([])
-  
-  useEffect(() => {
-    ipcRenderer.send('get_saved_opened_files')
-  }, [])
 
   useEffect(() => {
     console.log(selectedFiles)
