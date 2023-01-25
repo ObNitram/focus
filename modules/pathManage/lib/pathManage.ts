@@ -1,8 +1,9 @@
-const upath = require ('upath')
-const Path = require('path')
+
+import * as Path from 'path'
+import {normalizeTrim, normalizeSafe} from 'upath'
 
 export function getName(path:string):string{
-    let transformedPath = upath.normalizeTrim(path)
+    let transformedPath = normalizeTrim(path)
     let tableElem:string[] = transformedPath.split('/');
     return tableElem.at(-1) as string
 }
@@ -13,7 +14,7 @@ export function getParentPath(path:string){
 }
 
 export function convertCrossPath(path:string):string{
-    return upath.normalizeSafe(path)
+    return normalizeSafe(path)
 }
 
 export function getSeperatorOfSystem():string{
