@@ -1,9 +1,11 @@
 import Editor from '@/components/editor/Editor'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import styles from 'styles/components/editor/editors_contenair.module.scss'
 import { IoClose } from 'react-icons/io5'
 import { pathIsInFiles } from '../sidebar/FileListLogic'
 import { normalizePathname } from '@remix-run/router'
+
+import { SelectedFilesContext } from '@/context/selectedFilesContext'
 const { ipcRenderer } = window.require('electron')
 
 export type fileType = {
@@ -18,6 +20,7 @@ export default function Editor_contenair():JSX.Element {
     const [viewedFile, setViewedFile] = useState<fileType>()
     const [unsavedFiles, setUnsavedFiles] = useState<Set<string>>(new Set())
 
+    let selectedFilesContext = useContext(SelectedFilesContext);
     
     const isViewed = (fileName:fileType) => {
         if(!viewedFile) return false
@@ -65,6 +68,10 @@ export default function Editor_contenair():JSX.Element {
                 value.isRemoved = false;
             }
             return value
+        })
+
+        let newSelected = selectedFilesContext?.[0].map((path:string) => {
+            return pathIsInFiles(folderContent, path)
         })
         setOpenedFiles(newOpened)
     }
