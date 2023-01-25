@@ -21,7 +21,7 @@ import * as VaultManagement from './modules/VaultManagementModule'
 import * as WindowsManagement from './modules/WindowsManagement'
 import * as printMessage from './modules/OutputModule'
 import * as MarkdownConverter from './modules/markdownConversion/MarkdownConversionModule'
-import { initConfig, saveInSettingPathVault, initGeneralConfig, saveSizeSideBar, getSizeSidebar } from './modules/ManageConfig'
+import { initConfig, saveInSettingPathVault, initGeneralConfig, saveSizeSideBar, getSizeSidebar, saveOpenedFiles, getSavedOpenedFiles } from './modules/ManageConfig'
 import { removeMD } from './modules/FileSystemModule'
 
 import * as pathManage from 'pathmanage'
@@ -247,7 +247,19 @@ function setupEvents() {
 
   ipcMain.on('closeApp', () => {
     printMessage.printLog('Close application is asked')
-    closeApp();
+    mainWindow?.webContents.send('get_opened_files')
+    ipcMain.once('opened_files_response', (event:Electron.IpcMainEvent, paths:string[]) => {
+      printMessage.printLog('Opened responses')
+      if(paths.length == 0){
+        closeApp()
+      }else{
+        saveOpenedFiles(paths).then((value:string) => {
+          printMessage.printOK(value)
+        }).catch((reason:string) => {
+          printMessage.printError(reason)
+        }).finally(() => closeApp())
+      }
+    })
   })
 
   ipcMain.on('maximizeWindow', (event) => {
@@ -274,6 +286,11 @@ function setupEvents() {
     printMessage.printLog('Open link asked: ' + link)
 
     shell.openExternal(link)
+  })
+
+  ipcMain.on('get_saved_opened_files', () => {
+    printMessage.printINFO('Saved opened files is asked!')
+    mainWindow.webContents.send('saved_opened_files', getSavedOpenedFiles())
   })
 }
 

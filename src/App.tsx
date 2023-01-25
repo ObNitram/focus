@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
+const { ipcRenderer } = window.require('electron')
 import './assets/styles/index.scss'
 import styles from 'styles/app.module.scss'
 
@@ -13,6 +14,21 @@ import Editor_contenair from './components/main/editors_contenair/Editor_contena
 const App: React.FC = () => {
   const [selectedFiles, setSelectedFiles] = useState<string[]>([])
   
+  useEffect(() => {
+    let savedOpenedFiles:string[] = []
+    ipcRenderer.send('get_saved_opened_files')
+    ipcRenderer.once('saved_opened_files', (event, value:string[]) => {
+      console.log('Old opened files is ' + value)
+      let i = 50;
+      value.forEach((path:string) => {
+        setTimeout(() => {
+          ipcRenderer.send('open-note', path)
+        }, i);
+        i += 50;
+      })
+    })
+  }, [])
+
   useEffect(() => {
     console.log(selectedFiles)
   }, [selectedFiles])

@@ -1,5 +1,5 @@
 import { shell } from 'electron'
-import { cp, mkdir, readdir, readFile, rename, rm, stat, writeFile } from 'original-fs'
+import { cp, fstat, mkdir, readdir, readFile, rename, rm, stat, writeFile, existsSync } from 'original-fs'
 import { join } from 'path'
 import * as printMessage from './OutputModule'
 
@@ -440,4 +440,10 @@ export function convertAllCrossPath(file:File){
         return convertAllCrossPath(value)
     })
     return file
+}
+
+export function removeNonExistentPath(paths:string[]):string[]{
+    return paths.filter((path) => {
+        return existsSync(path)
+    })
 }

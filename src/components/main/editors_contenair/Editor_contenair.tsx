@@ -23,6 +23,7 @@ export default function Editor_contenair():JSX.Element {
         return viewedFile.path == fileName.path
     }
 
+
     function setupEvents() {
         ipcRenderer.on('note-opened', (event, noteName, noteData, filePath) => {
             console.log('opened file, noteName is '  + noteName)
@@ -44,12 +45,6 @@ export default function Editor_contenair():JSX.Element {
 
             setOpenedFiles([...openedFiles, newFile])
             setViewedFile(newFile)
-            // setNoteName(noteName)
-
-            // const editorState = editor.parseEditorState(noteData)
-            // editor.setEditorState(editorState)
-
-            // setIsNoteSaved(true)
         })
         ipcRenderer.on('folder-content', (event, folderContent) => {
             let newOpened:fileType[] = openedFiles.map((value:fileType) => {
@@ -62,6 +57,12 @@ export default function Editor_contenair():JSX.Element {
             })
             setOpenedFiles(newOpened)
         })
+        ipcRenderer.on('get_opened_files', (event:Electron.IpcRendererEvent) => {
+            console.log('getopenedfiles asked')
+            event.sender.send('opened_files_response', openedFiles.map((value:fileType) => {
+                return value.path
+            }))
+        }) 
     }
 
     useEffect(() => {
@@ -69,6 +70,7 @@ export default function Editor_contenair():JSX.Element {
 
         return () => {
             ipcRenderer.removeAllListeners('note-opened')
+            ipcRenderer.removeAllListeners('get_opened_files')
         }
     })
 

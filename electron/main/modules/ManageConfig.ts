@@ -2,17 +2,20 @@ import fs from 'fs'
 import {app} from 'electron'
 import * as outPut from './OutputModule'
 import * as vaultManagement from './VaultManagementModule'
+import * as FileSystemModule from './FileSystemModule'
+import { convertCrossPath } from 'pathmanage'
 
-const pathConfigFolder:string = app.getPath('appData')+ '/focus/'
-const vaultConfigFileName:string = 'vaultConfig.json'
-const generalConfigFileName: string = 'generalConfig.json'
+const pathConfigFolder:string = convertCrossPath(app.getPath('appData')+ '/focus/')
+const vaultConfigFileName:string = convertCrossPath('vaultConfig.json')
+const generalConfigFileName: string = convertCrossPath('generalConfig.json')
 
 type vaultConfigFileNameType = {
     location:string;
 }
 
 type generalConfigType = {
-    size_sidebar: number
+    size_sidebar: number,
+    openedFiles: string[]
 }
 
 let generalConfig:generalConfigType|null = null
@@ -48,7 +51,7 @@ export function initConfig(){
         try{
             outPut.printINFO('Try to create ' + pathConfigFolder+vaultConfigFileName+ '...')
             fs.writeFileSync(pathConfigFolder+vaultConfigFileName, JSON.stringify({
-                location: null
+                location: null,
             }))
             outPut.printOK('File created !')
         }catch(error){
@@ -86,7 +89,8 @@ export function initGeneralConfig():boolean{
         try{
             outPut.printINFO('Try to create ' + pathConfigFolder+generalConfigFileName+ '...')
             fs.writeFileSync(pathConfigFolder+generalConfigFileName, JSON.stringify({
-                size_sidebar: 300
+                size_sidebar: 300,
+                openedFiles: []
             }))
             outPut.printOK('File created !')
         }catch(error){
@@ -104,6 +108,7 @@ export function initGeneralConfig():boolean{
     if(data){
         try {
             let res:generalConfigType = JSON.parse(data)
+            res.openedFiles = FileSystemModule.removeNonExistentPath(res.openedFiles)
             generalConfig = res
             outPut.printOK('Config is OK!')
             return true
@@ -163,4 +168,27 @@ export async function saveSizeSideBar(newSize:number):Promise<string>{
         }
         resolve('Size of sidebar is saved')
     })
+}
+
+export async function saveOpenedFiles(paths:string[]):Promise<string>{
+    return new Promise((resolve, reject) => {
+        outPut.printINFO('Try to save user\'s opened files.')
+        if(paths.length == 0){
+            reject('There is no file path to save!')
+        }
+        if(initGeneralConfig() == false){
+            reject('An error occur, the config is corrupted. User\'s size of sidebar not saved!')
+        }
+        generalConfig.openedFiles = paths
+        try{
+            fs.writeFileSync(pathConfigFolder+generalConfigFileName, JSON.stringify(generalConfig))
+        }catch(error){
+            reject('An error occured while trying to save general config in file system.')
+        }
+        resolve('Opened files is saved in setting!')
+    })
+}
+
+export function getSavedOpenedFiles():string[]{
+    return FileSystemModule.removeNonExistentPath(generalConfig.openedFiles)
 }
