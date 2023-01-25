@@ -5,7 +5,6 @@ import { printLog } from './OutputModule';
 import * as pathManage from 'pathmanage'
 
 let pathVault: string | null = null;
-let currentOpenedNotePath: string | null = null;
 
 export function getPathVault() {
     return pathVault
@@ -83,34 +82,5 @@ export function saveFile(data: string, path:string): Promise<void> {
     })
 }
 
-export function getOpenedFilePath(): string | null {
-    return currentOpenedNotePath
-}
-
-/**
- * Show a dialog to the user to confirm if he wants to continue without saving the current note
- * @returns {boolean} true if the user wants to continue, false otherwise
- */
-export function alertUserNoteNotSaved(): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
-        if (currentOpenedNotePath) {
-            dialog.showMessageBox({
-                type: 'warning',
-                title: 'Note not saved',
-                message: 'You have unsaved changes in your note. Do you really want to continue?\nIf you continue, your changes will be lost.',
-                buttons: ['Cancel', 'Continue']
-            }).then((value) => {
-                if (value.response === 1) {
-                    currentOpenedNotePath = null
-                    resolve(true)
-                }
-                resolve(false)
-            })
-        }
-        else {
-            resolve(false)
-        }
-    })
-}
 
 export default FileSystemModule.File

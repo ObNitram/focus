@@ -247,32 +247,7 @@ function setupEvents() {
 
   ipcMain.on('closeApp', () => {
     printMessage.printLog('Close application is asked')
-
-    if (VaultManagement.getOpenedFilePath() !== null) {
-      mainWindow?.webContents.send('is-note-saved')
-
-      ipcMain.once('is-note-saved-answer', (event, isSaved) => {
-        printMessage.printLog('Note is saved : ' + isSaved)
-        if (isSaved) {
-          closeApp();
-          return
-        }
-        printMessage.printLog('Note is not saved, ask user if he wants to continue')
-        VaultManagement.alertUserNoteNotSaved().then((userWantsToContinue) => {
-          if (!userWantsToContinue) {
-            printMessage.printLog('User canceled the action')
-            return
-          }
-          printMessage.printLog('User wants to continue, close application')
-          closeApp();
-        })
-          .catch((err) => {
-            printMessage.printError(err)
-          })
-      })
-    } else {
-      closeApp();
-    }
+    closeApp();
   })
 
   ipcMain.on('maximizeWindow', (event) => {
