@@ -10,14 +10,14 @@
   "scripts": {
     "install": "cd modules/pathManage && npm run build",
     "dev": "vite",
-    "build": "tsc && vite build && electron-builder",
-    "build-wasm": "cd ./wasm_lib/ && ./build.sh && cd ../"
+    "build": "tsc && vite build && electron-builder"
   },
   "engines": {
     "node": "^14.18.0 || >=16.0.0"
   },
   "dependencies": {
     "@lexical/code": "^0.7.6",
+    "@lexical/link": "^0.7.6",
     "@lexical/list": "^0.7.6",
     "@lexical/markdown": "^0.7.6",
     "@lexical/react": "^0.7.6",
@@ -32,10 +32,11 @@
     "pathmanage": "file:modules/pathManage",
     "react-icons": "^4.7.1",
     "react-router-dom": "^6.5.0",
-    "upath": "^2.0.1",
-    "webassembly": "^0.9.0"
+    "upath": "^2.0.1"
   },
   "devDependencies": {
+    "@lexical/clipboard": "^0.7.6",
+    "@types/node": "^18.11.18",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.9",
     "@vitejs/plugin-react": "^3.0.0",
@@ -47,9 +48,7 @@
     "typescript": "^4.9.3",
     "vite": "^4.0.0",
     "vite-electron-plugin": "^0.5.2",
-    "vite-plugin-electron-renderer": "^0.11.3",
-    "vite-plugin-top-level-await": "^1.2.2",
-    "vite-plugin-wasm": "^3.1.1"
+    "vite-plugin-electron-renderer": "^0.11.3"
   },
   "debug": {
     "env": {

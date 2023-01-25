@@ -7,7 +7,7 @@ import { customStart, loadViteEnv } from 'vite-electron-plugin/plugin'
 import renderer from 'vite-plugin-electron-renderer'
 import pkg from './package.json'
 
-import wasm from "vite-plugin-wasm";
+
 import topLevelAwait from "vite-plugin-top-level-await";
 
 rmSync(path.join(__dirname, 'dist-electron'), { recursive: true, force: true })
@@ -22,8 +22,6 @@ export default defineConfig({
   },
   plugins: [
     react(),
-    wasm(),
-    topLevelAwait(),
     electron({
       include: [
         'electron',
@@ -51,8 +49,6 @@ export default defineConfig({
   worker: {
     format: "es",
     plugins: [
-      wasm(),
-      topLevelAwait()
     ]
   },
   server: process.env.VSCODE_DEBUG ? (() => {
