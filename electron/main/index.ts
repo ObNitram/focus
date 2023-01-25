@@ -250,15 +250,11 @@ function setupEvents() {
     mainWindow?.webContents.send('get_opened_files')
     ipcMain.once('opened_files_response', (event:Electron.IpcMainEvent, paths:string[]) => {
       printMessage.printLog('Opened responses')
-      if(paths.length == 0){
-        closeApp()
-      }else{
-        saveOpenedFiles(paths).then((value:string) => {
-          printMessage.printOK(value)
-        }).catch((reason:string) => {
-          printMessage.printError(reason)
-        }).finally(() => closeApp())
-      }
+      saveOpenedFiles(paths).then((value:string) => {
+        printMessage.printOK(value)
+      }).catch((reason:string) => {
+        printMessage.printError(reason)
+      }).finally(() => closeApp())
     })
   })
 

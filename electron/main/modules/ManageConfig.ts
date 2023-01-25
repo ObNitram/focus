@@ -174,7 +174,7 @@ export async function saveOpenedFiles(paths:string[]):Promise<string>{
     return new Promise((resolve, reject) => {
         outPut.printINFO('Try to save user\'s opened files.')
         if(paths.length == 0){
-            reject('There is no file path to save!')
+            resolve('There is no file path to save!')
         }
         if(initGeneralConfig() == false){
             reject('An error occur, the config is corrupted. User\'s size of sidebar not saved!')
