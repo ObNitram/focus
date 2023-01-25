@@ -290,7 +290,26 @@ function setupEvents() {
 
   ipcMain.on('get_saved_opened_files', () => {
     printMessage.printINFO('Saved opened files is asked!')
-    mainWindow.webContents.send('saved_opened_files', getSavedOpenedFiles())
+    let saved_opened_files = getSavedOpenedFiles()
+    let dataToSend = []
+    Promise.all(saved_opened_files.map(path => {
+        return VaultManagement.openFile(path)
+        .then(([noteData, filePath]:string[]) => {
+            return MarkdownConverter.convertMarkdownToJSON(noteData)
+            .then((noteData) => {
+              return VaultManagement.getNoteOrFolderInfo(path, false)
+              .then((note) => {
+                  printMessage.printOK(path + ' opened!!')
+                  dataToSend.push([note.name, noteData, filePath])
+              })
+            })
+        })
+    })).then(() => {
+        mainWindow?.webContents.send('saved_opened_files', dataToSend)
+    })
+    .catch((err) => {
+        printMessage.printError(err)
+    })
   })
 }
 

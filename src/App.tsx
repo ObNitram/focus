@@ -15,18 +15,7 @@ const App: React.FC = () => {
   const [selectedFiles, setSelectedFiles] = useState<string[]>([])
   
   useEffect(() => {
-    let savedOpenedFiles:string[] = []
     ipcRenderer.send('get_saved_opened_files')
-    ipcRenderer.once('saved_opened_files', (event, value:string[]) => {
-      console.log('Old opened files is ' + value)
-      let i = 50;
-      value.forEach((path:string) => {
-        setTimeout(() => {
-          ipcRenderer.send('open-note', path)
-        }, i);
-        i += 50;
-      })
-    })
   }, [])
 
   useEffect(() => {

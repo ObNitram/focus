@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import styles from 'styles/components/editor/editors_contenair.module.scss'
 import { IoClose } from 'react-icons/io5'
 import { pathIsInFiles } from '../sidebar/FileListLogic'
+import { normalizePathname } from '@remix-run/router'
 const { ipcRenderer } = window.require('electron')
 
 export type fileType = {
@@ -46,17 +47,8 @@ export default function Editor_contenair():JSX.Element {
             setOpenedFiles([...openedFiles, newFile])
             setViewedFile(newFile)
         })
-        ipcRenderer.on('folder-content', (event, folderContent) => {
-            let newOpened:fileType[] = openedFiles.map((value:fileType) => {
-                if (!pathIsInFiles(folderContent, value.path)){
-                    value.isRemoved = true;
-                }else{
-                    value.isRemoved = false;
-                }
-                return value
-            })
-            setOpenedFiles(newOpened)
-        })
+
+        ipcRenderer.on('folder-content', verifyFolderContent)
         ipcRenderer.on('get_opened_files', (event:Electron.IpcRendererEvent) => {
             console.log('getopenedfiles asked')
             event.sender.send('opened_files_response', openedFiles.map((value:fileType) => {
@@ -65,14 +57,46 @@ export default function Editor_contenair():JSX.Element {
         }) 
     }
 
+    function verifyFolderContent(event:Electron.IpcRendererEvent, folderContent:any){
+        let newOpened:fileType[] = openedFiles.map((value:fileType) => {
+            if (!pathIsInFiles(folderContent, value.path)){
+                value.isRemoved = true;
+            }else{
+                value.isRemoved = false;
+            }
+            return value
+        })
+        setOpenedFiles(newOpened)
+    }
+
     useEffect(() => {
         setupEvents()
 
         return () => {
             ipcRenderer.removeAllListeners('note-opened')
             ipcRenderer.removeAllListeners('get_opened_files')
+            ipcRenderer.removeListener('folder-content', verifyFolderContent)
         }
     })
+
+    useEffect(() => {
+        ipcRenderer.send('get_saved_opened_files')
+        ipcRenderer.once('saved_opened_files', (event, value:string[][]) => {
+            console.log('saved_opened_files receive, data is ' + value)
+            let newOpenedFiles:fileType[] = []
+            value.forEach((elem) => {
+                let newFile:fileType = {
+                    name: elem[0],
+                    data: elem[1],
+                    path: elem[2],
+                    isRemoved: false
+                }
+                newOpenedFiles.push(newFile)
+            })
+            setOpenedFiles(newOpenedFiles)
+            setViewedFile(newOpenedFiles.at(-1))
+        })
+    }, [])
 
     useEffect(() => {
         console.log(openedFiles)
