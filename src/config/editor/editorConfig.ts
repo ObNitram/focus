@@ -5,9 +5,9 @@ import EditorNodes from "../../components/editor/nodes/EditorNodes";
 const theme = {
   ltr: "ltr",
   rtl: "rtl",
-  placeholder: styles.editor_inner_placeholder,
-  paragraph: styles.editor_inner_paragraph,
-  quote: styles.editor_inner_quote,
+  placeholder: `${styles.editor_inner_placeholder}`,
+  paragraph: `${styles.editor_inner_paragraph} editor_paragraph`,
+  quote: 'editor_quote',
   code: styles.editor_inner_code,
   codeHighlight: {
     atrule: styles.editor_inner_codeHighlight_tokenAttr,
@@ -42,23 +42,23 @@ const theme = {
     variable: styles.editor_inner_codeHighlight_tokenVariable
   },
   heading: {
-    h1: styles.editor_inner_heading1,
-    h2: styles.editor_inner_heading2,
-    h3: styles.editor_inner_heading3,
-    h4: styles.editor_inner_heading4,
-    h5: styles.editor_inner_heading5,
-    h6: styles.editor_inner_heading6
+    h1: 'editor_h1',
+    h2: 'editor_h2',
+    h3: 'editor_h3',
+    h4: 'editor_h4',
+    h5: 'editor_h5',
+    h6: 'editor_h6'
   },
   list: {
-    ol: styles.editor_inner_list_ol,
-    ul: styles.editor_inner_list_ul
+    ol: 'editor_ol',
+    ul: 'editor_ul'
   },
   text: {
-    bold: styles.editor_inner_text_bold,
-    italic: styles.editor_inner_text_italic,
-    underline: styles.editor_inner_text_underline
+    bold: 'editor_bold',
+    italic: 'editor_italic',
+    underline: 'editor_underline'
   },
-  link: styles.editor_inner_link
+  link: 'editor_link'
 }
 
 const editorConfig = {

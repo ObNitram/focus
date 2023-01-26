@@ -3,12 +3,6 @@ export type theme = {
         'backgroundColor': string,
         'caret-color' : string,
     }
-    placeholder: {
-        'color': string,
-        'top': string,
-        'left': string,
-        'font-size': string,
-    },
     paragraph: {
         'color': string,
         'margin-left': string,
@@ -111,12 +105,6 @@ export const defaultTheme:theme = {
     general: {
         'backgroundColor': '#1e1e1e',
         'caret-color': '#fff',
-    },
-    placeholder: {
-        'color': '#999',
-        'top': '15px',
-        'left': '10px',
-        'font-size': '15px'
     },
     paragraph: {
         'color': '#fff',

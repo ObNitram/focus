@@ -23,7 +23,6 @@
   }
 
   .editor_inner {
-    background: $editor_inner_background_color;
     position: relative;
     // height: 100%;
     flex-grow: 2;
@@ -31,56 +30,38 @@
     .editor_inner_input {
       min-height: 150px;
       resize: none;
-      font-size: 15px;
       position: relative;
       tab-size: 1;
       outline: 0;
       padding: 15px 10px;
-      caret-color: $editor_inner_input_caret_color;
       height: 100%;
     }
 
     .editor_inner_placeholder {
-      color: $editor_inner_placeholder_color;
+      top: 15px;
+      left: 10px;
       overflow: hidden;
       position: absolute;
       text-overflow: ellipsis;
-      top: 15px;
-      left: 10px;
-      font-size: 15px;
       user-select: none;
       display: inline-block;
       pointer-events: none;
     }
 
     .editor_inner_paragraph {
-      margin: 0;
-      margin-bottom: 8px;
       position: relative;
 
       .editor_inner_text_bold {
-        font-weight: bold;
+ 
       }
 
       .editor_inner_text_italic {
-        font-style: italic;
+   
       }
 
       .editor_inner_text_underline {
-        text-decoration: underline;
+        
       }
-    }
-
-    .editor_inner_quote {
-      margin: 0;
-      margin-left: 20px;
-      margin-bottom: 10px;
-      font-size: 15px;
-      color: $editor_inner_quote_color;
-      border-left-color: $editor_inner_quote_border_color;
-      border-left-width: 4px;
-      border-left-style: solid;
-      padding-left: 16px;
     }
 
     .editor_inner_code {
@@ -141,11 +122,8 @@
     }
 
     .editor_inner_link {
-      color: $editor_inner_link_color;
-      text-decoration: none;
 
       &:hover {
-        text-decoration: underline;
         cursor: pointer;
       }
     }
