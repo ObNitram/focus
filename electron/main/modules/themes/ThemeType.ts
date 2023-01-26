@@ -1,4 +1,4 @@
-export type theme = {
+export type Theme = {
     general: {
         'backgroundColor': string,
         'caret-color' : string,
@@ -84,10 +84,10 @@ export type theme = {
         'font-size': string,
         'color': string,
         'text-decoration': string
-    },
-    linkHover: {
-        'color': string,
-        'text-decoration': string
+        'linkHover': {
+            'color': string,
+            'text-decoration': string
+        },
     },
     ul: {
         'padding-left': string,
@@ -101,7 +101,7 @@ export type theme = {
     }
 }
 
-export const defaultTheme:theme = {
+export const defaultTheme:Theme = {
     general: {
         'backgroundColor': '#1e1e1e',
         'caret-color': '#fff',
@@ -186,11 +186,11 @@ export const defaultTheme:theme = {
     link: {
         'font-size': '15px',
         'color': 'rgb(46 134 255)',
-        'text-decoration': 'none'
-    },
-    linkHover: {
-        'color': 'rgb(46 134 255)',
-        'text-decoration': 'underline'
+        'text-decoration': 'none',
+        'linkHover': {
+            'color': 'rgb(46 134 255)',
+            'text-decoration': 'underline'
+        },
     },
     ul: {
         'padding-left': '14px',
