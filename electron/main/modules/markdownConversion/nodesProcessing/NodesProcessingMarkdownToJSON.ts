@@ -1,4 +1,4 @@
-import { BulletListNodeV1, CodeNodeV1, headingLevel, HeadingNodeV1, LineBreakNodeV1, ListItemNodeV1, ListNode, OrderedListNodeV1, QuoteNodeV1, textFormat, TextNodeV1 } from '../LexicalNodes';
+import { BulletListNodeV1, CodeNodeV1, headingLevel, HeadingNodeV1, LineBreakNodeV1, ListItemNodeV1, ListNode, OrderedListNodeV1, QuoteNodeV1, textFormat, TextNodeV1 } from '../../../model/LexicalNodes';
 
 /**
 * get the number of indents in a line

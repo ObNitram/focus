@@ -6,6 +6,7 @@ import * as vaultManagement from './VaultManagementModule'
 const pathConfigFolder:string = app.getPath('appData')+ '/focus/'
 const vaultConfigFileName:string = 'vaultConfig.json'
 const generalConfigFileName: string = 'generalConfig.json'
+const editorExtraFeaturesConfigFileName:string = 'editorExtraFeaturesConfig.json'
 
 type vaultConfigFileNameType = {
     location:string;
@@ -117,6 +118,22 @@ export function initGeneralConfig():boolean{
     }
 }
 
+export function initConfigEditorExtraFeature(): boolean {
+    outPut.printINFO('Try to init config editor extra feature...')
+    if(! fs.existsSync(pathConfigFolder+editorExtraFeaturesConfigFileName)){
+        outPut.printINFO('Config file '+ pathConfigFolder+editorExtraFeaturesConfigFileName + ' not found !')
+        try{
+            outPut.printINFO('Try to create ' + pathConfigFolder+editorExtraFeaturesConfigFileName+ '...')
+            fs.writeFileSync(pathConfigFolder+editorExtraFeaturesConfigFileName, '{}')
+            outPut.printOK('File created !')
+        }catch(error){
+            outPut.printError('Failed to create the file. Aborting.')
+            return false;
+        }
+    }
+    return true;
+}
+
 
 
 export function saveInSettingPathVault(path:string):boolean{
@@ -163,4 +180,54 @@ export async function saveSizeSideBar(newSize:number):Promise<string>{
         }
         resolve('Size of sidebar is saved')
     })
+}
+
+export function saveEditorExtraFeature(notePath: string, nodePath: string, key: string, value: any) {
+    outPut.printINFO('Try to save editor extra feature...')
+    fs.readFile(pathConfigFolder+editorExtraFeaturesConfigFileName, 'utf8', (err, data) => {
+        if(err){
+            outPut.printError('Failed to read editor extra feature config file !')
+            return
+        }
+        let content: JSON = JSON.parse(data);
+        if(!content[notePath]){
+            content[notePath] = {}
+        }
+        content[notePath][nodePath + '.' + key] = value
+        fs.writeFile(pathConfigFolder+editorExtraFeaturesConfigFileName, JSON.stringify(content), (err) => {
+            if(err){
+                outPut.printError('Failed to save editor extra feature config file !')
+                return
+            }
+            outPut.printOK('Editor extra feature saved !')
+        })
+    })
+}
+
+export function extraFeaturesExtistForNote(notePath: string): Promise<boolean> {
+    outPut.printINFO('Try to check if extra features exist for note...')
+
+    return new Promise((resolve, reject) => {
+        fs.readFile(pathConfigFolder+editorExtraFeaturesConfigFileName, 'utf8', (err, data) => {
+            if(err){
+                outPut.printError('Failed to read editor extra feature config file !')
+                reject(false)
+            }
+            let content: JSON = JSON.parse(data);
+            if(!content[notePath]){
+                resolve(false)
+            }
+            resolve(true)
+        })
+    })
+}
+
+export function getEditorExtraFeature(notePath: string, nodePath: string, key: string): any {
+    outPut.printINFO('Try to get editor extra feature...')
+
+    let content: JSON = JSON.parse(fs.readFileSync(pathConfigFolder+editorExtraFeaturesConfigFileName, 'utf8'));
+    if(!content[notePath]){
+        return null
+    }
+    return content[notePath][nodePath + '.' + key]
 }

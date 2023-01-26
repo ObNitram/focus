@@ -1,4 +1,4 @@
-import { HeadingNodeV1, Node, textFormat, TextNodeV1, ListNode, QuoteNodeV1, ParagraphNodeV1, CodeNodeV1 } from '../LexicalNodes';
+import { HeadingNodeV1, Node, textFormat, TextNodeV1, ListNode, QuoteNodeV1, ParagraphNodeV1, CodeNodeV1 } from '../../../model/LexicalNodes';
 
 function getHeadingLevelNumberFromString(headingLevel: string): number {
     switch (headingLevel) {

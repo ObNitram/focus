@@ -1,4 +1,4 @@
-import { CodeNodeV1, LineBreakNodeV1, ListNode, ParagraphNodeV1, QuoteNodeV1, RootNodeV1, textFormat } from './LexicalNodes';
+import { CodeNodeV1, LineBreakNodeV1, ListNode, ParagraphNodeV1, QuoteNodeV1, RootNodeV1, textFormat } from '../../model/LexicalNodes';
 import * as processNodesToJSON from './nodesProcessing/NodesProcessingMarkdownToJSON';
 import * as processNodesToMarkdown from './nodesProcessing/NodesProcessingJSONToMarkdown';
 
