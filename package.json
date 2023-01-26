@@ -31,6 +31,7 @@
     "original-fs": "^1.2.0",
     "pathmanage": "file:modules/pathManage",
     "react-icons": "^4.7.1",
+    "react-loader-spinner": "^5.3.4",
     "react-router-dom": "^6.5.0",
     "upath": "^2.0.1"
   },

@@ -25,6 +25,8 @@ import { initConfig, saveInSettingPathVault, initGeneralConfig, saveSizeSideBar,
 import { removeMD } from './modules/FileSystemModule'
 
 import * as pathManage from 'pathmanage'
+import { convertThemeForStyle } from './modules/themes/ManageTheme'
+import { defaultTheme } from './modules/themes/ThemeType'
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration()
@@ -306,6 +308,10 @@ function setupEvents() {
     .catch((err) => {
         printMessage.printError(err)
     })
+  })
+
+  ipcMain.on('getTheme', () => {
+    mainWindow?.webContents.send('getTheme_responses', convertThemeForStyle(defaultTheme))
   })
 }
 

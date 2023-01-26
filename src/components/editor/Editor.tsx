@@ -95,7 +95,7 @@ export default function Editor(this:any, props:Editor_Props) {
 
                 <div className={styles.editor_inner}>
                     <RichTextPlugin
-                        contentEditable={<ContentEditable className={styles.editor_inner_input} />}
+                        contentEditable={<ContentEditable className={`${styles.editor_inner_input} editor_general`}/>}
                         placeholder={<Placeholder />}
                         ErrorBoundary={LexicalErrorBoundary}
                     />

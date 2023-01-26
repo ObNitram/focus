@@ -4,6 +4,7 @@ import styles from 'styles/components/editor/editors_contenair.module.scss'
 import { IoClose } from 'react-icons/io5'
 import { pathIsInFiles } from '../sidebar/FileListLogic'
 import { normalizePathname } from '@remix-run/router'
+import { ColorRing } from 'react-loader-spinner'
 
 import { SelectedFilesContext } from '@/context/selectedFilesContext'
 const { ipcRenderer } = window.require('electron')
@@ -19,6 +20,7 @@ export default function Editor_contenair():JSX.Element {
     const [openedFiles, setOpenedFiles] = useState<fileType[]>([])
     const [viewedFile, setViewedFile] = useState<fileType>()
     const [unsavedFiles, setUnsavedFiles] = useState<Set<string>>(new Set())
+    const [themeReceived, setThemeReceived] = useState<boolean>(false)
 
     let selectedFilesContext = useContext(SelectedFilesContext);
     
@@ -103,6 +105,13 @@ export default function Editor_contenair():JSX.Element {
             setOpenedFiles(newOpenedFiles)
             setViewedFile(newOpenedFiles.at(-1))
         })
+        ipcRenderer.send('getTheme')
+        ipcRenderer.once('getTheme_responses', (event, value:string) => {
+            let newStyle = document.createElement('style')
+            newStyle.innerHTML = value
+            document.head.appendChild(newStyle)
+            setThemeReceived(true)
+        })
     }, [])
 
     useEffect(() => {
@@ -150,23 +159,45 @@ export default function Editor_contenair():JSX.Element {
         setUnsavedFiles(newSet) 
     }
 
-    return (
-        <div className={styles.editors_contenair}>
-            <ul className={styles.tabs_menu}>
-                {openedFiles.map((value:fileType, index:number) => {
-                    return( <li className={isViewed(value) ? styles.tab_active :  ''}  key={index} onClick={()=>setViewedFile(value)} >
-                                <p className={value.isRemoved ? styles.p_removed : ''}>{value.name.endsWith('.md') ? value.name.slice(0,-3) : value.name}</p>
-                                <IoClose onClick={() => onClose(value.path)}></IoClose>
-                            </li> 
-                          )
-                })}
-            </ul>
-            { openedFiles.length != 0 ? 
-                openedFiles.map((value:fileType, index:number) => {
-                    return( <Editor key={index} active={isViewed(value)} file={value} addUnsavedFiles={addUnsavedFiles} removeUnsavedFiles={removeUnsavedFiles}></Editor>
-                          )
-                }) 
-                : (<p>Nothing</p>)}
-        </div>
-    )
+    if(themeReceived){
+        return (
+
+            <div className={styles.editors_contenair}>
+                <ul className={styles.tabs_menu}>
+                    {openedFiles.map((value:fileType, index:number) => {
+                        return( <li className={isViewed(value) ? styles.tab_active :  ''}  key={index} onClick={()=>setViewedFile(value)} >
+                                    <p className={value.isRemoved ? styles.p_removed : ''}>{value.name.endsWith('.md') ? value.name.slice(0,-3) : value.name}</p>
+                                    <IoClose onClick={() => onClose(value.path)}></IoClose>
+                                </li> 
+                              )
+                    })}
+                </ul>
+                { openedFiles.length != 0 ? 
+                    openedFiles.map((value:fileType, index:number) => {
+                        return( <Editor key={index} active={isViewed(value)} file={value} addUnsavedFiles={addUnsavedFiles} removeUnsavedFiles={removeUnsavedFiles}></Editor>
+                              )
+                    }) 
+                    : (<p>Nothing</p>)}
+            </div>
+        )
+    }else{
+        return (
+            <div className={styles.editors_contenair}>
+                <div style={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'}}>
+                    <ColorRing
+                        visible={true}
+                        height="100"
+                        width="100"
+                        ariaLabel="blocks-loading"
+                        wrapperStyle={{}}
+                        wrapperClass="blocks-wrapper"
+                        colors={['#8400ff', '#7700e6','#6a00cc','#5c00b3','#4f0099']}
+                    />
+
+                </div>
+            </div>
+        )
+    }
+
+    
 }

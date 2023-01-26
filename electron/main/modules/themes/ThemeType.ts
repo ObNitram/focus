@@ -1,6 +1,6 @@
 export type Theme = {
     general: {
-        'backgroundColor': string,
+        'background-color': string,
         'caret-color' : string,
     }
     paragraph: {
@@ -103,7 +103,7 @@ export type Theme = {
 
 export const defaultTheme:Theme = {
     general: {
-        'backgroundColor': '#1e1e1e',
+        'background-color': '#1e1e1e',
         'caret-color': '#fff',
     },
     paragraph: {
