@@ -42,6 +42,10 @@ export function proceedHeading(headingNode: HeadingNodeV1): string {
     for (let i = 0; i < headingNode.children.length; i++) {
         headingText += proceedText(headingNode.children[i]);
     }
+    if (!headingText.trim()) {
+        return '';
+    }
+    headingText += '\n';
     return '#'.repeat(getHeadingLevelNumberFromString(headingNode.tag)) + ' ' + headingText;
 }
 
@@ -107,7 +111,13 @@ export function proceedQuote(quoteNode: QuoteNodeV1): string {
     }
     let quoteText = addIndentation(quoteNode.indent);
     for (let i = 0; i < quoteNode.children.length; i++) {
-        quoteText += '>' + proceedText(quoteNode.children[i]) + '\n';
+        let quoteTextTemp = proceedText(quoteNode.children[i]);
+        if (quoteTextTemp.trim()) {
+            if (i > 0) {
+                quoteText += '\n';
+            }
+            quoteText += '> ' + proceedText(quoteNode.children[i]);
+        }
     }
     return quoteText
 }

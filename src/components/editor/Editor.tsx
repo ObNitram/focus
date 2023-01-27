@@ -1,4 +1,4 @@
-import {Dispatch, SetStateAction, useEffect, useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 
 import styles from "styles/components/editor/editor.module.scss";
 
@@ -23,7 +23,6 @@ import {validateUrl} from './utils/url';
 import editorConfig from "../../config/editor/editorConfig";
 
 import Toolbar from './toolbar/Toolbar';
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { fileType } from '../main/editors_contenair/Editor_contenair';
 import { EditorState } from 'lexical';
 
@@ -43,7 +42,6 @@ function Placeholder() {
 export default function Editor(this:any, props:Editor_Props) {
     const refEditorContenair = useRef<HTMLDivElement>(null)
 
-    const [noteName, setNoteName] = useState(props.file.name)
     const [isNoteSaved, setIsNoteSaved] = useState(true)
 
     const editorStateRef = useRef<EditorState>()
@@ -73,8 +71,8 @@ export default function Editor(this:any, props:Editor_Props) {
     }
 
     function saveNote() {
-        console.log('Save of ' + props.file.name + ' is asked !\n' + 
-    
+        console.log('Save of ' + props.file.name + ' is asked !\n' +
+
         ' isNoteSaved is ' + isNoteSaved +
         ' IsActive  is ' + props.active );
         if(isNoteSaved || !editorStateRef || !editorStateRef.current || !props.active ) return

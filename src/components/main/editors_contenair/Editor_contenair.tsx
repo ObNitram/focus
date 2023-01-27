@@ -17,7 +17,7 @@ export default function Editor_contenair():JSX.Element {
     const [viewedFile, setViewedFile] = useState<fileType>()
     const [unsavedFiles, setUnsavedFiles] = useState<Set<string>>(new Set())
 
-    
+
     const isViewed = (fileName:fileType) => {
         if(!viewedFile) return false
         return viewedFile.path == fileName.path
@@ -89,7 +89,7 @@ export default function Editor_contenair():JSX.Element {
         console.log('viewed file has change')
         console.log(viewedFile)
     }, [viewedFile])
-    
+
     const onClose = (path:string) => {
         if(unsavedFiles.has(path)){
             const choice = window.confirm('This note is not saved. Do you really want to close it?')
@@ -114,7 +114,7 @@ export default function Editor_contenair():JSX.Element {
     const removeUnsavedFiles = (path:string) => {
         let newSet:Set<string> = new Set(unsavedFiles)
         newSet.delete(path)
-        setUnsavedFiles(newSet) 
+        setUnsavedFiles(newSet)
     }
 
     return (
@@ -124,15 +124,15 @@ export default function Editor_contenair():JSX.Element {
                     return( <li className={isViewed(value) ? styles.tab_active :  ''}  key={index} onClick={()=>setViewedFile(value)} >
                                 <p className={value.isRemoved ? styles.p_removed : ''}>{value.name.endsWith('.md') ? value.name.slice(0,-3) : value.name}</p>
                                 <IoClose onClick={() => onClose(value.path)}></IoClose>
-                            </li> 
+                            </li>
                           )
                 })}
             </ul>
-            { openedFiles.length != 0 ? 
+            { openedFiles.length != 0 ?
                 openedFiles.map((value:fileType, index:number) => {
                     return( <Editor key={index} active={isViewed(value)} file={value} addUnsavedFiles={addUnsavedFiles} removeUnsavedFiles={removeUnsavedFiles}></Editor>
                           )
-                }) 
+                })
                 : (<p>Nothing</p>)}
         </div>
     )
