@@ -231,3 +231,73 @@ export function getEditorExtraFeature(notePath: string, nodePath: string, key: s
     }
     return content[notePath][nodePath + '.' + key]
 }
+
+export function updateEditorExtraFeaturesPath(oldPath: string, newPath: string): Promise<string> {
+    outPut.printINFO('Try to update editor extra features path...')
+
+    return new Promise((resolve, reject) => {
+        fs.readFile(pathConfigFolder+editorExtraFeaturesConfigFileName, 'utf8', (err, data) => {
+            if(err){
+                reject('Failed to read editor extra feature config file !')
+            }
+            let content: JSON = JSON.parse(data);
+            if(!content[oldPath]){
+                resolve('No extra features for this note')
+            }
+            content[newPath] = content[oldPath]
+            delete content[oldPath]
+            fs.writeFile(pathConfigFolder+editorExtraFeaturesConfigFileName, JSON.stringify(content), (err) => {
+                if(err){
+                    reject('Failed to save editor extra feature config file !')
+                }
+                resolve('Editor extra feature saved !')
+            })
+        })
+    })
+}
+
+export function deleteEditorExtraFeaturesPath(notePath: string): Promise<string> {
+    outPut.printINFO('Try to delete editor extra features path...')
+
+    return new Promise((resolve, reject) => {
+        fs.readFile(pathConfigFolder+editorExtraFeaturesConfigFileName, 'utf8', (err, data) => {
+            if(err){
+                reject('Failed to read editor extra feature config file !')
+            }
+            let content: JSON = JSON.parse(data);
+            if(!content[notePath]){
+                resolve('No extra features for this note')
+            }
+            delete content[notePath]
+            fs.writeFile(pathConfigFolder+editorExtraFeaturesConfigFileName, JSON.stringify(content), (err) => {
+                if(err){
+                    reject('Failed to save editor extra feature config file !')
+                }
+                resolve('Editor extra feature saved !')
+            })
+        })
+    })
+}
+
+export function copyEditorExtraFeaturesNoteToNewPath(path: string, newPath: string): Promise<string> {
+    outPut.printINFO('Try to copy editor extra features note to new path...')
+
+    return new Promise((resolve, reject) => {
+        fs.readFile(pathConfigFolder+editorExtraFeaturesConfigFileName, 'utf8', (err, data) => {
+            if(err){
+                reject('Failed to read editor extra feature config file !')
+            }
+            let content: JSON = JSON.parse(data);
+            if(!content[path]){
+                resolve('No extra features for this note')
+            }
+            content[newPath] = content[path]
+            fs.writeFile(pathConfigFolder+editorExtraFeaturesConfigFileName, JSON.stringify(content), (err) => {
+                if(err){
+                    reject('Failed to save editor extra feature config file !')
+                }
+                resolve('Editor extra feature saved !')
+            })
+        })
+    })
+}

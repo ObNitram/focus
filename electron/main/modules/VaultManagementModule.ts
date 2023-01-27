@@ -1,8 +1,9 @@
 import { dialog } from 'electron';
 import * as FileSystemModule from './FileSystemModule'
-import { printLog } from './OutputModule';
 
 import * as pathManage from 'pathmanage'
+import { printError, printINFO } from './OutputModule';
+import { copyEditorExtraFeaturesNoteToNewPath, deleteEditorExtraFeaturesPath, updateEditorExtraFeaturesPath } from './ManageConfig';
 
 let pathVault: string | null = null;
 let currentOpenedNotePath: string | null = null;
@@ -24,14 +25,30 @@ export async function createNote(dir: string): Promise<FileSystemModule.File> {
 }
 
 export async function deleteFileOrFolder(path: string): Promise<void> {
+    deleteEditorExtraFeaturesPath(path).then((result) => {
+        printINFO(result)
+    }).catch((reason) => {
+        printError(reason)
+    })
     return FileSystemModule.deleteFileOrFolder(path)
 }
 
 export async function moveFileOrFolder(oldPath: string, newPath: string): Promise<void> {
+    updateEditorExtraFeaturesPath(oldPath, newPath).then((result) => {
+        printINFO(result)
+    }).catch((reason) => {
+        printError(reason)
+    })
     return FileSystemModule.moveFileOrFolder(oldPath, newPath)
 }
 
 export async function copyFileOrFolder(oldPath: string, newPath: string): Promise<void> {
+    copyEditorExtraFeaturesNoteToNewPath(oldPath, newPath).then((result) => {
+        printINFO(result)
+    }).catch((reason) => {
+        printError(reason)
+    })
+
     return FileSystemModule.copyFileOrFolder(oldPath, newPath)
 }
 
@@ -47,6 +64,11 @@ export async function renameFileOrFolder(oldPath: string, newName: string): Prom
     if (oldPath.endsWith('.md')) {
         newPath += '.md'
     }
+    updateEditorExtraFeaturesPath(oldPath, newPath).then((result) => {
+        printINFO(result)
+    }).catch((reason) => {
+        printError(reason)
+    })
     return FileSystemModule.renameFileOrFolder(oldPath, newPath)
 }
 
