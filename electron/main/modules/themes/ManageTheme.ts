@@ -1,10 +1,15 @@
 import { Theme, defaultTheme } from "./ThemeType";
+import { cpSync, existsSync } from "fs";
+import { mainWindow } from "../WindowsManagement";
+import { ipcMain } from "electron";
+import { getThemes } from "../ManageConfig";
+import { printError, printINFO, printLog } from "../OutputModule";
 
-export function convertThemeForStyle(theme:Theme):string{
+export function convertThemeForStyle(theme:Theme):{name:string, css:string}{
     let css:string = ''
     for(const selector in theme){
         let newCssProperty = ''
-        if(selector != 'link'){
+        if(selector != 'link' && selector != 'name'){
             newCssProperty = `\n.editor_${selector}{\n`
             for(const property in theme[selector]){
                 newCssProperty += `\t${property}: ${theme[selector][property]};\n`
@@ -26,6 +31,39 @@ export function convertThemeForStyle(theme:Theme):string{
     }
     newCssProperty += '}'
     css += newCssProperty
-    console.log(css)
-    return css
+    return {
+        name: theme.name,
+        css: css
+    }
 }
+
+async function createAllThemesConverted():Promise<{name:string, css:string}[]>{
+    return new Promise((resolve, reject) => {
+        let convertedThemes: {name:string, css:string}[] = []
+        convertedThemes.push(convertThemeForStyle(defaultTheme))
+        try{
+            let savedThemes:Theme[] = getThemes()
+            savedThemes.forEach((value:Theme) => {
+                convertedThemes.push(convertThemeForStyle(value))
+            })
+            resolve(convertedThemes)
+        }catch(e){
+            printError(e)
+            reject(convertedThemes)
+        }
+    })
+}
+
+export function setupEvents():void{
+    ipcMain.on('getTheme', () => {
+        printINFO('getTheme receive')
+        createAllThemesConverted().then((value: {name:string, css:string}[]) => {
+            printINFO('Themes is converted, send they to client')
+            mainWindow?.webContents.send('getTheme_responses', value)
+        }).catch((reason) => {
+            printError('Error when convert themes')
+            mainWindow?.webContents.send('getTheme_responses', reason)
+        })
+    })
+}
+

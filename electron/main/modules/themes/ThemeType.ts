@@ -1,4 +1,5 @@
 export type Theme = {
+    name: string
     general: {
         'background-color': string,
         'caret-color' : string,
@@ -102,6 +103,7 @@ export type Theme = {
 }
 
 export const defaultTheme:Theme = {
+    name: 'default',
     general: {
         'background-color': '#1e1e1e',
         'caret-color': '#fff',

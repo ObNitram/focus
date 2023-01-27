@@ -8,8 +8,8 @@ import { join } from 'path'
 
 import * as printMessage from './OutputModule'
 
-let mainWindow: BrowserWindow | null = null
-let winVault: BrowserWindow | null = null
+export let mainWindow: BrowserWindow | null = null
+export let winVault: BrowserWindow | null = null
 
 
 // Here, you can also use other preload

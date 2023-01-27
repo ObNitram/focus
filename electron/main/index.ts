@@ -21,7 +21,8 @@ import * as VaultManagement from './modules/VaultManagementModule'
 import * as WindowsManagement from './modules/WindowsManagement'
 import * as printMessage from './modules/OutputModule'
 import * as MarkdownConverter from './modules/markdownConversion/MarkdownConversionModule'
-import { initConfig, saveInSettingPathVault, initGeneralConfig, saveSizeSideBar, getSizeSidebar, saveOpenedFiles, getSavedOpenedFiles } from './modules/ManageConfig'
+import * as ManageTheme from './modules/themes/ManageTheme'
+import { initConfig, saveInSettingPathVault, initGeneralConfig, saveSizeSideBar, getSizeSidebar, saveOpenedFiles, getSavedOpenedFiles, initThemeConfig } from './modules/ManageConfig'
 import { removeMD } from './modules/FileSystemModule'
 
 import * as pathManage from 'pathmanage'
@@ -309,21 +310,18 @@ function setupEvents() {
         printMessage.printError(err)
     })
   })
-
-  ipcMain.on('getTheme', () => {
-    mainWindow?.webContents.send('getTheme_responses', convertThemeForStyle(defaultTheme))
-  })
 }
 
 
 
-if (initConfig() == false || initGeneralConfig() == false) {
+if (initConfig() == false || initGeneralConfig() == false || initThemeConfig() == false) {
   printMessage.printError('The configuration of settings is corrupted or a system error occured. Exiting...')
   app.exit();
 }
 
 app.whenReady().then(() => {
   setupEvents();
+  ManageTheme.setupEvents();
   pathVault = VaultManagement.getPathVault()
   printMessage.printLog('Path found is ' + pathVault)
   if (pathVault == null) {

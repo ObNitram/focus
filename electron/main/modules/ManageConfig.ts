@@ -4,10 +4,13 @@ import * as outPut from './OutputModule'
 import * as vaultManagement from './VaultManagementModule'
 import * as FileSystemModule from './FileSystemModule'
 import { convertCrossPath } from 'pathmanage'
+import { Theme } from './themes/ThemeType'
 
-const pathConfigFolder:string = convertCrossPath(app.getPath('appData')+ '/focus/')
-const vaultConfigFileName:string = convertCrossPath('vaultConfig.json')
-const generalConfigFileName: string = convertCrossPath('generalConfig.json')
+export const pathConfigFolder:string = convertCrossPath(app.getPath('appData')+ '/focus/')
+export const vaultConfigFileName:string = convertCrossPath('vaultConfig.json')
+export const generalConfigFileName: string = convertCrossPath('generalConfig.json')
+export const pathThemeConfigFileName:string = convertCrossPath('themes.json')
+
 
 type vaultConfigFileNameType = {
     location:string;
@@ -18,7 +21,11 @@ type generalConfigType = {
     openedFiles: string[]
 }
 
+type themeConfigFileType = Theme[]
+
 let generalConfig:generalConfigType|null = null
+
+let themeConfig:themeConfigFileType|null = null
 
 export function initConfig(){
     if(!fs.existsSync(pathConfigFolder)) {
@@ -52,6 +59,20 @@ export function initConfig(){
             outPut.printINFO('Try to create ' + pathConfigFolder+vaultConfigFileName+ '...')
             fs.writeFileSync(pathConfigFolder+vaultConfigFileName, JSON.stringify({
                 location: null,
+            }))
+            outPut.printOK('File created !')
+        }catch(error){
+            outPut.printError('Failed to create the file. Aborting.')
+            return false;
+        }
+        return true
+    }
+    if(! fs.existsSync(pathConfigFolder+pathThemeConfigFileName)){
+        outPut.printINFO('Config file '+ pathConfigFolder+pathThemeConfigFileName + ' not found !')
+        try{
+            outPut.printINFO('Try to create ' + pathConfigFolder+pathThemeConfigFileName+ '...')
+            fs.writeFileSync(pathConfigFolder+pathThemeConfigFileName, JSON.stringify({
+                themes: [],
             }))
             outPut.printOK('File created !')
         }catch(error){
@@ -122,6 +143,40 @@ export function initGeneralConfig():boolean{
     }
 }
 
+export function initThemeConfig():boolean{
+    if(! fs.existsSync(pathConfigFolder+pathThemeConfigFileName)){
+        outPut.printINFO('Config file '+ pathConfigFolder+pathThemeConfigFileName + ' not found !')
+        try{
+            outPut.printINFO('Try to create ' + pathConfigFolder+pathThemeConfigFileName+ '...')
+            fs.writeFileSync(pathConfigFolder+pathThemeConfigFileName, JSON.stringify([]))
+            outPut.printOK('File created !')
+        }catch(error){
+            outPut.printError('Failed to create the file. Aborting.')
+            return false;
+        }
+    }
+    let data;
+    try{
+        data = fs.readFileSync(pathConfigFolder+pathThemeConfigFileName, 'utf8');
+    }catch(error){
+        outPut.printError('Failed to read setting !')
+        return false
+    }
+    if(data){
+        try {
+            let res:themeConfigFileType = JSON.parse(data)
+            themeConfig = res
+            outPut.printOK('Config is OK!')
+            return true
+        } catch (error:any) {
+            outPut.printError('Failed to get setting. Aborting...')
+            return false
+        }
+    }else{
+        outPut.printError('Failed to get setting. Aborting...')
+        return false
+    }
+}
 
 
 export function saveInSettingPathVault(path:string):boolean{
@@ -191,4 +246,9 @@ export async function saveOpenedFiles(paths:string[]):Promise<string>{
 
 export function getSavedOpenedFiles():string[]{
     return FileSystemModule.removeNonExistentPath(generalConfig.openedFiles)
+}
+
+export function getThemes():themeConfigFileType{
+    if(themeConfig != null) return themeConfig
+    return []
 }

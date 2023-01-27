@@ -106,9 +106,9 @@ export default function Editor_contenair():JSX.Element {
             setViewedFile(newOpenedFiles.at(-1))
         })
         ipcRenderer.send('getTheme')
-        ipcRenderer.once('getTheme_responses', (event, value:string) => {
+        ipcRenderer.once('getTheme_responses', (event, value: {name:string, css:string}[]) => {
             let newStyle = document.createElement('style')
-            newStyle.innerHTML = value
+            newStyle.innerHTML = value[0].css
             document.head.appendChild(newStyle)
             setThemeReceived(true)
         })
