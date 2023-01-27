@@ -1,0 +1,16 @@
+@import '../../../variables.scss';
+
+.buttonToggleThemeGenerator{
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+    border-radius: 50%;
+    height: 50px;
+    width: 50px;
+    cursor: pointer;
+    background-color: $button_color;
+
+    &:hover{
+        transform: scale(1.1);
+    }
+}

@@ -1,0 +1,35 @@
+@import '../../../variables.scss';
+
+
+
+.themeGenerator{
+    position: absolute;
+    top: $height_menubar;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow-y: hidden;
+    .h1{
+        background-color: $main-color;
+        padding: 20px 0;
+        margin : 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 30px;
+        height: $title_h1_theme_generator;
+        border-bottom: solid 2px white;
+    }
+    .themeGeneratorContenair{
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top:$title_h1_theme_generator;
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        grid-template-rows: 1fr;
+        grid-column-gap: 0px;
+        grid-row-gap: 0px;
+    }
+}

@@ -1,0 +1,10 @@
+@import '../../../variables.scss';
+
+.exemplePage{
+    grid-area: 1 / 2 / 2 / 3;
+    text-align: left;
+    position: relative;
+    overflow-y: auto;
+    // border: dashed 1px $text-color;
+    padding: 15px 10px;
+}

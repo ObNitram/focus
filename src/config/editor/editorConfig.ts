@@ -2,7 +2,7 @@ import styles from "../../assets/styles/components/editor/editor.module.scss";
 
 import EditorNodes from "../../components/editor/nodes/EditorNodes";
 
-const theme = {
+export const theme = {
   ltr: "ltr",
   rtl: "rtl",
   placeholder: `${styles.editor_inner_placeholder}`,
@@ -56,7 +56,7 @@ const theme = {
   text: {
     bold: 'editor_bold',
     italic: 'editor_italic',
-    underline: 'editor_underline'
+    underline: `editor_underline ${styles.editor_inner_underline}`
   },
   link: 'editor_link'
 }
