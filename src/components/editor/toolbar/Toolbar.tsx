@@ -233,7 +233,7 @@ export default function Toolbar(this:any, props:ToolBarProps) {
             let textAlign = $isParagraphNode(parent) ? getAlignmentFromNumber(parent.getFormat()) : getAlignmentFromNumber(node.getFormat());
 
             currTextAlignKey = textAlign;
-            currTextAlignTitle = textAlign;
+            currTextAlignTitle = textAlign.charAt(0).toUpperCase() + textAlign.slice(1);
 
             setCurrTextAlign(currTextAlignTitle);
         }
@@ -241,7 +241,7 @@ export default function Toolbar(this:any, props:ToolBarProps) {
             let textAlign = $isHeadingNode(parent) ? getAlignmentFromNumber(parent.getFormat()) : getAlignmentFromNumber(node.getFormat());
 
             currTextAlignKey = textAlign;
-            currTextAlignTitle = textAlign;
+            currTextAlignTitle = textAlign.charAt(0).toUpperCase() + textAlign.slice(1);
 
             setCurrTextAlign(currTextAlignTitle);
         }
