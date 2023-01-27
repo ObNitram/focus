@@ -1,4 +1,4 @@
-import { HeadingNodeV1, Node, textFormat, TextNodeV1, ListNode, QuoteNodeV1, ParagraphNodeV1, CodeNodeV1 } from '../../../model/LexicalNodes';
+import { HeadingNodeV1, Node, textFormat, TextNodeV1, ListNode, QuoteNodeV1, ParagraphNodeV1, CodeNodeV1, LinkNodeV1 } from '../../../model/LexicalNodes';
 
 function getHeadingLevelNumberFromString(headingLevel: string): number {
     switch (headingLevel) {
@@ -45,8 +45,7 @@ export function proceedHeading(headingNode: HeadingNodeV1): string {
     if (!headingText.trim()) {
         return '';
     }
-    headingText += '\n';
-    return '#'.repeat(getHeadingLevelNumberFromString(headingNode.tag)) + ' ' + headingText;
+    return '#'.repeat(getHeadingLevelNumberFromString(headingNode.tag)) + ' ' + headingText + '\n\n';
 }
 
 /**
@@ -59,16 +58,29 @@ export function proceedText(node: Node): string {
     if (node.type === 'linebreak') {
         return '\n';
     }
-    let textNode = node as TextNodeV1;
-    switch (textNode.format) {
-        case textFormat.bold:
-            return '**' + textNode.text + '**';
-        case textFormat.italic:
-            return '*' + textNode.text + '*';
-        case textFormat.normal:
-            return textNode.text;
-        default:
-            throw new Error('The text format is not normal, bold or italic.');
+    if (node.type === 'text') {
+        let textNode = node as TextNodeV1;
+        switch (textNode.format) {
+            case textFormat.bold:
+                return '**' + textNode.text + '**';
+            case textFormat.italic:
+                return '*' + textNode.text + '*';
+            case textFormat.normal:
+                return textNode.text;
+            default:
+                throw new Error('The text format is not normal, bold or italic.');
+        }
+    }
+    else if (node.type === 'link') {
+        let linkNode = node as LinkNodeV1;
+        let linkText = '';
+        for (let i = 0; i < linkNode.children.length; i++) {
+            linkText += proceedText(linkNode.children[i]);
+        }
+        return '[' + linkText + '](' + linkNode.url + ')';
+    }
+    else {
+        throw new Error('The node is not a text node.');
     }
 }
 
@@ -96,7 +108,7 @@ export function proceedList(listNode: ListNode): string {
         }
         markdownList += '\n';
     }
-    return markdownList;
+    return markdownList + '\n';
 }
 
 /**
@@ -119,7 +131,7 @@ export function proceedQuote(quoteNode: QuoteNodeV1): string {
             quoteText += '> ' + proceedText(quoteNode.children[i]);
         }
     }
-    return quoteText
+    return quoteText + '\n\n';
 }
 
 /**
@@ -137,7 +149,7 @@ export function proceedParagraph(paragraphNode: ParagraphNodeV1): string {
     for (let j = 0; j < paragraphNode.children.length; j++) {
         paragraphText += proceedText(paragraphNode.children[j]);
     }
-    return paragraphText + '\n';
+    return paragraphText + '\n\n';
 }
 
 /**
@@ -155,5 +167,5 @@ export function proceedCode(codeBlockNode: CodeNodeV1): string {
         codeBlockText += proceedText(codeBlockNode.children[i]);
     }
     codeBlockText += '\n```';
-    return codeBlockText;
+    return codeBlockText + '\n\n';
 }

@@ -171,6 +171,10 @@ export function convertJSONToMarkdown(json: string): Promise<string> {
             }
         }
 
+        // Remove the last line breaks
+        while (markdown.endsWith('\n')) {
+            markdown = markdown.substring(0, markdown.length - 1);
+        }
         resolve(markdown);
     });
 }
