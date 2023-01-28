@@ -21,6 +21,16 @@
         border-bottom: solid 2px white;
         position: relative;
 
+        @media screen and (max-width : 600px){
+            justify-content: left;
+            font-size: 30px;
+        }
+
+        @media screen and (max-width : 440px){
+            justify-content: left;
+            font-size: 20px;
+        }
+
         .btnClose{
             position: absolute;
             right: 30px;
@@ -42,4 +52,6 @@
         grid-column-gap: 0px;
         grid-row-gap: 0px;
     }
+
+    
 }

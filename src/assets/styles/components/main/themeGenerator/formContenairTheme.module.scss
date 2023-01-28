@@ -6,5 +6,15 @@
     overflow-y: auto;
     background-color: $main-color;
     border-right:solid 2px white;
+
+        .section_Form{
+            h3{
+                background-color: $dropdown_background_color;
+            }
+            table{
+                margin: 0;
+                padding: 0;
+            }
+        }
     
 }
