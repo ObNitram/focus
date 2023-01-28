@@ -19,6 +19,16 @@
         gap: 30px;
         height: $title_h1_theme_generator;
         border-bottom: solid 2px white;
+        position: relative;
+
+        .btnClose{
+            position: absolute;
+            right: 30px;
+
+            &:hover{
+                background-color: $hover;
+            }
+        }
     }
     .themeGeneratorContenair{
         position: absolute;
