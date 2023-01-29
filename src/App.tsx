@@ -25,6 +25,7 @@ const App: React.FC = () => {
         ipcRenderer.once('getTheme_responses', (event, value: {name:string, css:string}[]) => {
             let newStyle = document.createElement('style')
             newStyle.innerHTML = value[0].css
+            newStyle.id= 'style_editor'
             document.head.appendChild(newStyle)
             setThemeReceived(true)
             setSelectedTheme('default')
