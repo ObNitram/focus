@@ -3,18 +3,46 @@
 .formContenairTheme{
     grid-area: 1 / 1 / 2 / 2;
     position: relative;
-    overflow-y: auto;
+    overflow-y: hidden;
     background-color: $main-color;
     border-right:solid 2px white;
 
+    form{
+        position: absolute;
+        left:0;
+        right:0;
+        bottom: 0;
+        top: $title_h1_theme_generator;
+        overflow-y: auto;
         .section_Form{
             h3{
                 background-color: $dropdown_background_color;
-            }
-            table{
                 margin: 0;
-                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+
+                &:hover{
+                    background-color: #424040;
+                }
             }
+
+            .table_contenair{
+                overflow-y: hidden;
+                table{
+                    margin: 0;
+                    padding: 0;
+                    background-color: $document_back_color;
+                    width: 100%;
+    
+                    td{
+                        width: 50%;
+                    }
+                }
+            }
+
         }
+    }
     
 }
