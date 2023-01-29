@@ -3,8 +3,8 @@ import crossEditorStyles from 'styles/components/editor/editor.module.scss'
 
 export function ExemplePage(this:any) {
     return(
-        <div className={styles.exemplePage + ' ' +crossEditorStyles.editor_inner_input}>
-            <div className={crossEditorStyles.editor_inner_input}>
+        <div className={styles.exemplePage + ' editor_general ' +crossEditorStyles.editor_inner_input}>
+            <div className={`${crossEditorStyles.editor_inner_input}` }>
                 <h1 className={`editor_h1 ltr`} dir="ltr"><span >I am a title 1</span></h1>
                 
                 <p className={`editor_paragraph ltr`} dir="ltr">
@@ -49,6 +49,8 @@ export function ExemplePage(this:any) {
                 </p>
                 
                 <h3 className="editor_h3 ltr" dir="ltr"><span >A second h3</span></h3>
+
+                <blockquote className="editor_quote ltr" dir="ltr"><span data-lexical-text="true">Bonjour ceci est une quote, </span><br/><span >Elle fait plusieurs lignes c'est cool.</span></blockquote>
                 
                 <p className={`editor_paragraph ltr`} dir="ltr">
                     <span >Lorem ipsum dolor sit amet consectetur adipisicing elit. Culpa sed eaque sequi accusantium! </span>
@@ -63,7 +65,7 @@ export function ExemplePage(this:any) {
                 <h1 className="editor_h1 ltr" dir="ltr"><span >A second H1</span></h1>
                 <h2 className="editor_h2 ltr" dir="ltr"><span >Its a h2 !</span></h2>
                 <p className={`editor_paragraph ltr`} dir="ltr">
-                    <span style={{textDecoration: "underline"}} className={`editor_underline`}>Lorem ipsum dolor sit amet consectetur adipisicing elit.</span>
+                    <span className={`editor_underline`}>Lorem ipsum dolor sit amet consectetur adipisicing elit.</span>
                     <span > Culpa sed eaque sequi accusantium! Voluptatum aperiam, perferendis totam pariatur quisquam nostrum dignissimos dolor! Voluptate unde, placeat sequi nemo illo culpa.Lorem ipsum dolor sit amet consectetur adipisicing elit. Culpa sed eaque sequi accusantium! Voluptatum aperiam, perferendis totam pariatur quisquam nostrum dignissimos dolor! Voluptate unde, placeat sequi nemo illo culpa.</span>
                 </p>
                 
@@ -78,7 +80,7 @@ export function ExemplePage(this:any) {
                 </p>
                 
                 <p className={`editor_paragraph ltr`} dir="ltr">
-                    <span style={{textDecoration: "underline"}} className={`editor_underline`}>An entire underline sentence !</span>
+                    <span className={`editor_underline`}>An entire underline sentence !</span>
                 </p>
                 
                 <h5 className="editor_h5 ltr" dir="ltr"><span >This is a h5 ! </span></h5>
