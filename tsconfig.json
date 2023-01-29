@@ -6,7 +6,8 @@
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
 		"paths": {
 			"@/*": ["src/*"],
-      "styles/*": ["src/assets/styles/*"]
+      "styles/*": ["src/assets/styles/*"],
+      "types/*": ["./types/*"]
 		},
     "allowJs": false,
     "skipLibCheck": true,
@@ -21,7 +22,7 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src", "modules"],
+  "include": ["src", "modules", "types", "electron/main/modules/themes/ThemeType.ts"],
   "references": [{ "path": "./tsconfig.node.json" }],
 }
 

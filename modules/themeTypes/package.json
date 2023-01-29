@@ -1,0 +1,12 @@
+{
+  "name": "themetypes",
+  "version": "1.0.0",
+  "description": "TypeScript Type for describe Themes for focus project",
+  "main": "./dist/ThemeType.js",
+  "types": "./dist/ThemeType.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "author": "Thomas Graber",
+  "license": "ISC"
+}

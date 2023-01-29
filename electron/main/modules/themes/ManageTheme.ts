@@ -1,9 +1,9 @@
-import { Theme, defaultTheme } from "./ThemeType";
 import { cpSync, existsSync } from "fs";
 import { mainWindow } from "../WindowsManagement";
 import { ipcMain } from "electron";
 import { getThemes } from "../ManageConfig";
 import { printError, printINFO, printLog } from "../OutputModule";
+import {Theme, defaultTheme} from 'themetypes'
 
 export function convertThemeForStyle(theme:Theme):{name:string, css:string}{
     let css:string = ''
