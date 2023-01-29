@@ -106,29 +106,29 @@ export const defaultTheme:Theme = {
     name: 'default',
     general: {
         'background-color': '#1e1e1e',
-        'caret-color': '#fff',
+        'caret-color': '#ffffff',
     },
     paragraph: {
-        'color': '#fff',
+        'color': '#ffffff',
         'font-size': '15px',
         'margin-bottom': '8px',
         'margin-left': '0',
         'margin-top': '0',
     },
     bold: {
-        'color': '#fff',
+        'color': '#ffffff',
         'font-size': '15px',
     },
     italic: {
-        'color': '#fff',
+        'color': '#ffffff',
         'font-size': '15px',
     },
     underline: {
-        'color': '#fff',
+        'color': '#ffffff',
         'font-size': '15px',
     },
     h1: {
-        'color': '#fff',
+        'color': '#ffffff',
         'margin-left': '0px',
         'margin-top': '20px',
         'margin-bottom': '20px',
@@ -136,7 +136,7 @@ export const defaultTheme:Theme = {
         'font-weight': '700'
     },
     h2: {
-        'color': '#fff',
+        'color': '#ffffff',
         'margin-left': '0px',
         'margin-top': '18px',
         'margin-bottom': '18px',
@@ -144,7 +144,7 @@ export const defaultTheme:Theme = {
         'font-weight': '700'
     },
     h3: {
-        'color': '#fff',
+        'color': '#ffffff',
         'margin-left': '0px',
         'margin-top': '17px',
         'margin-bottom': '17px',
@@ -152,7 +152,7 @@ export const defaultTheme:Theme = {
         'font-weight': '700'
     },
     h4: {
-        'color': '#fff',
+        'color': '#ffffff',
         'margin-left': '0px',
         'margin-top': '19px',
         'margin-bottom': '19px',
@@ -160,7 +160,7 @@ export const defaultTheme:Theme = {
         'font-weight': '700'
     },
     h5: {
-        'color': '#fff',
+        'color': '#ffffff',
         'margin-left': '0px',
         'margin-top': '20px',
         'margin-bottom': '20px',
@@ -168,7 +168,7 @@ export const defaultTheme:Theme = {
         'font-weight': '700'
     },
     h6: {
-        'color': '#fff',
+        'color': '#ffffff',
         'margin-left': '0px',
         'margin-top': '23px',
         'margin-bottom': '23px',
@@ -179,18 +179,18 @@ export const defaultTheme:Theme = {
         'margin-left': '20px',
         'margin-bottom': '10px',
         'font-size': '15px',
-        'color': 'rgb(193, 194, 196)',
-        'border-left-color': 'rgb(206, 208, 212)',
+        'color': '#C1C2C4',
+        'border-left-color': '#CED0D4',
         'border-left-width': '4px',
         'border-left-style': 'solid',
         'padding-left': '16px'
     },
     link: {
         'font-size': '15px',
-        'color': 'rgb(46 134 255)',
+        'color': '#2E86FF',
         'text-decoration': 'none',
         'linkHover': {
-            'color': 'rgb(46 134 255)',
+            'color': '#2E86FF',
             'text-decoration': 'underline'
         },
     },
