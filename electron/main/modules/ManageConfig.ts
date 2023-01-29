@@ -4,7 +4,7 @@ import * as outPut from './OutputModule'
 import * as vaultManagement from './VaultManagementModule'
 import * as FileSystemModule from './FileSystemModule'
 import { convertCrossPath } from 'pathmanage'
-import { Theme } from './themes/ThemeType'
+import { Theme } from 'themetypes'
 
 export const pathConfigFolder:string = convertCrossPath(app.getPath('appData')+ '/focus/')
 export const vaultConfigFileName:string = convertCrossPath('vaultConfig.json')
