@@ -23,11 +23,8 @@ import * as printMessage from './modules/OutputModule'
 import * as MarkdownConverter from './modules/markdownConversion/MarkdownConversionModule'
 import * as ManageTheme from './modules/themes/ManageTheme'
 import { initConfig, saveInSettingPathVault, initGeneralConfig, saveSizeSideBar, getSizeSidebar, saveOpenedFiles, getSavedOpenedFiles, initThemeConfig } from './modules/ManageConfig'
-import { removeMD } from './modules/FileSystemModule'
 
 import * as pathManage from 'pathmanage'
-import { convertThemeForStyle } from './modules/themes/ManageTheme'
-import { defaultTheme } from './modules/themes/ThemeType'
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration()
