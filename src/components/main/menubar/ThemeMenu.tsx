@@ -9,7 +9,8 @@ type ThemeMenuProps = {
     selectedTheme: string,
     isUnrolled: boolean,
     displayManageTheme: (bool: boolean) => void,
-    displayThemeGenerator: boolean
+    displayThemeGenerator: boolean,
+    setSelectedTheme: (theme:string) => void
 }
 
 export function ThemeMenu(this:any, props:ThemeMenuProps){
@@ -28,7 +29,7 @@ export function ThemeMenu(this:any, props:ThemeMenuProps){
             <div className={`${styles.subMenu} ${props.displayThemeGenerator && styles.unavailable}`} style={props.isUnrolled ? {display: 'block'} : {display: 'none'}}>
                 <ul>
                     {props.themes.map((value: { name: string; css: string; }) => {
-                        return (<li key={value.name}>
+                        return (<li key={value.name} onClick={() => props.setSelectedTheme(value.name)}>
                                     {value.name}
                                     {value.name == props.selectedTheme && <AiOutlineCheck/>}
                                 </li>)

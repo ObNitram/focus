@@ -34,6 +34,13 @@ const App: React.FC = () => {
   }, [])
 
   useEffect(() => {
+    let style = document.getElementById('style_editor')
+    if(style != null){
+      style.innerHTML = themes?.find((value) => value.name == selectedTheme)?.css || ''
+    }
+  }, [selectedTheme])
+
+  useEffect(() => {
     console.log(selectedFiles)
   }, [selectedFiles])
   // TODO: Set folder name and dir after retrieving the saved values
@@ -45,7 +52,7 @@ const App: React.FC = () => {
   return (
     <div className={styles.app}>
       <SelectedFilesContext.Provider value={[selectedFiles, setSelectedFiles]}>
-        <MenuBar themes={themes} selectedTheme={selectedTheme} displayManageTheme={setDisplayThemeGenerator} displayThemeGenerator={displayThemeGenerator}/>
+        <MenuBar themes={themes} selectedTheme={selectedTheme} displayManageTheme={setDisplayThemeGenerator} displayThemeGenerator={displayThemeGenerator} setSelectedTheme={setSelectedTheme}/>
         {themeReceived ? 
         <div className={styles.appContenair} style={{display: displayThemeGenerator? 'none' : 'flex'}}>
           <Sidebar  />

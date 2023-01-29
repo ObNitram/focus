@@ -14,7 +14,8 @@ type MenuBarProps = {
     themes: {name:string, css:string}[]|null,
     selectedTheme:string,
     displayManageTheme: (bool: boolean) => void,
-    displayThemeGenerator: boolean
+    displayThemeGenerator: boolean,
+    setSelectedTheme: (theme:string) => void
 }
 
 export default function MenuBar(props: MenuBarProps) {
@@ -38,7 +39,7 @@ export default function MenuBar(props: MenuBarProps) {
                 <img src="/electron.png" alt="Logo of Focus"/>
                 <ul className={styles.listMenu}>
                     <li onClick={() => setThemeUnroll(!themeUnroll)}>
-                        <ThemeMenu themes={props.themes} selectedTheme={props.selectedTheme} isUnrolled={themeUnroll} displayManageTheme={props.displayManageTheme} displayThemeGenerator={props.displayThemeGenerator}/>
+                        <ThemeMenu themes={props.themes} selectedTheme={props.selectedTheme} isUnrolled={themeUnroll} displayManageTheme={props.displayManageTheme} displayThemeGenerator={props.displayThemeGenerator} setSelectedTheme={props.setSelectedTheme}/>
                     </li>
                 </ul>
             </div>
