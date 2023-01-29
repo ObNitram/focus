@@ -65,5 +65,10 @@ export function setupEvents():void{
             mainWindow?.webContents.send('getTheme_responses', reason)
         })
     })
+
+    ipcMain.on('getJSONTypes', () => {
+        printINFO('JSON themes is asked ! Send they to front.')
+        mainWindow?.webContents.send('JSONTypesReceived', [defaultTheme, ...getThemes()])
+    })
 }
 
