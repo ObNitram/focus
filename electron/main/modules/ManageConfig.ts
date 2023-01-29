@@ -252,3 +252,19 @@ export function getThemes():themeConfigFileType{
     if(themeConfig != null) return themeConfig
     return []
 }
+
+export async function saveThemes(themes:themeConfigFileType):Promise<string>{
+    return new Promise((resolve, reject) => {
+        outPut.printINFO('Try to save user\'s themes.')
+        if(initThemeConfig() == false){
+            reject('An error occur, the config is corrupted. User\'s size of sidebar not saved!')
+        }
+        try{
+            fs.writeFileSync(pathConfigFolder+pathThemeConfigFileName, JSON.stringify(themes))
+            themeConfig = themes
+        }catch(error){
+            reject('An error occured while trying to save general config in file system.')
+        }
+        resolve('Themes is saved in setting!')
+    })
+}

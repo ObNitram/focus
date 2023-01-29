@@ -1,7 +1,7 @@
 import { cpSync, existsSync } from "fs";
 import { mainWindow } from "../WindowsManagement";
 import { ipcMain } from "electron";
-import { getThemes } from "../ManageConfig";
+import { getThemes, saveThemes } from "../ManageConfig";
 import { printError, printINFO, printLog } from "../OutputModule";
 import {Theme, defaultTheme} from 'themetypes'
 
@@ -69,6 +69,24 @@ export function setupEvents():void{
     ipcMain.on('getJSONTypes', () => {
         printINFO('JSON themes is asked ! Send they to front.')
         mainWindow?.webContents.send('JSONTypesReceived', [defaultTheme, ...getThemes()])
+    })
+
+    ipcMain.on('saveTheme', (event, themeName: string, theme: Theme) => {
+        printINFO('Save theme "' + themeName + '" is asked.')
+        console.log(theme)
+        let themes:Theme[] = getThemes()
+        let index = themes.findIndex((value:Theme) => value.name == theme.name)
+        if(index != -1){
+            themes[index] = theme
+        }else{
+            themes.push(theme)
+        }
+        saveThemes(themes).then(() => {
+            printINFO('Theme "' + themeName + '" is saved !')
+        }).catch((reason) => {  
+            printError('Error when save theme "' + themeName + '"')
+            printError(reason)
+        })
     })
 }
 

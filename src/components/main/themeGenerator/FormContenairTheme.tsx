@@ -4,6 +4,8 @@ import {IoIosArrowDown} from 'react-icons/io'
 import React, {useRef, useState, useEffect} from 'react'
 import {gsap} from "gsap"
 import {Theme} from 'themetypes'
+const { ipcRenderer } = window.require('electron')
+
 
 type FormContenairThemeprops = {
     JSONThemes: Theme[]
@@ -31,11 +33,6 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
     const refLinkSetting = useRef<HTMLDivElement>(null)
     const refULSetting = useRef<HTMLDivElement>(null)
     const refOLSetting = useRef<HTMLDivElement>(null)
-
-    useEffect(() => {
-        // const style_editor = document.getElementById('style_editor') as HTMLStyleElement
-        // style_editor.remove()
-    }, [])
 
     const toggleShowTable = (e:React.MouseEvent) => {
         const associatedTable = e.currentTarget.nextElementSibling as HTMLDivElement
@@ -340,10 +337,121 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
         changeStyle();
     }, [themeSelected])
 
+    const saveTheme = (e:React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        // return if one ref or ref.current is null
+        if(!refGeneralSetting || !refGeneralSetting.current || !refParagraphSetting || !refParagraphSetting.current || !refBoldSetting || !refBoldSetting.current || !refItalicSetting || !refItalicSetting.current || !refUnderlineSetting || !refUnderlineSetting.current || !refH1Setting || !refH1Setting.current || !refH2Setting || !refH2Setting.current || !refH3Setting || !refH3Setting.current || !refH4Setting || !refH4Setting.current || !refH5Setting || !refH5Setting.current || !refH6Setting || !refH6Setting.current || !refQuoteSetting || !refQuoteSetting.current || !refLinkSetting || !refLinkSetting.current || !refULSetting || !refULSetting.current || !refOLSetting || !refOLSetting.current) return
+        const theme:Theme = {
+            name: themeSelected,
+            general: {
+                'background-color': refGeneralSetting.current.getElementsByTagName('input')[0].value,
+                'caret-color': refGeneralSetting.current.getElementsByTagName('input')[1].value,
+            },
+            paragraph: {
+                'color': refParagraphSetting.current.getElementsByTagName('input')[0].value,
+                'font-size': refParagraphSetting.current.getElementsByTagName('input')[1].value + 'px',
+                'margin-bottom': refParagraphSetting.current.getElementsByTagName('input')[2].value + 'px',
+                'margin-left': refParagraphSetting.current.getElementsByTagName('input')[3].value + 'px',
+                'margin-top': refParagraphSetting.current.getElementsByTagName('input')[4].value + 'px',
+            },
+            bold: {
+                'color': refBoldSetting.current.getElementsByTagName('input')[0].value,
+                'font-size': refBoldSetting.current.getElementsByTagName('input')[1].value + 'px',
+            },
+            italic: {
+                'color': refItalicSetting.current.getElementsByTagName('input')[0].value,
+                'font-size':  refItalicSetting.current.getElementsByTagName('input')[1].value + 'px',
+            },
+            underline: {
+                'color': refUnderlineSetting.current.getElementsByTagName('input')[0].value,
+                'font-size': refUnderlineSetting.current.getElementsByTagName('input')[1].value + 'px',
+            },
+            h1: {
+                'color': refH1Setting.current.getElementsByTagName('input')[0].value,
+                'margin-left': refH1Setting.current.getElementsByTagName('input')[1].value + 'px',
+                'margin-top': refH1Setting.current.getElementsByTagName('input')[2].value + 'px',
+                'margin-bottom': refH1Setting.current.getElementsByTagName('input')[3].value + 'px',
+                'font-size': refH1Setting.current.getElementsByTagName('input')[4].value + 'px',
+                'font-weight': refH1Setting.current.getElementsByTagName('input')[5].value,
+            },
+            h2: {
+                'color': refH2Setting.current.getElementsByTagName('input')[0].value,
+                'margin-left': refH2Setting.current.getElementsByTagName('input')[1].value + 'px',
+                'margin-top': refH2Setting.current.getElementsByTagName('input')[2].value + 'px',
+                'margin-bottom': refH2Setting.current.getElementsByTagName('input')[3].value + 'px',
+                'font-size': refH2Setting.current.getElementsByTagName('input')[4].value + 'px',
+                'font-weight': refH2Setting.current.getElementsByTagName('input')[5].value,
+            },
+            h3: {
+                'color': refH3Setting.current.getElementsByTagName('input')[0].value,
+                'margin-left': refH3Setting.current.getElementsByTagName('input')[1].value + 'px',
+                'margin-top': refH3Setting.current.getElementsByTagName('input')[2].value + 'px',
+                'margin-bottom': refH3Setting.current.getElementsByTagName('input')[3].value + 'px',
+                'font-size': refH3Setting.current.getElementsByTagName('input')[4].value + 'px',
+                'font-weight': refH3Setting.current.getElementsByTagName('input')[5].value,
+            },
+            h4: {
+                'color': refH4Setting.current.getElementsByTagName('input')[0].value,
+                'margin-left': refH4Setting.current.getElementsByTagName('input')[1].value + 'px',
+                'margin-top': refH4Setting.current.getElementsByTagName('input')[2].value + 'px',
+                'margin-bottom': refH4Setting.current.getElementsByTagName('input')[3].value + 'px',
+                'font-size': refH4Setting.current.getElementsByTagName('input')[4].value + 'px',
+                'font-weight': refH4Setting.current.getElementsByTagName('input')[5].value,
+            },
+            h5: {
+                'color': refH5Setting.current.getElementsByTagName('input')[0].value,
+                'margin-left': refH5Setting.current.getElementsByTagName('input')[1].value + 'px',
+                'margin-top':   refH5Setting.current.getElementsByTagName('input')[2].value + 'px',
+                'margin-bottom': refH5Setting.current.getElementsByTagName('input')[3].value + 'px',
+                'font-size': refH5Setting.current.getElementsByTagName('input')[4].value + 'px',
+                'font-weight': refH5Setting.current.getElementsByTagName('input')[5].value,
+            },
+            h6: {
+                'color': refH6Setting.current.getElementsByTagName('input')[0].value,
+                'margin-left': refH6Setting.current.getElementsByTagName('input')[1].value + 'px',
+                'margin-top': refH6Setting.current.getElementsByTagName('input')[2].value + 'px',
+                'margin-bottom': refH6Setting.current.getElementsByTagName('input')[3].value + 'px',
+                'font-size': refH6Setting.current.getElementsByTagName('input')[4].value + 'px',
+                'font-weight': refH6Setting.current.getElementsByTagName('input')[5].value,
+            },
+            quote: {
+                'margin-left': refQuoteSetting.current.getElementsByTagName('input')[0].value + 'px',
+                'margin-bottom': refQuoteSetting.current.getElementsByTagName('input')[1].value + 'px',
+                'font-size': refQuoteSetting.current.getElementsByTagName('input')[2].value + 'px',
+                'color': refQuoteSetting.current.getElementsByTagName('input')[3].value,
+                'border-left-color': refQuoteSetting.current.getElementsByTagName('input')[4].value,
+                'border-left-width': refQuoteSetting.current.getElementsByTagName('input')[5].value + 'px',
+                'border-left-style': refQuoteSetting.current.getElementsByTagName('select')[0].value,
+                'padding-left': refQuoteSetting.current.getElementsByTagName('input')[6].value + 'px',
+            },
+            link: {
+                'font-size': refLinkSetting.current.getElementsByTagName('input')[0].value + 'px',
+                'color': refLinkSetting.current.getElementsByTagName('input')[1].value,
+                'text-decoration': refLinkSetting.current.getElementsByTagName('select')[0].value,
+                'linkHover': {
+                    'color': refLinkSetting.current.getElementsByTagName('input')[2].value,
+                    'text-decoration': refLinkSetting.current.getElementsByTagName('select')[1].value,
+                },
+            },
+            ul: {
+                'padding-left': refULSetting.current.getElementsByTagName('input')[0].value + 'px',
+                'margin-bottom': refULSetting.current.getElementsByTagName('input')[1].value + 'px',
+                'margin-top': refULSetting.current.getElementsByTagName('input')[2].value + 'px'
+            },
+            ol: {
+                'padding-left': refOLSetting.current.getElementsByTagName('input')[0].value + 'px',
+                'margin-bottom': refOLSetting.current.getElementsByTagName('input')[1].value + 'px',
+                'margin-top': refOLSetting.current.getElementsByTagName('input')[2].value + 'px'
+            }
+            
+        }
+        ipcRenderer.send('saveTheme', themeSelected, theme)
+    }
 
     return(
         <div className={styles.formContenairTheme}>
-            <h2>Edit section {themeSelected !== '' && `- ${themeSelected}`}</h2>
+            <h2>Edit section {themeSelected !== '' && `- ${themeSelected}`}{themeSelected !== '' && (<button className={styles.btn_save} onClick={(e) => saveTheme(e)}>Save</button>)}</h2>
             {themeSelected !== ''
             ? (<form action="">
                 <div className={styles.section_Form}>
