@@ -34,7 +34,7 @@ export default function ThemeGenerator(this:any, props:ThemeGeneratorProps){
             {JSONThemes == null 
                 ? <Loader/>
                 : <div className={styles.themeGeneratorContenair}>
-                    <FormContenairTheme></FormContenairTheme>
+                    <FormContenairTheme JSONThemes={JSONThemes}></FormContenairTheme>
                     <ExemplePage></ExemplePage>
                   </div>
             }

@@ -1,11 +1,18 @@
 import styles from 'styles/components/main/themeGenerator/FormContenairTheme.module.scss'
 
 import {IoIosArrowDown} from 'react-icons/io'
-import React, {useState} from 'react'
+import React, {useRef, useState} from 'react'
 import {gsap} from "gsap"
+import {Theme} from 'themetypes'
 
-export function FormContenairTheme(this:any){
-    // const [jsonThemes, setJsonThemes] = useState<>()
+type FormContenairThemeprops = {
+    JSONThemes: Theme[]
+}
+
+export function FormContenairTheme(this:any, props:FormContenairThemeprops){
+    const [themeSelected, setThemeSelected] = useState<string>('')
+    const refNewNameInput = useRef<HTMLInputElement>(null)
+    const refNewThemeContenair = useRef<HTMLDivElement>(null)
 
     const toggleShowTable = (e:React.MouseEvent) => {
         const associatedTable = e.currentTarget.nextElementSibling as HTMLDivElement
@@ -31,11 +38,45 @@ export function FormContenairTheme(this:any){
         }
     }
 
+    const createFormErrorElement = (msg:string):HTMLParagraphElement => {
+        let errorP = document.createElement('p')
+        errorP.classList.add(styles.errorP)
+        errorP.innerHTML = msg
+        return errorP
+    }
+
+    const handleCreateNewTheme = (e:React.MouseEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+        if(refNewNameInput == null || refNewNameInput.current == null || refNewThemeContenair == null || refNewThemeContenair.current == null) return
+        let errorMessages = refNewThemeContenair.current.getElementsByClassName(styles.errorP)
+        while(errorMessages.length > 0) errorMessages[0].remove()
+        const name = refNewNameInput.current.value
+        if(name == ''){
+            refNewThemeContenair.current.appendChild(createFormErrorElement('You must choose a name'))
+            return
+        }
+        let alreadyFound= false;
+        props.JSONThemes.forEach((value:Theme) => {
+            if(value.name == name){
+                refNewThemeContenair.current?.appendChild(createFormErrorElement('The chosen name is not available. A theme already exists with this name.'))
+                alreadyFound = true;
+                return
+            }
+        })
+        if(alreadyFound){
+            refNewNameInput.current.focus()
+            return
+        }
+        console.log(name)
+    }
+
 
     return(
         <div className={styles.formContenairTheme}>
             <h2>Edit section</h2>
-            <form action="">
+            {themeSelected !== ''
+            ? (<form action="">
                 <div className={styles.section_Form}>
                     <h3 style={{padding: '10px'}} onClick={(e:React.MouseEvent) => toggleShowTable(e)} >
                         General <IoIosArrowDown style={{transform : 'rotate(-90deg)'}}/>
@@ -437,7 +478,29 @@ export function FormContenairTheme(this:any){
                         </table>
                     </div>
                 </div>
-            </form>
+            </form>)
+            : (<form className={styles.form_SelectTheme}>
+                <h4>Please select a Theme : </h4>
+                {props.JSONThemes.length !== 1 
+                    ? (
+                        <div>
+                            <select id="selectTheme">
+                                {props.JSONThemes.map((value:Theme) => {
+                                    return (<option value={value.name}>{value.name}</option>)
+                                })}
+                            </select>
+                            <button>Modify</button>
+                        </div>
+                        )
+                    
+                    : (<p>No availables themes</p>)
+                }
+                <h4>Or create a new theme : </h4>
+                <div className={styles.newThemeContenair} ref={refNewThemeContenair}>
+                    <input ref={refNewNameInput} type="text" placeholder='Name'/>
+                    <button onClick={(e) => handleCreateNewTheme(e)}>Create</button>
+                </div>
+            </form>)}
         </div>
     )
 }

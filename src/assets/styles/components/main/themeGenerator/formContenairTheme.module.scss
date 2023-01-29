@@ -44,5 +44,39 @@
 
         }
     }
+
+    .form_SelectTheme{
+        h4{
+            font-size: 17px;
+            text-decoration: underline;
+        }
+        button{
+            min-width: 100px;
+            background-color: $button_color;
+            border-radius: 10px;
+            border: solid 1px white;
+            padding: 5px;
+
+            &:hover{
+                transform: scale(1.1);
+            }
+        }
+        .newThemeContenair{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+
+            .errorP{
+                color: red;
+                position: absolute;
+                bottom: -50px;
+                margin: 0;
+                padding: 0;
+            }
+
+        }
+    }
     
 }
