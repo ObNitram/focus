@@ -45,7 +45,7 @@ const App: React.FC = () => {
   return (
     <div className={styles.app}>
       <SelectedFilesContext.Provider value={[selectedFiles, setSelectedFiles]}>
-        <MenuBar themes={themes} selectedTheme={selectedTheme} displayManageTheme={setDisplayThemeGenerator}/>
+        <MenuBar themes={themes} selectedTheme={selectedTheme} displayManageTheme={setDisplayThemeGenerator} displayThemeGenerator={displayThemeGenerator}/>
         {themeReceived ? 
         <div className={styles.appContenair} style={{display: displayThemeGenerator? 'none' : 'flex'}}>
           <Sidebar  />
