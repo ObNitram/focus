@@ -5,6 +5,7 @@ import React, {useState} from 'react'
 import {gsap} from "gsap"
 
 export function FormContenairTheme(this:any){
+    // const [jsonThemes, setJsonThemes] = useState<>()
 
     const toggleShowTable = (e:React.MouseEvent) => {
         const associatedTable = e.currentTarget.nextElementSibling as HTMLDivElement
@@ -19,7 +20,6 @@ export function FormContenairTheme(this:any){
                 duration: 0.2
             })
         }else{
-            associatedTable.style.height = '0px'
             gsap.to(associatedTable, {
                 height: '0px',
                 duration: 0.2
