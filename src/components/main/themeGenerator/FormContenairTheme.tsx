@@ -196,6 +196,7 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                 border-left-color: ${refQuoteSetting.current?.getElementsByTagName('input')[4].value};
                 border-left-style: ${refQuoteSetting.current?.getElementsByTagName('select')[0].value};
                 border-left-width: ${refQuoteSetting.current?.getElementsByTagName('input')[5].value}px;
+                padding-left: ${refQuoteSetting.current?.getElementsByTagName('input')[6].value}px;
             }
             .editor_ul{
                 padding-left: ${refULSetting.current?.getElementsByTagName('input')[0].value}px;
@@ -312,7 +313,7 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
             refQuoteSetting.current.getElementsByTagName('input')[1].value = removePXString(loadedTheme.quote['margin-bottom'])
             refQuoteSetting.current.getElementsByTagName('input')[2].value = removePXString(loadedTheme.quote['font-size'])
             refQuoteSetting.current.getElementsByTagName('input')[3].value = loadedTheme.quote['color']
-            refQuoteSetting.current.getElementsByTagName('input')[4].value = removePXString(loadedTheme.quote['border-left-color'])
+            refQuoteSetting.current.getElementsByTagName('input')[4].value = loadedTheme.quote['border-left-color']
             refQuoteSetting.current.getElementsByTagName('input')[5].value = removePXString(loadedTheme.quote['border-left-width'])
             refQuoteSetting.current.getElementsByTagName('select')[0].value = loadedTheme.quote['border-left-style']
             refQuoteSetting.current.getElementsByTagName('input')[6].value = removePXString(loadedTheme.quote['padding-left'])
@@ -350,10 +351,10 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
             },
             paragraph: {
                 'color': refParagraphSetting.current.getElementsByTagName('input')[0].value,
-                'font-size': refParagraphSetting.current.getElementsByTagName('input')[1].value + 'px',
-                'margin-bottom': refParagraphSetting.current.getElementsByTagName('input')[2].value + 'px',
-                'margin-left': refParagraphSetting.current.getElementsByTagName('input')[3].value + 'px',
-                'margin-top': refParagraphSetting.current.getElementsByTagName('input')[4].value + 'px',
+                'font-size': refParagraphSetting.current.getElementsByTagName('input')[4].value + 'px',
+                'margin-bottom': refParagraphSetting.current.getElementsByTagName('input')[3].value + 'px',
+                'margin-left': refParagraphSetting.current.getElementsByTagName('input')[1].value + 'px',
+                'margin-top': refParagraphSetting.current.getElementsByTagName('input')[2].value + 'px',
             },
             bold: {
                 'color': refBoldSetting.current.getElementsByTagName('input')[0].value,
@@ -752,7 +753,7 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="borderLeftColorQuote">Border left color :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="borderLeftColorQuote" /></td>
+                                    <td><input onChange={changeStyle} type="color" id="borderLeftColorQuote" /></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="borderLeftWidthQuote">Border left width :</label></td>

@@ -59,7 +59,7 @@ export function setupEvents():void{
         printINFO('getTheme receive')
         createAllThemesConverted().then((value: {name:string, css:string}[]) => {
             printINFO('Themes is converted, send they to client')
-            mainWindow?.webContents.send('getTheme_responses', value)
+            mainWindow?.webContents.send('getTheme_responses', value, 'default')
         }).catch((reason) => {
             printError('Error when convert themes')
             mainWindow?.webContents.send('getTheme_responses', reason)
@@ -83,6 +83,14 @@ export function setupEvents():void{
         }
         saveThemes(themes).then(() => {
             printINFO('Theme "' + themeName + '" is saved !')
+            createAllThemesConverted().then((value: {name:string, css:string}[]) => {
+                printINFO('Themes is converted, send they to client')
+                mainWindow?.webContents.send('getTheme_responses', value, themeName)
+            }).catch((reason) => {
+                printError('Error when convert themes')
+                mainWindow?.webContents.send('getTheme_responses', reason)
+            })
+            
         }).catch((reason) => {  
             printError('Error when save theme "' + themeName + '"')
             printError(reason)

@@ -22,15 +22,28 @@ const App: React.FC = () => {
 
   useEffect(() => {
     ipcRenderer.send('getTheme')
-        ipcRenderer.once('getTheme_responses', (event, value: {name:string, css:string}[]) => {
-            let newStyle = document.createElement('style')
-            newStyle.innerHTML = value[0].css
-            newStyle.id= 'style_editor'
-            document.head.appendChild(newStyle)
-            setThemeReceived(true)
-            setSelectedTheme('default')
-            setThemes(value)
-        })
+    ipcRenderer.on('getTheme_responses', (event, value: {name:string, css:string}[], themeToSet:string) => {
+      let editor_style:HTMLStyleElement|null = document.getElementById('style_editor') as HTMLStyleElement
+      if(editor_style == null) {
+        editor_style = document.createElement('style')
+        editor_style.id= 'style_editor'
+        document.head.appendChild(editor_style)
+      }
+      let found:boolean = false
+      value.forEach((value: {name:string, css:string}) => {
+        if(value.name == themeToSet && editor_style) {
+          editor_style.innerHTML = value.css
+          found = true
+          setSelectedTheme(themeToSet)
+        }
+      })
+      if(!found && editor_style) {
+        editor_style.innerHTML = value[0].css
+        setSelectedTheme(value[0].name)
+      }
+      setThemeReceived(true)
+      setThemes(value)
+    })
   }, [])
 
   useEffect(() => {
@@ -49,6 +62,7 @@ const App: React.FC = () => {
     setDisplayThemeGenerator(false)
   }
 
+
   return (
     <div className={styles.app}>
       <SelectedFilesContext.Provider value={[selectedFiles, setSelectedFiles]}>
@@ -63,7 +77,7 @@ const App: React.FC = () => {
               <Loader/>
           </div>
         }
-        {displayThemeGenerator && <ThemeGenerator closeThemeGenerator={closeThemeGenerator}></ThemeGenerator>}
+        {displayThemeGenerator && <ThemeGenerator closeThemeGenerator={closeThemeGenerator} ></ThemeGenerator>}
       </SelectedFilesContext.Provider>
     </div>
   )
