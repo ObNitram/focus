@@ -3,7 +3,7 @@
   "productName": "Focus",
   "private": true,
   "version": "2.1.0",
-  "description": "Vite React Electron boilerplate.",
+  "description": "A text editor for take note with customizable themes.",
   "author": "草鞋没号 <308487730@qq.com>",
   "license": "MIT",
   "main": "dist-electron/electron/main/index.js",
