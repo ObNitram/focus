@@ -1,4 +1,4 @@
-import styles from 'styles/components/main/themeGenerator/FormContenairTheme.module.scss'
+import styles from 'styles/components/main/themeGenerator/formContenairTheme.module.scss'
 
 import {IoIosArrowDown} from 'react-icons/io'
 import React, {useRef, useState, useEffect} from 'react'

@@ -1,4 +1,4 @@
-import styles from 'styles/components/main/themeGenerator/ExemplePage.module.scss'
+import styles from 'styles/components/main/themeGenerator/exemplePage.module.scss'
 import crossEditorStyles from 'styles/components/editor/editor.module.scss'
 
 export function ExemplePage(this:any) {
