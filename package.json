@@ -1,6 +1,6 @@
 {
-  "name": "electron-vite-react",
-  "productName": "Electron",
+  "name": "focus",
+  "productName": "Focus",
   "private": true,
   "version": "2.1.0",
   "description": "Vite React Electron boilerplate.",

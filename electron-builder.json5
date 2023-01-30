@@ -3,8 +3,8 @@
  */
 {
   appId: "YourAppID",
-  productName: "YourAppName",
-  copyright: "Copyright © 2022 ${author}",
+  productName: "Focus",
+  copyright: "Copyright © 2022 ${Graber Thomas, Humbert Logan, Guillemot Martin}",
   asar: true,
   directories: {
     output: "release/${version}",
