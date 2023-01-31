@@ -45,11 +45,6 @@ const App: React.FC = () => {
       setThemeReceived(true)
       setThemes(value)
     })
-    document.addEventListener('keydown', (ev: KeyboardEvent) => {
-      if (ev.key == 'a') {
-        addNotif('New Notif', NotificationLevelEnum.SUCESS)
-      }
-    })
   }, [])
 
   useEffect(() => {
@@ -73,6 +68,7 @@ const App: React.FC = () => {
   }
 
   const addNotif = (s:string, level:NotificationLevelEnum) => {
+    console.log('ADD NOTIF')
     let newNotif:NotificationType = {
       text: s,
       level: level
