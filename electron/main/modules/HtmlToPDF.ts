@@ -6,6 +6,7 @@ import { tmpdir } from 'os';
 import { printError, printINFO, printLog, printOK } from './OutputModule';
 import { mainWindow } from './WindowsManagement';
 import { getPathVault } from './VaultManagementModule';
+import { getName } from 'pathmanage';
 
 
 export function setupEvents() {
@@ -88,8 +89,10 @@ export function setupEvents() {
                 displayHeaderFooter: false,
             }).then(() => {
                 printOK('Pdf is saved in ' + filePathPDF)
+                mainWindow.webContents.send('pdf_save_responses', true, getName(filePathPDF))
             }).catch((e) => {
                 printError('The pdf is not saved ! An error occured : ' + e)
+                mainWindow.webContents.send('pdf_save_responses', false, getName(filePathPDF))
             }).finally(() => {
                 browser.close();
             })
