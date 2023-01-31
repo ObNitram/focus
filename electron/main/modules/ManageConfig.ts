@@ -1,27 +1,28 @@
 import fs from 'fs'
-import {app} from 'electron'
+import { app } from 'electron'
 import * as outPut from './OutputModule'
 import * as vaultManagement from './VaultManagementModule'
+import { NodesSave } from './editorExtraFeaturesManagementModule/SaveEditorExtraFeatures'
 
-const pathConfigFolder:string = app.getPath('appData')+ '/focus/'
-const vaultConfigFileName:string = 'vaultConfig.json'
+const pathConfigFolder: string = app.getPath('appData') + '/focus/'
+const vaultConfigFileName: string = 'vaultConfig.json'
 const generalConfigFileName: string = 'generalConfig.json'
-const editorExtraFeaturesConfigFileName:string = 'editorExtraFeaturesConfig.json'
+const editorExtraFeaturesConfigFileName: string = 'editorExtraFeaturesConfig.json'
 
 type vaultConfigFileNameType = {
-    location:string;
+    location: string;
 }
 
 type generalConfigType = {
     size_sidebar: number
 }
 
-let generalConfig:generalConfigType|null = null
+let generalConfig: generalConfigType | null = null
 
-export function initConfig(){
-    if(!fs.existsSync(pathConfigFolder)) {
+export function initConfig() {
+    if (!fs.existsSync(pathConfigFolder)) {
         outPut.printINFO('Config folder not found in ' + pathConfigFolder)
-        outPut.printINFO('Try to create ' + pathConfigFolder+ '...')
+        outPut.printINFO('Try to create ' + pathConfigFolder + '...')
         try {
             fs.mkdirSync(pathConfigFolder)
             outPut.printOK('Setting folder created !')
@@ -30,89 +31,89 @@ export function initConfig(){
             return false
         }
     }
-    if(! fs.existsSync(pathConfigFolder+vaultConfigFileName)){
-        outPut.printINFO('Config file '+ pathConfigFolder+vaultConfigFileName + ' not found !')
-        try{
-            outPut.printINFO('Try to create ' + pathConfigFolder+vaultConfigFileName+ '...')
-            fs.writeFileSync(pathConfigFolder+vaultConfigFileName, JSON.stringify({
+    if (!fs.existsSync(pathConfigFolder + vaultConfigFileName)) {
+        outPut.printINFO('Config file ' + pathConfigFolder + vaultConfigFileName + ' not found !')
+        try {
+            outPut.printINFO('Try to create ' + pathConfigFolder + vaultConfigFileName + '...')
+            fs.writeFileSync(pathConfigFolder + vaultConfigFileName, JSON.stringify({
                 location: null
             }))
             outPut.printOK('File created !')
-        }catch(error){
+        } catch (error) {
             outPut.printError('Failed to create the file. Aborting.')
             return false;
         }
         return true
     }
-    if(! fs.existsSync(pathConfigFolder+vaultConfigFileName)){
-        outPut.printINFO('Config file '+ pathConfigFolder+vaultConfigFileName + ' not found !')
-        try{
-            outPut.printINFO('Try to create ' + pathConfigFolder+vaultConfigFileName+ '...')
-            fs.writeFileSync(pathConfigFolder+vaultConfigFileName, JSON.stringify({
+    if (!fs.existsSync(pathConfigFolder + vaultConfigFileName)) {
+        outPut.printINFO('Config file ' + pathConfigFolder + vaultConfigFileName + ' not found !')
+        try {
+            outPut.printINFO('Try to create ' + pathConfigFolder + vaultConfigFileName + '...')
+            fs.writeFileSync(pathConfigFolder + vaultConfigFileName, JSON.stringify({
                 location: null
             }))
             outPut.printOK('File created !')
-        }catch(error){
+        } catch (error) {
             outPut.printError('Failed to create the file. Aborting.')
             return false;
         }
         return true
     }
     let data;
-    try{
-        data = fs.readFileSync(pathConfigFolder+vaultConfigFileName, 'utf8');
-    }catch(error){
+    try {
+        data = fs.readFileSync(pathConfigFolder + vaultConfigFileName, 'utf8');
+    } catch (error) {
         outPut.printError('Failed to read setting !')
         return false
     }
-    if(data){
+    if (data) {
         try {
-            let res:vaultConfigFileNameType = JSON.parse(data)
+            let res: vaultConfigFileNameType = JSON.parse(data)
             vaultManagement.setPath(res.location)
             outPut.printOK('Config is OK!')
             return true
-        } catch (error:any) {
+        } catch (error: any) {
             outPut.printError('Failed to get setting. Aborting...')
             return false
         }
-    }else{
+    } else {
         outPut.printError('Failed to get setting. Aborting...')
         return false
     }
 }
 
-export function initGeneralConfig():boolean{
-    if(! fs.existsSync(pathConfigFolder+generalConfigFileName)){
-        outPut.printINFO('Config file '+ pathConfigFolder+generalConfigFileName + ' not found !')
-        try{
-            outPut.printINFO('Try to create ' + pathConfigFolder+generalConfigFileName+ '...')
-            fs.writeFileSync(pathConfigFolder+generalConfigFileName, JSON.stringify({
+export function initGeneralConfig(): boolean {
+    if (!fs.existsSync(pathConfigFolder + generalConfigFileName)) {
+        outPut.printINFO('Config file ' + pathConfigFolder + generalConfigFileName + ' not found !')
+        try {
+            outPut.printINFO('Try to create ' + pathConfigFolder + generalConfigFileName + '...')
+            fs.writeFileSync(pathConfigFolder + generalConfigFileName, JSON.stringify({
                 size_sidebar: 300
             }))
             outPut.printOK('File created !')
-        }catch(error){
+        } catch (error) {
             outPut.printError('Failed to create the file. Aborting.')
             return false;
         }
     }
     let data;
-    try{
-        data = fs.readFileSync(pathConfigFolder+generalConfigFileName, 'utf8');
-    }catch(error){
+    try {
+        data = fs.readFileSync(pathConfigFolder + generalConfigFileName, 'utf8');
+    } catch (error) {
         outPut.printError('Failed to read setting !')
         return false
     }
-    if(data){
+    if (data) {
         try {
-            let res:generalConfigType = JSON.parse(data)
+            let res: generalConfigType = JSON.parse(data)
             generalConfig = res
             outPut.printOK('Config is OK!')
             return true
-        } catch (error:any) {
+        } catch (error: any) {
             outPut.printError('Failed to get setting. Aborting...')
             return false
         }
-    }else{
+    } else {
         outPut.printError('Failed to get setting. Aborting...')
         return false
     }
@@ -120,13 +121,13 @@ export function initGeneralConfig():boolean{
 
 export function initConfigEditorExtraFeature(): boolean {
     outPut.printINFO('Try to init config editor extra feature...')
-    if(! fs.existsSync(pathConfigFolder+editorExtraFeaturesConfigFileName)){
-        outPut.printINFO('Config file '+ pathConfigFolder+editorExtraFeaturesConfigFileName + ' not found !')
-        try{
-            outPut.printINFO('Try to create ' + pathConfigFolder+editorExtraFeaturesConfigFileName+ '...')
-            fs.writeFileSync(pathConfigFolder+editorExtraFeaturesConfigFileName, '{}')
+    if (!fs.existsSync(pathConfigFolder + editorExtraFeaturesConfigFileName)) {
+        outPut.printINFO('Config file ' + pathConfigFolder + editorExtraFeaturesConfigFileName + ' not found !')
+        try {
+            outPut.printINFO('Try to create ' + pathConfigFolder + editorExtraFeaturesConfigFileName + '...')
+            fs.writeFileSync(pathConfigFolder + editorExtraFeaturesConfigFileName, '{}')
             outPut.printOK('File created !')
-        }catch(error){
+        } catch (error) {
             outPut.printError('Failed to create the file. Aborting.')
             return false;
         }
@@ -136,21 +137,21 @@ export function initConfigEditorExtraFeature(): boolean {
 
 
 
-export function saveInSettingPathVault(path:string):boolean{
+export function saveInSettingPathVault(path: string): boolean {
     outPut.printINFO("Try to save user's vault path...")
-    if(initConfig() == false){
+    if (initConfig() == false) {
         outPut.printError('An error occur, the config is corrupted. User\'s path not saved!')
         return false
     }
-    if(! fs.existsSync(path)){
+    if (!fs.existsSync(path)) {
         outPut.printError('An error occur, The require path doesn\'t exist !')
         return false
     }
-    try{
-        let contentSettingFile:vaultConfigFileNameType = JSON.parse(fs.readFileSync(pathConfigFolder+vaultConfigFileName, 'utf8'))
+    try {
+        let contentSettingFile: vaultConfigFileNameType = JSON.parse(fs.readFileSync(pathConfigFolder + vaultConfigFileName, 'utf8'))
         contentSettingFile.location = path
-        fs.writeFileSync(pathConfigFolder+vaultConfigFileName, JSON.stringify(contentSettingFile))
-    }catch(error){
+        fs.writeFileSync(pathConfigFolder + vaultConfigFileName, JSON.stringify(contentSettingFile))
+    } catch (error) {
         outPut.printError('An error occured while trying to save the path in file system.')
         return false
     }
@@ -159,62 +160,71 @@ export function saveInSettingPathVault(path:string):boolean{
     return true
 }
 
-export function getSizeSidebar():number{
+export function getSizeSidebar(): number {
     return generalConfig.size_sidebar
 }
 
-export async function saveSizeSideBar(newSize:number):Promise<string>{
+export async function saveSizeSideBar(newSize: number): Promise<string> {
     return new Promise((resolve, reject) => {
         outPut.printINFO('Try to save user\'s size of sidebar')
-        if(initGeneralConfig() == false){
+        if (initGeneralConfig() == false) {
             reject('An error occur, the config is corrupted. User\'s size of sidebar not saved!')
         }
-        if(newSize < 0){
+        if (newSize < 0) {
             reject('An error occur, the data is invalid. User\'s size of sidebar not saved!')
         }
         generalConfig.size_sidebar = newSize
-        try{
-            fs.writeFileSync(pathConfigFolder+generalConfigFileName, JSON.stringify(generalConfig))
-        }catch(error){
+        try {
+            fs.writeFileSync(pathConfigFolder + generalConfigFileName, JSON.stringify(generalConfig))
+        } catch (error) {
             reject('An error occured while trying to save general config in file system.')
         }
         resolve('Size of sidebar is saved')
     })
 }
 
-export function saveEditorExtraFeature(notePath: string, nodePath: string, key: string, value: any) {
-    outPut.printINFO('Try to save editor extra feature...')
-    fs.readFile(pathConfigFolder+editorExtraFeaturesConfigFileName, 'utf8', (err, data) => {
-        if(err){
-            outPut.printError('Failed to read editor extra feature config file !')
-            return
+export function saveEditorExtraFeatures(notePath: string, nodes: Array<NodesSave>) {
+    outPut.printINFO('Try to save editor extra features...')
+    if (!initConfigEditorExtraFeature()) {
+        outPut.printError('Failed to init config editor extra feature !')
+        return
+    }
+    let content: JSON = JSON.parse(fs.readFileSync(pathConfigFolder + editorExtraFeaturesConfigFileName, 'utf8'));
+    content[notePath] = {}
+
+    for (let i = 0; i < nodes.length; i++) {
+        if (!nodes[i].value) {
+            continue
         }
-        let content: JSON = JSON.parse(data);
-        if(!content[notePath]){
-            content[notePath] = {}
+
+        if (!content[notePath][nodes[i].nodePath]) {
+            content[notePath][nodes[i].nodePath] = {}
         }
-        content[notePath][nodePath + '.' + key] = value
-        fs.writeFile(pathConfigFolder+editorExtraFeaturesConfigFileName, JSON.stringify(content), (err) => {
-            if(err){
-                outPut.printError('Failed to save editor extra feature config file !')
-                return
-            }
-            outPut.printOK('Editor extra feature saved !')
-        })
-    })
+        if (!content[notePath][nodes[i].nodePath][nodes[i].key]) {
+            content[notePath][nodes[i].nodePath][nodes[i].key] = {}
+        }
+        content[notePath][nodes[i].nodePath][nodes[i].key] = nodes[i].value
+    }
+
+    try {
+        fs.writeFileSync(pathConfigFolder + editorExtraFeaturesConfigFileName, JSON.stringify(content))
+    }
+    catch (error) {
+        outPut.printError('Failed to save editor extra features !')
+    }
 }
 
 export function extraFeaturesExtistForNote(notePath: string): Promise<boolean> {
     outPut.printINFO('Try to check if extra features exist for note...')
 
     return new Promise((resolve, reject) => {
-        fs.readFile(pathConfigFolder+editorExtraFeaturesConfigFileName, 'utf8', (err, data) => {
-            if(err){
+        fs.readFile(pathConfigFolder + editorExtraFeaturesConfigFileName, 'utf8', (err, data) => {
+            if (err) {
                 outPut.printError('Failed to read editor extra feature config file !')
                 reject(false)
             }
             let content: JSON = JSON.parse(data);
-            if(!content[notePath]){
+            if (!content[notePath]) {
                 resolve(false)
             }
             resolve(true)
@@ -225,8 +235,8 @@ export function extraFeaturesExtistForNote(notePath: string): Promise<boolean> {
 export function getEditorExtraFeature(notePath: string, nodePath: string, key: string): any {
     outPut.printINFO('Try to get editor extra feature...')
 
-    let content: JSON = JSON.parse(fs.readFileSync(pathConfigFolder+editorExtraFeaturesConfigFileName, 'utf8'));
-    if(!content[notePath]){
+    let content: JSON = JSON.parse(fs.readFileSync(pathConfigFolder + editorExtraFeaturesConfigFileName, 'utf8'));
+    if (!content[notePath]) {
         return null
     }
     return content[notePath][nodePath + '.' + key]
@@ -236,18 +246,18 @@ export function updateEditorExtraFeaturesPath(oldPath: string, newPath: string):
     outPut.printINFO('Try to update editor extra features path...')
 
     return new Promise((resolve, reject) => {
-        fs.readFile(pathConfigFolder+editorExtraFeaturesConfigFileName, 'utf8', (err, data) => {
-            if(err){
+        fs.readFile(pathConfigFolder + editorExtraFeaturesConfigFileName, 'utf8', (err, data) => {
+            if (err) {
                 reject('Failed to read editor extra feature config file !')
             }
             let content: JSON = JSON.parse(data);
-            if(!content[oldPath]){
+            if (!content[oldPath]) {
                 resolve('No extra features for this note')
             }
             content[newPath] = content[oldPath]
             delete content[oldPath]
-            fs.writeFile(pathConfigFolder+editorExtraFeaturesConfigFileName, JSON.stringify(content), (err) => {
-                if(err){
+            fs.writeFile(pathConfigFolder + editorExtraFeaturesConfigFileName, JSON.stringify(content), (err) => {
+                if (err) {
                     reject('Failed to save editor extra feature config file !')
                 }
                 resolve('Editor extra feature saved !')
@@ -260,17 +270,17 @@ export function deleteEditorExtraFeaturesPath(notePath: string): Promise<string>
     outPut.printINFO('Try to delete editor extra features path...')
 
     return new Promise((resolve, reject) => {
-        fs.readFile(pathConfigFolder+editorExtraFeaturesConfigFileName, 'utf8', (err, data) => {
-            if(err){
+        fs.readFile(pathConfigFolder + editorExtraFeaturesConfigFileName, 'utf8', (err, data) => {
+            if (err) {
                 reject('Failed to read editor extra feature config file !')
             }
             let content: JSON = JSON.parse(data);
-            if(!content[notePath]){
+            if (!content[notePath]) {
                 resolve('No extra features for this note')
             }
             delete content[notePath]
-            fs.writeFile(pathConfigFolder+editorExtraFeaturesConfigFileName, JSON.stringify(content), (err) => {
-                if(err){
+            fs.writeFile(pathConfigFolder + editorExtraFeaturesConfigFileName, JSON.stringify(content), (err) => {
+                if (err) {
                     reject('Failed to save editor extra feature config file !')
                 }
                 resolve('Editor extra feature saved !')
@@ -283,17 +293,17 @@ export function copyEditorExtraFeaturesNoteToNewPath(path: string, newPath: stri
     outPut.printINFO('Try to copy editor extra features note to new path...')
 
     return new Promise((resolve, reject) => {
-        fs.readFile(pathConfigFolder+editorExtraFeaturesConfigFileName, 'utf8', (err, data) => {
-            if(err){
+        fs.readFile(pathConfigFolder + editorExtraFeaturesConfigFileName, 'utf8', (err, data) => {
+            if (err) {
                 reject('Failed to read editor extra feature config file !')
             }
             let content: JSON = JSON.parse(data);
-            if(!content[path]){
+            if (!content[path]) {
                 resolve('No extra features for this note')
             }
             content[newPath] = content[path]
-            fs.writeFile(pathConfigFolder+editorExtraFeaturesConfigFileName, JSON.stringify(content), (err) => {
-                if(err){
+            fs.writeFile(pathConfigFolder + editorExtraFeaturesConfigFileName, JSON.stringify(content), (err) => {
+                if (err) {
                     reject('Failed to save editor extra feature config file !')
                 }
                 resolve('Editor extra feature saved !')
