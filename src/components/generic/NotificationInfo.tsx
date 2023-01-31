@@ -56,7 +56,7 @@ export function NotificationInfo(this:any, props:NotificationProps):JSX.Element{
                 {props.notification.level == NotificationLevelEnum.WARNING && 'WARNING'}
                 {props.notification.level == NotificationLevelEnum.SUCESS && 'SUCESS'}
                 </p>
-                <IoClose onClick={handleCloseNotif} color={'red'}></IoClose>
+                <IoClose onClick={handleCloseNotif} color={'red'} size={15}></IoClose>
             </div>
             <div className={styles.textContenair}>
                 <p>{props.notification.text}</p>
