@@ -1,13 +1,25 @@
 import { createContext } from "react";
 
-interface NotificationContextType {
-    notifications: string[];
-    addNotification: (s: string) => void;
-    removeNotification: (s: string) => void;
+export enum NotificationLevelEnum {
+    WARNING,
+    SUCESS,
+    ERROR
 }
+
+export type NotificationType = {
+    text: string,
+    level: NotificationLevelEnum,
+}
+
+interface NotificationContextType {
+    notifications: NotificationType[];
+    addNotification: (s:string, level:NotificationLevelEnum) => void
+    removeNotification: (notificationToDelete:NotificationType) => void;
+}
+
 
 export const NotificationContext = createContext<NotificationContextType>({
     notifications: [],
-    addNotification: (s:string) => {},
-    removeNotification: (s:string) => {}
+    addNotification: (s:string, level:NotificationLevelEnum) => {},
+    removeNotification: (notificationToDelete:NotificationType) => {}
 });

@@ -4,7 +4,7 @@ import './assets/styles/index.scss'
 import styles from 'styles/app.module.scss'
 
 import { SelectedFilesContext } from './context/selectedFilesContext'
-import { NotificationContext } from './context/NotificationContext'
+import { NotificationContext, NotificationType, NotificationLevelEnum } from './context/NotificationContext'
 import Sidebar from "./components/main/sidebar/Sidebar"
 import MenuBar from './components/main/menubar/MenuBar'
 import Editor_contenair from './components/main/editors_contenair/Editor_contenair'
@@ -19,7 +19,7 @@ const App: React.FC = () => {
   const [themeReceived, setThemeReceived] = useState<boolean>(false)
   const [themes, setThemes] = useState<{ name: string, css: string }[] | null>(null)
   const [selectedTheme, setSelectedTheme] = useState<string>('default')
-  const [notification, setNotification] = useState<string[]>([])
+  const [notification, setNotification] = useState<NotificationType[]>([])
 
   useEffect(() => {
     ipcRenderer.send('getTheme')
@@ -47,7 +47,7 @@ const App: React.FC = () => {
     })
     document.addEventListener('keydown', (ev: KeyboardEvent) => {
       if (ev.key == 'a') {
-        addNotif('New Notif')
+        addNotif('New Notif', NotificationLevelEnum.SUCESS)
       }
     })
   }, [])
@@ -72,13 +72,17 @@ const App: React.FC = () => {
     setDisplayThemeGenerator(false)
   }
 
-  const addNotif = (s:string) => {
-    setNotification([...notification, s])
+  const addNotif = (s:string, level:NotificationLevelEnum) => {
+    let newNotif:NotificationType = {
+      text: s,
+      level: level
+    }
+    setNotification([...notification, newNotif])
   }
 
-  const removeNotif = (s:string) => {
-    setNotification(notification.filter((value:string) => {
-      return s != value
+  const removeNotif = (notificationToDelete:NotificationType) => {
+    setNotification(notification.filter((value:NotificationType) => {
+      return (value.level != notificationToDelete.level && value.text != notificationToDelete.text)
     }))
   }
 
@@ -99,8 +103,8 @@ const App: React.FC = () => {
           }
           {displayThemeGenerator && <ThemeGenerator closeThemeGenerator={closeThemeGenerator} ></ThemeGenerator>}
 
-          {notification.map((value: string) => {
-            return <NotificationInfo texte={value} />
+          {notification.map((value: NotificationType) => {
+            return <NotificationInfo notification={value} />
           })}
         </SelectedFilesContext.Provider>
       </NotificationContext.Provider>

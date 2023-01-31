@@ -8,16 +8,40 @@
     height: 100px;
     // padding: 20px;
     background-color: $main_color;
+    border-radius: 10px;
+    overflow: hidden;
+
+    &.error{
+        .headerNotif{
+            color: red;
+        }
+    }
+
+    &.warning{
+        .headerNotif{
+            color: orange;
+        }
+    }
+
+    &.sucess{
+        .headerNotif{
+            color: green;
+        }
+    }
 
     .headerNotif{
         position: relative;
         height: 20px;
-        background-color: $background_notification;
         width: 100%;
         display: flex;
         align-items: center;
-        justify-content: flex-end;
+        justify-content: space-around;
         padding: 2px;
+        background-color: $top_menu_bar;
+
+        p{
+            text-align: left;
+        }
     }
     .textContenair{
         display: flex;
