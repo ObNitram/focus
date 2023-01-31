@@ -1,0 +1,36 @@
+@import '../../variables.scss';
+
+
+.notification{
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    height: 100px;
+    // padding: 20px;
+    background-color: $main_color;
+
+    .headerNotif{
+        position: relative;
+        height: 20px;
+        background-color: $background_notification;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 2px;
+    }
+    .textContenair{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 80px;
+
+        p{
+            padding: 5px;
+            margin: 0 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+}
