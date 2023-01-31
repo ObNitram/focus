@@ -1,4 +1,4 @@
-import {Dispatch, SetStateAction, useEffect, useRef, useState} from 'react';
+import {Dispatch, SetStateAction, useContext, useEffect, useRef, useState} from 'react';
 
 import styles from "styles/components/editor/editor.module.scss";
 
@@ -26,6 +26,7 @@ import Toolbar from './toolbar/Toolbar';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { fileType } from '../main/editors_contenair/Editor_contenair';
 import { EditorState } from 'lexical';
+import { NotificationContext, NotificationType, NotificationLevelEnum } from '@/context/NotificationContext';
 
 const { ipcRenderer } = window.require('electron')
 
@@ -51,6 +52,8 @@ export default function Editor(this:any, props:Editor_Props) {
     const refInput = useRef(null)
 
     editorConfig.editorState = props.file.data
+
+    const {notifications, addNotification, removeNotification} = useContext(NotificationContext)
 
     useEffect(() => {
         console.log('Editor of ' + props.file.name + ' is mounted !')
@@ -96,6 +99,9 @@ export default function Editor(this:any, props:Editor_Props) {
         console.log(styleElement)
         console.log(htmlElement)
         ipcRenderer.send('savePDF', htmlElement, styleElement)
+        ipcRenderer.once('pdf_save_responses', (event, isSaved, name) => {
+            addNotification(isSaved ? `'${name}' is saved.` : `The pdf '${name}' is not saved.`, isSaved?  NotificationLevelEnum.SUCESS : NotificationLevelEnum.ERROR)
+        })
     }
 
     return (
