@@ -25,6 +25,7 @@ import * as ManageTheme from './modules/themes/ManageTheme'
 import { initConfig, saveInSettingPathVault, initGeneralConfig, saveSizeSideBar, getSizeSidebar, saveOpenedFiles, getSavedOpenedFiles, initThemeConfig } from './modules/ManageConfig'
 
 import * as pathManage from 'pathmanage'
+import * as HtmlToPDF from './modules/HtmlToPDF'
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration()
@@ -319,6 +320,7 @@ if (initConfig() == false || initGeneralConfig() == false || initThemeConfig() =
 app.whenReady().then(() => {
   setupEvents();
   ManageTheme.setupEvents();
+  HtmlToPDF.setupEvents();
   pathVault = VaultManagement.getPathVault()
   printMessage.printLog('Path found is ' + pathVault)
   if (pathVault == null) {

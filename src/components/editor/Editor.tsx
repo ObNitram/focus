@@ -48,6 +48,8 @@ export default function Editor(this:any, props:Editor_Props) {
 
     const editorStateRef = useRef<EditorState>()
 
+    const refInput = useRef(null)
+
     editorConfig.editorState = props.file.data
 
     useEffect(() => {
@@ -88,10 +90,18 @@ export default function Editor(this:any, props:Editor_Props) {
         props.addUnsavedFiles(props.file.path)
     }
 
+    const exportToPDF = () => {
+        const styleElement = (document.getElementById('style_editor') as HTMLStyleElement).outerHTML
+        const htmlElement = (document.getElementsByClassName('editor_general')[0] as HTMLDivElement).outerHTML
+        console.log(styleElement)
+        console.log(htmlElement)
+        ipcRenderer.send('savePDF', htmlElement, styleElement)
+    }
+
     return (
         <LexicalComposer initialConfig={editorConfig}>
             <div className={`${styles.editor_container} ${props.active ? '' : styles.inactive}`} ref={refEditorContenair}>
-                <Toolbar isSaved={isNoteSaved}/>
+                <Toolbar isSaved={isNoteSaved} exportTOPDF={exportToPDF}/>
 
                 <div className={styles.editor_inner}>
                     <RichTextPlugin

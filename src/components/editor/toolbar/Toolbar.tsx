@@ -59,7 +59,7 @@ import Button from "./Button";
 import Selector from "./Selector";
 import Divider from "./Divider";
 
-import { FaIndent, FaLink, FaOutdent, FaRedo, FaUndo } from "react-icons/fa";
+import { FaIndent, FaLink, FaOutdent, FaRedo, FaUndo, FaFilePdf } from "react-icons/fa";
 import { sanitizeUrl } from "../utils/url";
 
 const dropdownTextFormatItems = [
@@ -150,7 +150,8 @@ let currTextAlignKey = 'left';
 let currTextAlignTitle = 'Left';
 
 export interface ToolBarProps {
-    isSaved:boolean
+    isSaved:boolean,
+    exportTOPDF: () => void
 
 }
 
@@ -508,6 +509,8 @@ export default function Toolbar(this:any, props:ToolBarProps) {
             <Selector title={currTextAlign} closed={dropdownTextAlignClosed} items={dropdownTextAlignItems} onItemSelect={handleDropdownTextAlignItemCLick} onClick={handleTextAlignBtnClick} alt="Text align" ref={dropdownTextAlignRef} />
             <Button onClick={() => { editor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined); }} alt="Indent" active={false} icon={<FaIndent />} />
             <Button onClick={() => { editor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined); }} alt="Outdent" active={false} icon={<FaOutdent />} />
+            <Divider />
+            <Button onClick={() => props.exportTOPDF()} alt="Export to pdf" icon={<FaFilePdf/>}/>
             {!props.isSaved && <div className={styles.div_saved} title="This note is not saved"></div>}
         </div>
     )
