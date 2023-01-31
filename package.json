@@ -30,6 +30,7 @@
     "lexical": "^0.7.6",
     "original-fs": "^1.2.0",
     "pathmanage": "file:modules/pathManage",
+    "puppeteer": "^19.6.2",
     "react-icons": "^4.7.1",
     "react-loader-spinner": "^5.3.4",
     "react-router-dom": "^6.5.0",
