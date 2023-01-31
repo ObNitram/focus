@@ -83,6 +83,7 @@ export function setupEvents():void{
         }
         saveThemes(themes).then(() => {
             printINFO('Theme "' + themeName + '" is saved !')
+            mainWindow.webContents.send('saveTheme_reponse', true)
             createAllThemesConverted().then((value: {name:string, css:string}[]) => {
                 printINFO('Themes is converted, send they to client')
                 mainWindow?.webContents.send('getTheme_responses', value, themeName)
@@ -92,6 +93,7 @@ export function setupEvents():void{
             })
             
         }).catch((reason) => {  
+            mainWindow.webContents.send('saveTheme_reponse', false)
             printError('Error when save theme "' + themeName + '"')
             printError(reason)
         })

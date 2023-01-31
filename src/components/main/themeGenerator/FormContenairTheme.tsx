@@ -1,9 +1,10 @@
 import styles from 'styles/components/main/themeGenerator/formContenairTheme.module.scss'
 
 import {IoIosArrowDown} from 'react-icons/io'
-import React, {useRef, useState, useEffect} from 'react'
+import React, {useRef, useState, useEffect, useContext} from 'react'
 import {gsap} from "gsap"
 import {Theme} from 'themetypes'
+import { NotificationContext, NotificationType, NotificationLevelEnum } from '@/context/NotificationContext'
 const { ipcRenderer } = window.require('electron')
 
 
@@ -33,6 +34,8 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
     const refLinkSetting = useRef<HTMLDivElement>(null)
     const refULSetting = useRef<HTMLDivElement>(null)
     const refOLSetting = useRef<HTMLDivElement>(null)
+
+    const { notifications, addNotification, removeNotification } = useContext(NotificationContext);
 
     const toggleShowTable = (e:React.MouseEvent) => {
         const associatedTable = e.currentTarget.nextElementSibling as HTMLDivElement
@@ -448,6 +451,9 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
             
         }
         ipcRenderer.send('saveTheme', themeSelected, theme)
+        ipcRenderer.once('saveTheme_reponse', (event, res:boolean) => {
+            addNotification(`The theme ${themeSelected} is ${res ? 'saved!' : 'unsaved!'}`, res ? NotificationLevelEnum.SUCESS : NotificationLevelEnum.ERROR )
+        })
     }
 
     return(
