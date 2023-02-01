@@ -37,7 +37,7 @@ npm run build
 > Your executable will be in 
 > ./focus/release/
 
-### Config
+## Config
 In linux, your configurations files will be saved in 
 ```
 ~/.config/focus
