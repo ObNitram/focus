@@ -37,6 +37,21 @@ npm run build
 > Your executable will be in 
 > ./focus/release/
 
+### Config
+In linux, your configurations files will be saved in 
+```
+~/.config/focus
+```
+In Windows, your configurations files will be saved in
+```
+%AppData%
+```
+In MacOS, your configurations files will be saved in
+```
+~/Library/Application Support
+```
+
+
 ## Don't hesitate to put a star!
 
 
