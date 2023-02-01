@@ -329,7 +329,8 @@ export function getEditorExtraFeature(notePath: string, nodePath: string, key: s
     if (!content[notePath]) {
         return null
     }
-    return content[notePath][nodePath + '.' + key]
+    outPut.printOK('Extra feature found: ' + key + '=>' + content[notePath][nodePath][key])
+    return content[notePath][nodePath][key]
 }
 
 export function updateEditorExtraFeaturesPath(oldPath: string, newPath: string): Promise<string> {
