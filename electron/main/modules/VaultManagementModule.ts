@@ -1,4 +1,3 @@
-import { dialog } from 'electron';
 import * as FileSystemModule from './FileSystemModule'
 
 import * as pathManage from 'pathmanage'
