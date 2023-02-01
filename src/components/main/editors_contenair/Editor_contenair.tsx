@@ -162,7 +162,7 @@ export default function Editor_contenair():JSX.Element {
             </ul>
             { openedFiles.length != 0 ?
                 openedFiles.map((value:fileType, index:number) => {
-                    return( <Editor key={index} active={isViewed(value)} file={value} addUnsavedFiles={addUnsavedFiles} removeUnsavedFiles={removeUnsavedFiles}></Editor>
+                    return( <Editor key={value.path} active={isViewed(value)} file={value} addUnsavedFiles={addUnsavedFiles} removeUnsavedFiles={removeUnsavedFiles}></Editor>
                           )
                 })
                 : (<p>Nothing</p>)}
