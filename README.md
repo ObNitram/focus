@@ -13,7 +13,7 @@ Lightweight and simple note editor with customizable theme.
     - 👉 Search Bar
     - 👉 Command Bar
 
-## Steps run the projects
+## Steps to run the projects
 
 Clone this repository with :
 ```bash
