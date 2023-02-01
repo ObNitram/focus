@@ -3,6 +3,7 @@ Lightweight and simple note editor with customizable theme.
 
 ## ✅ Current Features ✅
     - 💫 Full markdown support
+    - 💫 Extension of markdown : Underline, add space...
     - 💫 Editable by toolbar or markdown tag
     - 💫 Full customizable theme. Edit background, spacing, font size of all elements
     - 💫 Export your notes as PDF
