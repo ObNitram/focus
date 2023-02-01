@@ -26,6 +26,7 @@
     position: relative;
     // height: 100%;
     flex-grow: 2;
+    overflow-y: auto;
 
     .editor_inner_input {
       min-height: 150px;
