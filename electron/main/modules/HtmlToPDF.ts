@@ -1,9 +1,8 @@
 import { launch } from 'puppeteer';
 import * as fs from 'fs'
 import { dialog, ipcMain } from 'electron';
-import { string } from 'yargs';
 import { tmpdir } from 'os';
-import { printError, printINFO, printLog, printOK } from './OutputModule';
+import { printError, printINFO, printOK } from './OutputModule';
 import { mainWindow } from './WindowsManagement';
 import { getPathVault } from './VaultManagementModule';
 import { getName } from 'pathmanage';
