@@ -4,7 +4,6 @@ import {useState} from 'react'
 
 import {IoClose} from 'react-icons/io5'
 import {BiSquare} from 'react-icons/bi'
-import {AiOutlinePlusSquare} from 'react-icons/ai'
 import {IoRemove} from 'react-icons/io5'
 import React from 'react'
 import { ipcRenderer } from 'electron'
