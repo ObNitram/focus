@@ -26,6 +26,8 @@ import { initConfig, saveInSettingPathVault, initGeneralConfig, saveSizeSideBar,
 
 import * as pathManage from 'pathmanage'
 import * as HtmlToPDF from './modules/HtmlToPDF'
+import { saveEditorExtraFeatures } from './modules/editorExtraFeaturesManagementModule/SaveEditorExtraFeatures'
+import { restoreEditorExtraFeatures } from './modules/editorExtraFeaturesManagementModule/RestoreEditorExtraFeatures'
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration()
@@ -197,11 +199,17 @@ function setupEvents() {
 
   ipcMain.on('open-note', (event, path: string) => {
     printMessage.printINFO('Request to open : ' + path)
-    VaultManagement.openFile(path).then(([noteData, filePath]:string[]) => {
+    VaultManagement.openFile(path).then(([noteData, filePath]: string[]) => {
       MarkdownConverter.convertMarkdownToJSON(noteData).then((noteData) => {
-        VaultManagement.getNoteOrFolderInfo(path, false).then((note) => {
-          printMessage.printOK(path + ' opened!')
-          mainWindow?.webContents.send('note-opened', note.name, noteData, filePath)
+
+        restoreEditorExtraFeatures(path, noteData).then((noteData) => {
+          VaultManagement.getNoteOrFolderInfo(path, false).then((note) => {
+            printMessage.printOK(path + ' opened!')
+            mainWindow?.webContents.send('note-opened', note.name, noteData, filePath)
+          })
+            .catch((err) => {
+              printMessage.printError(err)
+            })
         })
           .catch((err) => {
             printMessage.printError(err)
@@ -216,13 +224,17 @@ function setupEvents() {
       })
   })
 
-  ipcMain.on('save-note', (event, noteData: string, path:string) => {
+  ipcMain.on('save-note', (event, noteData: string, path: string) => {
     printMessage.printINFO('Request to save : ' + path)
-
-    MarkdownConverter.convertJSONToMarkdown(noteData).then((noteData) => {
-      VaultManagement.saveFile(noteData, path).then(() => {
-        printMessage.printOK(path + ' saved!')
-        mainWindow?.webContents.send('note_saved', path)
+    saveEditorExtraFeatures(path, noteData).then(() => {
+      MarkdownConverter.convertJSONToMarkdown(noteData).then((noteData) => {
+        VaultManagement.saveFile(noteData, path).then(() => {
+          printMessage.printOK(path + ' saved!')
+          mainWindow?.webContents.send('note_saved', path)
+        })
+          .catch((err) => {
+            printMessage.printError(err)
+          })
       })
         .catch((err) => {
           printMessage.printError(err)

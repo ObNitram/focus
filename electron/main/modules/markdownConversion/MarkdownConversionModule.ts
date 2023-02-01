@@ -1,4 +1,4 @@
-import { CodeNodeV1, LineBreakNodeV1, ListNode, ParagraphNodeV1, QuoteNodeV1, RootNodeV1, textFormat } from './LexicalNodes';
+import { CodeNodeV1, LineBreakNodeV1, ListNode, ParagraphNodeV1, QuoteNodeV1, RootNodeV1, textFormat } from '../../model/LexicalNodes';
 import * as processNodesToJSON from './nodesProcessing/NodesProcessingMarkdownToJSON';
 import * as processNodesToMarkdown from './nodesProcessing/NodesProcessingJSONToMarkdown';
 
@@ -117,6 +117,19 @@ export function convertMarkdownToJSON(markdown: string): Promise<string> {
                 }
             }
         }
+        // Check again if there is a paragraph, quote or list that has not been added to the root node (happens when the last line is not empty)
+        if (currentParagraph) {
+            jsonObject.root.children.push(currentParagraph);
+            currentParagraph = null;
+        }
+        if (currentQuote) {
+            jsonObject.root.children.push(currentQuote);
+            currentQuote = null;
+        }
+        if (currentList) {
+            jsonObject.root.children.push(currentList);
+            currentList = null;
+        }
 
         // the root node should always have at least one child
         if (jsonObject.root.children.length === 0) {
@@ -130,8 +143,6 @@ export function convertJSONToMarkdown(json: string): Promise<string> {
     return new Promise((resolve, reject) => {
         let jsonObject = JSON.parse(json);
         let markdown = '';
-
-        console.log(jsonObject.root.children);
 
         for (let i = 0; i < jsonObject.root.children.length; i++) {
             let child = jsonObject.root.children[i];
@@ -160,6 +171,10 @@ export function convertJSONToMarkdown(json: string): Promise<string> {
             }
         }
 
+        // Remove the last line breaks
+        while (markdown.endsWith('\n')) {
+            markdown = markdown.substring(0, markdown.length - 1);
+        }
         resolve(markdown);
     });
 }

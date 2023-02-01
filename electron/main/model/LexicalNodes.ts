@@ -97,6 +97,30 @@ export class TextNodeV1 implements Node {
     }
 }
 
+export class LinkNodeV1 implements Node {
+    children: Node[];
+    direction: 'ltr' | 'rtl';
+    format: string;
+    indent: number;
+    type: string;
+    version: number;
+    rel: string|null;
+    target: string|null;
+    url: string|null;
+
+    constructor(url: string|null, target: string|null = null, rel: string|null = null) {
+        this.children = [];
+        this.direction = 'ltr';
+        this.format = '';
+        this.indent = 0;
+        this.type = 'link';
+        this.version = 1;
+        this.rel = rel;
+        this.target = target;
+        this.url = url;
+    }
+}
+
 export class HeadingNodeV1 implements Node {
     children: Node[];
     direction: 'ltr' | 'rtl';

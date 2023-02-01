@@ -1,4 +1,4 @@
-import { BulletListNodeV1, CodeNodeV1, headingLevel, HeadingNodeV1, LineBreakNodeV1, ListItemNodeV1, ListNode, OrderedListNodeV1, QuoteNodeV1, textFormat, TextNodeV1 } from '../LexicalNodes';
+import { BulletListNodeV1, CodeNodeV1, headingLevel, HeadingNodeV1, LineBreakNodeV1, LinkNodeV1, ListItemNodeV1, ListNode, OrderedListNodeV1, QuoteNodeV1, textFormat, TextNodeV1 } from '../../../model/LexicalNodes';
 
 /**
 * get the number of indents in a line
@@ -19,8 +19,8 @@ export function getNbIndentsInLine(line: string): number {
  * @param text the text to be processed
  * @returns the created text nodes
  */
-export function proceedText(text: string): TextNodeV1[] {
-    let textNodes: Array<TextNodeV1> = [];
+export function proceedText(text: string): Array<TextNodeV1|LinkNodeV1> {
+    let textNodes: Array<TextNodeV1|LinkNodeV1> = [];
     let textParts = text.split(/(\*\*|\*)/);
     let currentText = '';
     let currentFormat: textFormat = textFormat.normal;
@@ -52,7 +52,26 @@ export function proceedText(text: string): TextNodeV1[] {
             }
         }
         else {
-            currentText += part;
+            // check if text contains a link
+            if (part.match(/\[.*\]\(.*\)/)) {
+                let linkParts = part.split(/\[|\]\(|\)/);
+                let link = new LinkNodeV1(linkParts[2])
+                link.children.push(new TextNodeV1(linkParts[1]));
+
+                // add text before link
+                if (linkParts[0] !== '') {
+                    textNodes.push(new TextNodeV1(linkParts[0], currentFormat));
+                }
+                textNodes.push(link);
+
+                // add text after link
+                if (linkParts[3] !== '') {
+                    textNodes.push(new TextNodeV1(linkParts[3], currentFormat));
+                }
+            }
+            else {
+                currentText += part;
+            }
         }
     }
     if (currentText !== '') {
