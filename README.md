@@ -40,15 +40,15 @@ npm run build
 ## Config
 In linux, your configurations files will be saved in 
 ```
-~/.config/focus
+~/.config/focus/
 ```
 In Windows, your configurations files will be saved in
 ```
-%AppData%
+%AppData%/focus/
 ```
 In MacOS, your configurations files will be saved in
 ```
-~/Library/Application Support
+~/Library/Application Support/focus/
 ```
 
 
