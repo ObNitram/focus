@@ -34,9 +34,6 @@ function getNodesToSaveRecursively(node: Node, nodesSave: NodesSave[], nodePath:
 
 export function saveEditorExtraFeatures(notePath: string, json: string): Promise<void> {
     return new Promise((resolve, reject) => {
-        if (!ManageConfig.initConfigEditorExtraFeature()) {
-            reject('Failed to init config editor extra feature')
-        }
         try {
             let jsonObject = JSON.parse(json)
             let nodesSave: NodesSave[] = getNodesToSaveRecursively(jsonObject.root, [], 'root')

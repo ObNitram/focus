@@ -22,7 +22,7 @@ import * as WindowsManagement from './modules/WindowsManagement'
 import * as printMessage from './modules/OutputModule'
 import * as MarkdownConverter from './modules/markdownConversion/MarkdownConversionModule'
 import * as ManageTheme from './modules/themes/ManageTheme'
-import { initConfig, saveInSettingPathVault, initGeneralConfig, saveSizeSideBar, getSizeSidebar, saveOpenedFiles, getSavedOpenedFiles, initThemeConfig } from './modules/ManageConfig'
+import { initConfig, saveInSettingPathVault, saveSizeSideBar, getSizeSidebar, saveOpenedFiles, getSavedOpenedFiles } from './modules/ManageConfig'
 
 import * as pathManage from 'pathmanage'
 import * as HtmlToPDF from './modules/HtmlToPDF'
@@ -322,12 +322,8 @@ function setupEvents() {
   })
 }
 
-
-
-if (initConfig() == false || initGeneralConfig() == false || initThemeConfig() == false) {
-  printMessage.printError('The configuration of settings is corrupted or a system error occured. Exiting...')
-  app.exit();
-}
+// Initialize the config files if needed (it also check if the config files are valid)
+initConfig()
 
 app.whenReady().then(() => {
   setupEvents();
