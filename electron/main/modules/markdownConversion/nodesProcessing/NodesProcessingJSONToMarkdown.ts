@@ -61,6 +61,8 @@ export function proceedText(node: Node): string {
     if (node.type === 'text') {
         let textNode = node as TextNodeV1;
         switch (textNode.format) {
+            case textFormat.boldItalic:
+                return '***' + textNode.text + '***';
             case textFormat.bold:
                 return '**' + textNode.text + '**';
             case textFormat.italic:
@@ -68,7 +70,7 @@ export function proceedText(node: Node): string {
             case textFormat.normal:
                 return textNode.text;
             default:
-                throw new Error('The text format is not normal, bold or italic.');
+                throw new Error('Invalid text format: ' + textNode.format);
         }
     }
     else if (node.type === 'link') {
