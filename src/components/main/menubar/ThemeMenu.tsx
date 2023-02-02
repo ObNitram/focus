@@ -1,7 +1,5 @@
 import styles from 'styles/components/main/menubar.module.scss'
 
-
-import { useState } from "react"
 import { AiOutlineCheck } from "react-icons/ai"
 
 type ThemeMenuProps = {

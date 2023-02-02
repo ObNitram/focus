@@ -4,7 +4,7 @@ import {IoIosArrowDown} from 'react-icons/io'
 import React, {useRef, useState, useEffect, useContext} from 'react'
 import {gsap} from "gsap"
 import {Theme} from 'themetypes'
-import { NotificationContext, NotificationType, NotificationLevelEnum } from '@/context/NotificationContext'
+import { NotificationContext, NotificationLevelEnum } from '@/context/NotificationContext'
 const { ipcRenderer } = window.require('electron')
 
 

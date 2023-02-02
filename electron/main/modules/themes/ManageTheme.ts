@@ -1,4 +1,3 @@
-import { cpSync, existsSync } from "fs";
 import { mainWindow } from "../WindowsManagement";
 import { ipcMain } from "electron";
 import { getThemes, saveThemes } from "../ManageConfig";

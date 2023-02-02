@@ -1,5 +1,5 @@
 import styles from 'styles/components/generic/notification.module.scss'
-import React, { useEffect, useRef, useContext } from "react";
+import { useEffect, useRef, useContext } from "react";
 import { IoClose } from 'react-icons/io5'
 import { gsap } from 'gsap'
 import { NotificationContext, NotificationLevelEnum, NotificationType } from '@/context/NotificationContext';

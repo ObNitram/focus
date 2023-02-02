@@ -3,7 +3,6 @@ import { useState, useEffect, useContext } from 'react'
 import styles from 'styles/components/editor/editors_contenair.module.scss'
 import { IoClose } from 'react-icons/io5'
 import { pathIsInFiles } from '../sidebar/FileListLogic'
-import { normalizePathname } from '@remix-run/router'
 import { SelectedFilesContext } from '@/context/selectedFilesContext'
 const { ipcRenderer } = window.require('electron')
 
@@ -162,7 +161,7 @@ export default function Editor_contenair():JSX.Element {
             </ul>
             { openedFiles.length != 0 ?
                 openedFiles.map((value:fileType, index:number) => {
-                    return( <Editor key={index} active={isViewed(value)} file={value} addUnsavedFiles={addUnsavedFiles} removeUnsavedFiles={removeUnsavedFiles}></Editor>
+                    return( <Editor key={value.path} active={isViewed(value)} file={value} addUnsavedFiles={addUnsavedFiles} removeUnsavedFiles={removeUnsavedFiles}></Editor>
                           )
                 })
                 : (<p>Nothing</p>)}

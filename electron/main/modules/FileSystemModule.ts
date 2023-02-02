@@ -1,5 +1,5 @@
 import { shell } from 'electron'
-import { cp, fstat, mkdir, readdir, readFile, rename, rm, stat, writeFile, existsSync } from 'original-fs'
+import { cp, mkdir, readdir, readFile, rename, rm, stat, writeFile, existsSync } from 'original-fs'
 import { join } from 'path'
 import * as printMessage from './OutputModule'
 

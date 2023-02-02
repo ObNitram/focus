@@ -54,8 +54,8 @@ export const theme = {
     ul: 'editor_ul'
   },
   text: {
-    bold: 'editor_bold',
-    italic: 'editor_italic',
+    bold: `editor_bold ${styles.editor_inner_bold}`,
+    italic: `editor_italic ${styles.editor_inner_italic}`,
     underline: `editor_underline ${styles.editor_inner_underline}`
   },
   link: 'editor_link'

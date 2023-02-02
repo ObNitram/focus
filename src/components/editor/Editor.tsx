@@ -1,4 +1,4 @@
-import {Dispatch, SetStateAction, useContext, useEffect, useRef, useState} from 'react';
+import {useContext, useEffect, useRef, useState} from 'react';
 
 import styles from "styles/components/editor/editor.module.scss";
 
@@ -25,7 +25,7 @@ import editorConfig from "../../config/editor/editorConfig";
 import Toolbar from './toolbar/Toolbar';
 import { fileType } from '../main/editors_contenair/Editor_contenair';
 import { EditorState } from 'lexical';
-import { NotificationContext, NotificationType, NotificationLevelEnum } from '@/context/NotificationContext';
+import { NotificationContext, NotificationLevelEnum } from '@/context/NotificationContext';
 
 const { ipcRenderer } = window.require('electron')
 
