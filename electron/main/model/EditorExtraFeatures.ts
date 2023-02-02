@@ -1,3 +1,4 @@
 export const editorExtraFeatures = {
-    'paragraph': ['format']
+    'paragraph': ['format'],
+    'text': ['format']
 }

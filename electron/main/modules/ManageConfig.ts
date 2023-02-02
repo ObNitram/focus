@@ -272,12 +272,18 @@ export function extraFeaturesExtistForNote(notePath: string): Promise<boolean> {
 export function getEditorExtraFeature(notePath: string, nodePath: string, key: string): any {
     outPut.printINFO('Try to get editor extra feature...')
 
-    let content: JSON = JSON.parse(fs.readFileSync(pathConfigFolder + editorExtraFeaturesConfigFileName, 'utf8'));
-    if (!content[notePath]) {
+    try {
+        let content: JSON = JSON.parse(fs.readFileSync(pathConfigFolder + editorExtraFeaturesConfigFileName, 'utf8'));
+        if (!content[notePath]) {
+            return null
+        }
+        outPut.printOK('Extra feature found: ' + key + '=>' + content[notePath][nodePath][key])
+        return content[notePath][nodePath][key]
+    }
+    catch (error) {
+        // extra feature doesn't exist
         return null
     }
-    outPut.printOK('Extra feature found: ' + key + '=>' + content[notePath][nodePath][key])
-    return content[notePath][nodePath][key]
 }
 
 export function updateEditorExtraFeaturesPath(oldPath: string, newPath: string): Promise<string> {
