@@ -52,7 +52,6 @@ export function proceedHeading(headingNode: HeadingNodeV1): string {
  * proceed a text node and return the markdown text
  * @param textNode the text node to be processed
  * @returns the markdown text
- * @throws an error if the text format is not normal, bold or italic
  */
 export function proceedText(node: Node): string {
     if (node.type === 'linebreak') {
@@ -70,7 +69,7 @@ export function proceedText(node: Node): string {
             case textFormat.normal:
                 return textNode.text;
             default:
-                throw new Error('Invalid text format: ' + textNode.format);
+                return textNode.text;
         }
     }
     else if (node.type === 'link') {
