@@ -24,10 +24,7 @@ import * as MarkdownConverter from './modules/markdownConversion/MarkdownConvers
 import * as ManageTheme from './modules/themes/ManageTheme'
 import { initConfig, saveInSettingPathVault, saveSizeSideBar, getSizeSidebar, saveOpenedFiles, getSavedOpenedFiles } from './modules/ManageConfig'
 
-import * as pathManage from 'pathmanage'
 import * as HtmlToPDF from './modules/HtmlToPDF'
-import { saveEditorExtraFeatures } from './modules/editorExtraFeaturesManagementModule/SaveEditorExtraFeatures'
-import { restoreEditorExtraFeatures } from './modules/editorExtraFeaturesManagementModule/RestoreEditorExtraFeatures'
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration()
@@ -98,158 +95,6 @@ function setupEvents() {
     sendVaultContent()
   })
 
-  ipcMain.on('create-note', (event, pathVault: string | null = null) => {
-    printMessage.printINFO('Request to add note !')
-
-    VaultManagement.createNote(pathVault ? pathVault : VaultManagement.getPathVault()).then((note) => {
-      if (note) {
-        printMessage.printOK('Note added')
-      } else {
-        printMessage.printError('Note not added')
-      }
-    })
-      .catch((err) => {
-        printMessage.printError(err)
-      })
-  })
-
-  ipcMain.on('create-folder', (event, pathVault: string | null = null) => {
-    printMessage.printINFO('Request to add folder !')
-
-    VaultManagement.createFolder(pathVault ? pathVault : VaultManagement.getPathVault(), 'Untitled').then((folder) => {
-      if (folder) {
-        printMessage.printOK('Folder added')
-      } else {
-        printMessage.printError('Folder not added')
-      }
-    })
-      .catch((err) => {
-        printMessage.printError(err)
-      })
-  })
-
-  ipcMain.on('delete-note-or-folder', (event, arg) => {
-    printMessage.printINFO('Request to remove : ' + arg)
-
-    VaultManagement.deleteFileOrFolder(arg).then(() => {
-      printMessage.printOK(arg + ' removed!')
-    })
-      .catch((err) => {
-        printMessage.printError(err)
-      })
-  })
-
-  ipcMain.on('rename-note-or-folder', (event, path: string, newName: string) => {
-    printMessage.printINFO('Request to rename : ' + path + ', new name is ' + newName)
-
-    VaultManagement.renameFileOrFolder(path, newName).then(() => {
-      printMessage.printOK(path + ' renamed!')
-    })
-      .catch((err) => {
-        printMessage.printError(err)
-        VaultManagement.getNoteOrFolderInfo(path, true).then((note) => {
-          mainWindow?.webContents.send('note-updated', note)
-        })
-          .catch((err) => {
-            printMessage.printError(err)
-          })
-      })
-  })
-
-  ipcMain.on('move-note-or-folder', (event, path: string, newParentFolder: string | null = null) => {
-    if (newParentFolder === null) {
-      newParentFolder = pathManage.repairEndOfPath(VaultManagement.getPathVault(), true)
-    }
-
-    printMessage.printINFO('Request to move : ' + path + ' to ' + newParentFolder)
-    // printMessage.printLog('Parent of file to move is ' + pathManage.getParentPath(path) )
-    // printMessage.printLog('Parent of file to move is ' + pathManage.getParentPath(path) )
-    if (path === newParentFolder || newParentFolder == pathManage.getParentPath(path)) {
-      printMessage.printINFO('No move needed')
-      return
-    }
-
-    const newPath = join(newParentFolder, pathManage.getName(path))
-
-    VaultManagement.moveFileOrFolder(path, newPath).then(() => {
-      printMessage.printOK(path + ' moved!')
-    })
-      .catch((err) => {
-        printMessage.printError(err)
-      })
-  })
-
-  ipcMain.on('copy-note-or-folder', (event, path: string, newParentFolder: string | null = null) => {
-    if (newParentFolder === null) {
-      newParentFolder = VaultManagement.getPathVault()
-    }
-
-    printMessage.printINFO('Request to copy : ' + path + ' to ' + newParentFolder)
-
-    let pathParts = path.split('/')
-    const newPath = join(newParentFolder, pathParts[pathParts.length - 1])
-
-    VaultManagement.copyFileOrFolder(path, newPath).then(() => {
-      printMessage.printOK(path + ' copied!')
-    })
-      .catch((err) => {
-        printMessage.printError(err)
-      })
-  })
-
-  ipcMain.on('open-note', (event, path: string) => {
-    printMessage.printINFO('Request to open : ' + path)
-    VaultManagement.openFile(path).then(([noteData, filePath]: string[]) => {
-      MarkdownConverter.convertMarkdownToJSON(noteData).then((noteData) => {
-
-        restoreEditorExtraFeatures(path, noteData).then((noteData) => {
-          VaultManagement.getNoteOrFolderInfo(path, false).then((note) => {
-            printMessage.printOK(path + ' opened!')
-            mainWindow?.webContents.send('note-opened', note.name, noteData, filePath)
-          })
-            .catch((err) => {
-              printMessage.printError(err)
-            })
-        })
-          .catch((err) => {
-            printMessage.printError(err)
-          })
-      })
-        .catch((err) => {
-          printMessage.printError(err)
-        })
-    })
-      .catch((err) => {
-        printMessage.printError(err)
-      })
-  })
-
-  ipcMain.on('save-note', (event, noteData: string, path: string) => {
-    printMessage.printINFO('Request to save : ' + path)
-    saveEditorExtraFeatures(path, noteData).then(() => {
-      MarkdownConverter.convertJSONToMarkdown(noteData).then((noteData) => {
-        VaultManagement.saveFile(noteData, path).then(() => {
-          printMessage.printOK(path + ' saved!')
-          mainWindow?.webContents.send('note_saved', path)
-        })
-          .catch((err) => {
-            printMessage.printError(err)
-          })
-      })
-        .catch((err) => {
-          printMessage.printError(err)
-        })
-    })
-      .catch((err) => {
-        printMessage.printError(err)
-      })
-  })
-
-  ipcMain.on('show-in-explorer', (event, path: string) => {
-    printMessage.printINFO('Request to show in explorer : ' + path)
-    VaultManagement.showInExplorer(path)
-  })
-
   ipcMain.on('open_main_window', (event, path: string) => {
     if (!saveInSettingPathVault(path)) {
       app.exit();
@@ -269,16 +114,6 @@ function setupEvents() {
         printMessage.printError(reason)
       }).finally(() => closeApp())
     })
-  })
-
-  ipcMain.on('maximizeWindow', (event) => {
-    printMessage.printLog('Maximize application is asked')
-    BrowserWindow.getFocusedWindow().maximize()
-  })
-
-  ipcMain.on('hideWindow', (event) => {
-    printMessage.printLog('hide application is asked')
-    BrowserWindow.getFocusedWindow().minimize()
   })
 
   ipcMain.on('getSizeSidebar', (event) => {
@@ -329,6 +164,9 @@ app.whenReady().then(() => {
   setupEvents();
   ManageTheme.setupEvents();
   HtmlToPDF.setupEvents();
+  VaultManagement.setupEvents();
+  WindowsManagement.setupEvents();
+
   pathVault = VaultManagement.getPathVault()
   printMessage.printLog('Path found is ' + pathVault)
   if (pathVault == null) {
