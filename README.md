@@ -21,6 +21,11 @@ Clone this repository with :
 git clone https://github.com/ObNitram/focus
 ```
 
+Build modules :
+```bash
+npm run build_modules
+```
+
 Install dependencies :
 ```bash
 npm i
