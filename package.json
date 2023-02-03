@@ -8,7 +8,7 @@
   "license": "MIT",
   "main": "dist-electron/electron/main/index.js",
   "scripts": {
-    "install": "cd modules/pathManage && npm run build && cd ../themeTypes/ && npm run build",
+    "build_modules" : "cd ./modules && npm run build-modules",
     "dev": "vite",
     "build": "tsc && vite build && electron-builder"
   },
