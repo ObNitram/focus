@@ -352,7 +352,7 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
         if(refCodeSetting && refCodeSetting.current){
             refCodeSetting.current.getElementsByTagName('input')[0].value = removePXString(loadedTheme.code['margin-top'])
             refCodeSetting.current.getElementsByTagName('input')[1].value = removePXString(loadedTheme.code['margin-bottom'])
-            refCodeSetting.current.getElementsByTagName('input')[2].value = loadedTheme.code['background-color']
+            refCodeSetting.current.getElementsByTagName('input')[2].value = loadedTheme.code['background-color'].slice(0, -2)
             refCodeSetting.current.getElementsByTagName('input')[3].value = removePXString(loadedTheme.code['font-size'])
         }
         changeStyle();
