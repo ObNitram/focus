@@ -34,10 +34,21 @@ function createConfigFileIfNeeded(path: string, initConfig: string = '{}'): bool
         outPut.printINFO('Config folder not found in ' + path)
         outPut.printINFO('Try to create ' + path + '...')
         try {
-            fs.mkdirSync(path)
-            outPut.printOK('Setting folder created !')
-
             fs.writeFileSync(path, initConfig)
+        } catch (error) {
+            outPut.printError('Failed to create the folder. Aborting.')
+            return false
+        }
+    }
+    return true
+}
+
+function createConfigFolderIfNeeded(path: string): boolean {
+    if (!fs.existsSync(path)) {
+        outPut.printINFO('Config folder not found in ' + path)
+        outPut.printINFO('Try to create ' + path + '...')
+        try {
+            fs.mkdirSync(path)
         } catch (error) {
             outPut.printError('Failed to create the folder. Aborting.')
             return false
@@ -48,11 +59,11 @@ function createConfigFileIfNeeded(path: string, initConfig: string = '{}'): bool
 
 function createConfigFilesIfNeeded(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-        if (!createConfigFileIfNeeded(pathConfigFolder)
-            || !createConfigFileIfNeeded(pathConfigFolder + vaultConfigFileName, JSON.stringify({ location: '' }))
-            || !createConfigFileIfNeeded(pathConfigFolder + pathThemeConfigFileName, JSON.stringify({ themes: [] }))
+        if (!createConfigFolderIfNeeded(pathConfigFolder)
+            || !createConfigFileIfNeeded(pathConfigFolder + vaultConfigFileName, JSON.stringify({ location: null }))
+            || !createConfigFileIfNeeded(pathConfigFolder + pathThemeConfigFileName, JSON.stringify([]))
             || !createConfigFileIfNeeded(pathConfigFolder + generalConfigFileName, JSON.stringify({ size_sidebar: 300, openedFiles: [] }))
-            || !createConfigFileIfNeeded(pathConfigFolder + editorExtraFeaturesConfigFileName, JSON.stringify({ notes: [] }))) {
+            || !createConfigFileIfNeeded(pathConfigFolder + editorExtraFeaturesConfigFileName)) {
             reject(false)
         }
         resolve(true)
