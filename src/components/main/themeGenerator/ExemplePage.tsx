@@ -77,82 +77,82 @@ export function ExemplePage(this: any) {
 8
 9"
                     dir="ltr">
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenAttr}`} data-lexical-text="true">const</span>
+                        <span className='editor_code_attr' data-lexical-text="true">const</span>
                         <span data-lexical-text="true"> </span>
                         <span data-lexical-text="true">testFunction</span>
                         <span data-lexical-text="true"> </span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenOperator}`} data-lexical-text="true">=</span>
+                        <span className='editor_code_operator' data-lexical-text="true">=</span>
                         <span data-lexical-text="true"> </span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">&#40;</span>
+                        <span className='editor_code_punctuation' data-lexical-text="true">&#40;</span>
                         <span data-lexical-text="true">a</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">,</span>
+                        <span className='editor_code_punctuation' data-lexical-text="true">,</span>
                         <span data-lexical-text="true">b</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">&#41;</span>
+                        <span className='editor_code_punctuation' data-lexical-text="true">&#41;</span>
                         <span data-lexical-text="true"> </span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenOperator}`} data-lexical-text="true">=&gt;</span>
+                        <span className='editor_code_operator' data-lexical-text="true">=&gt;</span>
                         <span data-lexical-text="true"> </span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">&#123;</span>
+                        <span className='editor_code_punctuation' data-lexical-text="true">&#123;</span>
                         <br/><span data-lexical-text="true">&nbsp;&nbsp;&nbsp;&nbsp;console</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">.</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenFunction}`} data-lexical-text="true">log</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">&#40;</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenSelector}`} data-lexical-text="true">'Enter in function test'</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">&#41;</span>
+                        <span className='editor_code_punctuation' data-lexical-text="true">.</span>
+                        <span className='editor_code_function'data-lexical-text="true">log</span>
+                        <span className='editor_code_punctuation' data-lexical-text="true">&#40;</span>
+                        <span className='editor_code_selector' data-lexical-text="true">'Enter in function test'</span>
+                        <span className='editor_code_punctuation' data-lexical-text="true">&#41;</span>
                         <br/><span data-lexical-text="true">&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenAttr}`} data-lexical-text="true">for</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">&#40;</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenAttr}`} data-lexical-text="true">let</span>
+                        <span className='editor_code_attr' data-lexical-text="true">for</span>
+                        <span className='editor_code_punctuation' data-lexical-text="true">&#40;</span>
+                        <span className='editor_code_attr' data-lexical-text="true">let</span>
                         <span data-lexical-text="true"> i </span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenOperator}`} data-lexical-text="true">=</span>
+                        <span className='editor_code_operator' data-lexical-text="true">=</span>
                         <span data-lexical-text="true"> </span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenProperty}`} data-lexical-text="true">0</span>
+                        <span className='editor_code_property' data-lexical-text="true">0</span>
                         <span data-lexical-text="true"> </span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">;</span>
+                        <span className='editor_code_punctuation' data-lexical-text="true">;</span>
                         <span data-lexical-text="true"> i </span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenOperator}`} data-lexical-text="true">&lt;</span>
+                        <span className='editor_code_operator' data-lexical-text="true">&lt;</span>
                         <span data-lexical-text="true"> a</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">.</span>
+                        <span className='editor_code_punctuation' data-lexical-text="true">.</span>
                         <span data-lexical-text="true">length </span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">;</span>
+                        <span className='editor_code_punctuation' data-lexical-text="true">;</span>
                         <span data-lexical-text="true"> i</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenOperator}`} data-lexical-text="true">++</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">&#41;</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">&#123;</span>
+                        <span className='editor_code_operator' data-lexical-text="true">++</span>
+                        <span className='editor_code_punctuation' data-lexical-text="true">&#41;</span>
+                        <span className='editor_code_punctuation' data-lexical-text="true">&#123;</span>
                         <br/><span data-lexical-text="true">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenFunction}`} data-lexical-text="true">doSometing</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">&#40;</span>
+                        <span className='editor_code_function'data-lexical-text="true">doSometing</span>
+                        <span className='editor_code_punctuation' data-lexical-text="true">&#40;</span>
                         <span data-lexical-text="true">a</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">[</span>
+                        <span className='editor_code_punctuation' data-lexical-text="true">[</span>
                         <span data-lexical-text="true">i</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">]</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">&#41;</span>
+                        <span className='editor_code_punctuation' data-lexical-text="true">]</span>
+                        <span className='editor_code_punctuation' data-lexical-text="true">&#41;</span>
                         <br/><span data-lexical-text="true">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenFunction}`} data-lexical-text="true">do_anotherThing</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">&#40;</span>
+                        <span className='editor_code_function'data-lexical-text="true">do_anotherThing</span>
+                        <span className='editor_code_punctuation' data-lexical-text="true">&#40;</span>
                         <span data-lexical-text="true">b</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">[</span>
-                        <span data-lexical-text="true">i</span><span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">]</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">&#41;</span>
+                        <span className='editor_code_punctuation' data-lexical-text="true">[</span>
+                        <span data-lexical-text="true">i</span><span className='editor_code_punctuation' data-lexical-text="true">]</span>
+                        <span className='editor_code_punctuation' data-lexical-text="true">&#41;</span>
                         <br/><span data-lexical-text="true">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenAttr}`} data-lexical-text="true">if</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">&#40;</span><span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenFunction}`} data-lexical-text="true">test</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">&#40;</span>
+                        <span className='editor_code_attr' data-lexical-text="true">if</span>
+                        <span className='editor_code_punctuation' data-lexical-text="true">&#40;</span><span className='editor_code_function'data-lexical-text="true">test</span>
+                        <span className='editor_code_punctuation' data-lexical-text="true">&#40;</span>
                         <span data-lexical-text="true">b</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">[</span>
-                        <span data-lexical-text="true">i</span><span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">]</span><span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">&#41;</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">&#41;</span>
+                        <span className='editor_code_punctuation' data-lexical-text="true">[</span>
+                        <span data-lexical-text="true">i</span><span className='editor_code_punctuation' data-lexical-text="true">]</span><span className='editor_code_punctuation' data-lexical-text="true">&#41;</span>
+                        <span className='editor_code_punctuation' data-lexical-text="true">&#41;</span>
                         <span data-lexical-text="true"> </span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenAttr}`} data-lexical-text="true">return</span>
+                        <span className='editor_code_attr' data-lexical-text="true">return</span>
                         <span data-lexical-text="true"> </span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenProperty}`} data-lexical-text="true">false</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">;</span>
+                        <span className='editor_code_property' data-lexical-text="true">false</span>
+                        <span className='editor_code_punctuation' data-lexical-text="true">;</span>
                         <br/><span data-lexical-text="true">&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">&#125;</span>
+                        <span className='editor_code_punctuation' data-lexical-text="true">&#125;</span>
                         <br/><span data-lexical-text="true">&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenAttr}`} data-lexical-text="true">return</span>
+                        <span className='editor_code_attr' data-lexical-text="true">return</span>
                         <span data-lexical-text="true"> </span>
-                        <span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenProperty}`} data-lexical-text="true">true</span>
-                        <br/><span className={`${crossEditorStyles.editor_inner_codeHighlight_tokenPunctuation}`} data-lexical-text="true">&#125;</span>
+                        <span className='editor_code_property' data-lexical-text="true">true</span>
+                        <br/><span className='editor_code_punctuation' data-lexical-text="true">&#125;</span>
                         </code>
 
                         <h2 className="editor_h2 ltr" dir="ltr"><span >Its a h2 !</span></h2>

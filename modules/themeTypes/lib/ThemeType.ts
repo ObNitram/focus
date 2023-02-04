@@ -106,7 +106,31 @@ export type Theme = {
         'margin-top': string,
         'margin-bottom': string,
         'background-color': string,
-        'font-size': string
+        'font-size': string,
+    },
+    code_comment: {
+        'color': string,
+    },
+    code_punctuation: {
+        'color': string,
+    },
+    code_property: {
+        'color': string,
+    },
+    code_selector: {
+        'color': string,
+    },
+    code_operator: {
+        'color': string,
+    },
+    code_attr: {
+        'color': string,
+    },
+    code_variable: {
+        'color': string,
+    },
+    code_function: {
+        'color': string,
     }
 }
 
@@ -219,5 +243,29 @@ export const defaultTheme:Theme = {
         'margin-bottom' : '8px',
         'background-color': '#a5a5a588',
         'font-size': '13px'
+    },
+    code_comment: {
+        'color': '#a6bbd1',
+    },
+    code_punctuation: {
+        'color': '#cfcfcf',
+    },
+    code_property: {
+        'color': '#ff008e'
+    },
+    code_selector: {
+        'color': '#00c110',
+    },
+    code_operator: {
+        'color': '#ffb966',
+    },
+    code_attr: {
+        'color': '#00b3ff',
+    },
+    code_variable: {
+        'color': '#e90',
+    },
+    code_function: {
+        'color': '#ff5578',
     }
 }

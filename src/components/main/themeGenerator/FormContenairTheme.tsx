@@ -229,6 +229,30 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                 background-color: ${refCodeSetting.current?.getElementsByTagName('input')[2].value as string+88};
                 font-size: ${refCodeSetting.current?.getElementsByTagName('input')[3].value}px;
             }
+            .editor_code_comment{
+                color: ${refCodeSetting.current?.getElementsByTagName('input')[4].value};
+            }
+            .editor_code_punctuation{
+                color: ${refCodeSetting.current?.getElementsByTagName('input')[5].value};
+            }
+            .editor_code_property{
+                color: ${refCodeSetting.current?.getElementsByTagName('input')[6].value};
+            }
+            .editor_code_selector{
+                color: ${refCodeSetting.current?.getElementsByTagName('input')[7].value};
+            }
+            .editor_code_operator{
+                color: ${refCodeSetting.current?.getElementsByTagName('input')[8].value};
+            }
+            .editor_code_attr{
+                color: ${refCodeSetting.current?.getElementsByTagName('input')[9].value};
+            }
+            .editor_code_variable{
+                color: ${refCodeSetting.current?.getElementsByTagName('input')[10].value};
+            }
+            .editor_code_function{
+                color: ${refCodeSetting.current?.getElementsByTagName('input')[11].value};
+            }
         `
     }
 
@@ -354,6 +378,14 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
             refCodeSetting.current.getElementsByTagName('input')[1].value = removePXString(loadedTheme.code['margin-bottom'])
             refCodeSetting.current.getElementsByTagName('input')[2].value = loadedTheme.code['background-color'].slice(0, -2)
             refCodeSetting.current.getElementsByTagName('input')[3].value = removePXString(loadedTheme.code['font-size'])
+            refCodeSetting.current.getElementsByTagName('input')[4].value = loadedTheme.code_comment['color']
+            refCodeSetting.current.getElementsByTagName('input')[5].value = loadedTheme.code_punctuation['color']
+            refCodeSetting.current.getElementsByTagName('input')[6].value = loadedTheme.code_property['color']
+            refCodeSetting.current.getElementsByTagName('input')[7].value = loadedTheme.code_selector['color']
+            refCodeSetting.current.getElementsByTagName('input')[8].value = loadedTheme.code_operator['color']
+            refCodeSetting.current.getElementsByTagName('input')[9].value = loadedTheme.code_attr['color']
+            refCodeSetting.current.getElementsByTagName('input')[10].value = loadedTheme.code_variable['color']
+            refCodeSetting.current.getElementsByTagName('input')[11].value = loadedTheme.code_function['color']
         }
         changeStyle();
     }, [themeSelected])
@@ -472,8 +504,31 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                 'margin-bottom': refCodeSetting.current.getElementsByTagName('input')[1].value + 'px',
                 'background-color': refCodeSetting.current.getElementsByTagName('input')[2].value + '88',
                 'font-size': refCodeSetting.current.getElementsByTagName('input')[3].value + 'px',
+            },
+            code_comment:{
+                'color': refCodeSetting.current.getElementsByTagName('input')[4].value,
+            },
+            code_punctuation:{
+                'color': refCodeSetting.current.getElementsByTagName('input')[5].value,
+            },
+            code_property:{
+                'color': refCodeSetting.current.getElementsByTagName('input')[6].value,
+            },
+            code_selector:{
+                'color': refCodeSetting.current.getElementsByTagName('input')[7].value,
+            },
+            code_operator:{
+                'color': refCodeSetting.current.getElementsByTagName('input')[8].value,
+            },
+            code_attr: {
+                'color': refCodeSetting.current.getElementsByTagName('input')[9].value,
+            },
+            code_variable: {
+                'color': refCodeSetting.current.getElementsByTagName('input')[10].value,
+            },
+            code_function: {
+                'color': refCodeSetting.current.getElementsByTagName('input')[11].value,
             }
-            
         }
         ipcRenderer.send('saveTheme', themeSelected, theme)
         ipcRenderer.once('saveTheme_reponse', (event, res:boolean) => {
@@ -913,6 +968,38 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                                 <tr>
                                     <td><label htmlFor="fontSizeCode">Font size :</label></td>
                                     <td><input onChange={changeStyle} type="number" id="fontSizeCode" /></td>
+                                </tr>
+                                <tr>
+                                    <td><label htmlFor="colorComment">Comment :</label></td>
+                                    <td><input onChange={changeStyle} type="color" id="colorComment" /></td>
+                                </tr>
+                                <tr>
+                                    <td><label htmlFor="colorPunctuation">Punctuation :</label></td>
+                                    <td><input onChange={changeStyle} type="color" id="colorPunctuation" /></td>
+                                </tr>
+                                <tr>
+                                    <td><label htmlFor="colorProperty">Property :</label></td>
+                                    <td><input onChange={changeStyle} type="color" id="colorProperty" /></td>
+                                </tr>
+                                <tr>
+                                    <td><label htmlFor="colorSelector">Selector :</label></td>
+                                    <td><input onChange={changeStyle} type="color" id="colorSelector" /></td>
+                                </tr>
+                                <tr>
+                                    <td><label htmlFor="colorOperator">Operator :</label></td>
+                                    <td><input onChange={changeStyle} type="color" id="colorOperator" /></td>
+                                </tr>
+                                <tr>
+                                    <td><label htmlFor="colorAttr">Attributs :</label></td>
+                                    <td><input onChange={changeStyle} type="color" id="colorAttr" /></td>
+                                </tr>
+                                <tr>
+                                    <td><label htmlFor="colorVariable">Variable :</label></td>
+                                    <td><input onChange={changeStyle} type="color" id="colorVariable" /></td>
+                                </tr>
+                                <tr>
+                                    <td><label htmlFor="colorFunction">Function :</label></td>
+                                    <td><input onChange={changeStyle} type="color" id="colorFunction" /></td>
                                 </tr>
                             </tbody>
                         </table>
