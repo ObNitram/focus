@@ -205,11 +205,13 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                 padding-left: ${refULSetting.current?.getElementsByTagName('input')[0].value}px;
                 margin-bottom: ${refULSetting.current?.getElementsByTagName('input')[1].value}px;
                 margin-top: ${refULSetting.current?.getElementsByTagName('input')[2].value}px;
+                color: ${refULSetting.current?.getElementsByTagName('input')[3].value};
             }
             .editor_ol{
                 padding-left: ${refOLSetting.current?.getElementsByTagName('input')[0].value}px;
                 margin-bottom: ${refOLSetting.current?.getElementsByTagName('input')[1].value}px;
                 margin-top: ${refOLSetting.current?.getElementsByTagName('input')[2].value}px;
+                color: ${refOLSetting.current?.getElementsByTagName('input')[3].value};
             }
             .editor_link{
                 font-size: ${refLinkSetting.current?.getElementsByTagName('input')[0].value}px;
@@ -332,11 +334,14 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
             refULSetting.current.getElementsByTagName('input')[0].value = removePXString(loadedTheme.ul['padding-left'])
             refULSetting.current.getElementsByTagName('input')[1].value = removePXString(loadedTheme.ul['margin-bottom'])
             refULSetting.current.getElementsByTagName('input')[2].value = removePXString(loadedTheme.ul['margin-top'])
+            refULSetting.current.getElementsByTagName('input')[3].value = loadedTheme.ul['color']
         }
         if(refOLSetting && refOLSetting.current){
             refOLSetting.current.getElementsByTagName('input')[0].value = removePXString(loadedTheme.ol['padding-left'])
             refOLSetting.current.getElementsByTagName('input')[1].value = removePXString(loadedTheme.ol['margin-bottom'])
             refOLSetting.current.getElementsByTagName('input')[2].value = removePXString(loadedTheme.ol['margin-top'])
+            refOLSetting.current.getElementsByTagName('input')[3].value = loadedTheme.ol['color']
+
         }
         changeStyle();
     }, [themeSelected])
@@ -441,12 +446,14 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
             ul: {
                 'padding-left': refULSetting.current.getElementsByTagName('input')[0].value + 'px',
                 'margin-bottom': refULSetting.current.getElementsByTagName('input')[1].value + 'px',
-                'margin-top': refULSetting.current.getElementsByTagName('input')[2].value + 'px'
+                'margin-top': refULSetting.current.getElementsByTagName('input')[2].value + 'px',
+                'color': refULSetting.current.getElementsByTagName('input')[3].value,
             },
             ol: {
                 'padding-left': refOLSetting.current.getElementsByTagName('input')[0].value + 'px',
                 'margin-bottom': refOLSetting.current.getElementsByTagName('input')[1].value + 'px',
-                'margin-top': refOLSetting.current.getElementsByTagName('input')[2].value + 'px'
+                'margin-top': refOLSetting.current.getElementsByTagName('input')[2].value + 'px',
+                'color': refOLSetting.current.getElementsByTagName('input')[3].value
             }
             
         }
@@ -839,6 +846,10 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                                     <td><label htmlFor="mtUl">Space above :</label></td>
                                     <td><input onChange={changeStyle} type="number" id="mtUl" /></td>
                                 </tr>
+                                <tr>
+                                    <td><label htmlFor="colorUl">Color :</label></td>
+                                    <td><input onChange={changeStyle} type="color" id="colorUl" /></td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -857,6 +868,10 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                                 <tr>
                                     <td><label htmlFor="mtOl">Space above :</label></td>
                                     <td><input onChange={changeStyle} type="number" id="mtOl" /></td>
+                                </tr>
+                                <tr>
+                                    <td><label htmlFor="colorOl">Color :</label></td>
+                                    <td><input onChange={changeStyle} type="color" id="colorOl" /></td>
                                 </tr>
                             </tbody>
                         </table>

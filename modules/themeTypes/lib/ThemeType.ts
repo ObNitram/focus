@@ -91,11 +91,13 @@ export type Theme = {
         },
     },
     ul: {
+        'color': string,
         'padding-left': string,
         'margin-bottom': string,
         'margin-top': string
     },
     ol: {
+        'color': string,
         'padding-left': string,
         'margin-bottom': string,
         'margin-top': string 
@@ -195,11 +197,13 @@ export const defaultTheme:Theme = {
         },
     },
     ul: {
+        'color': '#ffffff',
         'padding-left': '14px',
         'margin-bottom': '15px',
         'margin-top': '15px'
     },
     ol: {
+        'color': '#ffffff',
         'padding-left': '14px',
         'margin-bottom': '15px',
         'margin-top': '15px' 
