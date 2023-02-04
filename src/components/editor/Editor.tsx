@@ -11,6 +11,7 @@ import {AutoLinkPlugin} from '@lexical/react/LexicalAutoLinkPlugin';
 import {LinkPlugin as LexicalLinkPlugin} from '@lexical/react/LexicalLinkPlugin';
 import {HistoryPlugin} from '@lexical/react/LexicalHistoryPlugin';
 import {OnChangePlugin} from '@lexical/react/LexicalOnChangePlugin'
+import {TabIndentationPlugin} from '@lexical/react/LexicalTabIndentationPlugin';
 
 import CodeHighlightPlugin from './plugins/CodeHighlightPlugin';
 import { MARKDOWN_TRANSFORMERS } from './plugins/MarkdownTransformersPlugin';
@@ -47,11 +48,9 @@ export default function Editor(this:any, props:Editor_Props) {
 
     const editorStateRef = useRef<EditorState>()
 
-    const refInput = useRef(null)
-
     editorConfig.editorState = props.file.data
 
-    const {notifications, addNotification, removeNotification} = useContext(NotificationContext)
+    const {addNotification} = useContext(NotificationContext)
 
     useEffect(() => {
         console.log('Editor of ' + props.file.name + ' is mounted !')
@@ -113,7 +112,6 @@ export default function Editor(this:any, props:Editor_Props) {
                         placeholder={<Placeholder />}
                         ErrorBoundary={LexicalErrorBoundary}
                     />
-                    {/* <OpenedNoteManagementPlugin /> */}
                     <ListPlugin />
                     <CodeHighlightPlugin />
                     <MarkdownShortcutPlugin transformers={MARKDOWN_TRANSFORMERS} />
@@ -121,6 +119,7 @@ export default function Editor(this:any, props:Editor_Props) {
                     <ClickableLinkPlugin />
                     <LexicalLinkPlugin validateUrl={validateUrl} />
                     <HistoryPlugin />
+                    <TabIndentationPlugin />
                     <OnChangePlugin onChange={(editorState:EditorState) => handleChange(editorState)} ignoreSelectionChange={true} />
                 </div>
             </div>
