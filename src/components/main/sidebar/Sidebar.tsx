@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import styles from 'styles/components/main/sidebar.module.scss'
 
