@@ -8,7 +8,9 @@
   "license": "MIT",
   "main": "dist-electron/electron/main/index.js",
   "scripts": {
-    "build_modules" : "cd ./modules && npm run build-modules",
+    "build_modules": "cd ./modules && npm run build-modules",
+    "clean": "node ./clean.js",
+    "reinstall": "npm run clean && npm run build_modules && npm i",
     "dev": "vite",
     "build": "tsc && vite build && electron-builder"
   },
@@ -48,6 +50,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sass": "^1.56.1",
+    "shelljs": "^0.8.5",
     "typescript": "^4.9.3",
     "vite": "^4.0.0",
     "vite-electron-plugin": "^0.5.2",
