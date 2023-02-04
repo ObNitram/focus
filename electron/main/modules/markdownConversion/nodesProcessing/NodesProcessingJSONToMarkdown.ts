@@ -57,7 +57,7 @@ export function proceedText(node: Node): string {
     if (node.type === 'linebreak') {
         return '\n';
     }
-    if (node.type === 'text') {
+    if (node.type === 'text' || node.type === 'code-highlight') {
         let textNode = node as TextNodeV1;
         switch (textNode.format) {
             case textFormat.boldItalic:
