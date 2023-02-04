@@ -52,15 +52,16 @@ export function proceedHeading(headingNode: HeadingNodeV1): string {
  * proceed a text node and return the markdown text
  * @param textNode the text node to be processed
  * @returns the markdown text
- * @throws an error if the text format is not normal, bold or italic
  */
 export function proceedText(node: Node): string {
     if (node.type === 'linebreak') {
         return '\n';
     }
-    if (node.type === 'text') {
+    if (node.type === 'text' || node.type === 'code-highlight') {
         let textNode = node as TextNodeV1;
         switch (textNode.format) {
+            case textFormat.boldItalic:
+                return '***' + textNode.text + '***';
             case textFormat.bold:
                 return '**' + textNode.text + '**';
             case textFormat.italic:
@@ -68,7 +69,7 @@ export function proceedText(node: Node): string {
             case textFormat.normal:
                 return textNode.text;
             default:
-                throw new Error('The text format is not normal, bold or italic.');
+                return textNode.text;
         }
     }
     else if (node.type === 'link') {

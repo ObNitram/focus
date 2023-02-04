@@ -1,5 +1,5 @@
 import { editorExtraFeatures } from "../../model/EditorExtraFeatures"
-import { extraFeaturesExtistForNote, getEditorExtraFeature, initConfigEditorExtraFeature } from "../ManageConfig"
+import { extraFeaturesExtistForNote, getEditorExtraFeature } from "../ManageConfig"
 import * as printMessage from '../OutputModule'
 import { Node } from "../../model/LexicalNodes"
 
@@ -24,9 +24,6 @@ function exploreEachNodeRecursively(jsonObject: Node, element: Node, notePath: s
 
 export async function restoreEditorExtraFeatures(notePath: string, json: string): Promise<string> {
     return new Promise((resolve, reject) => {
-        if (!initConfigEditorExtraFeature()) {
-            reject('Failed to init config editor extra feature')
-        }
         if (extraFeaturesExtistForNote(notePath)) {
             let jsonObject = JSON.parse(json)
             jsonObject = exploreEachNodeRecursively(jsonObject, jsonObject.root, notePath, 'root')

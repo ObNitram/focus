@@ -1,7 +1,8 @@
 export enum textFormat {
     normal = 0,
     bold = 1,
-    italic = 2
+    italic = 2,
+    boldItalic = 3
 }
 
 export enum headingLevel {

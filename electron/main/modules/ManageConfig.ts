@@ -6,10 +6,10 @@ import * as FileSystemModule from './FileSystemModule'
 import { convertCrossPath } from 'pathmanage'
 import { Theme } from 'themetypes'
 
-export const pathConfigFolder:string = convertCrossPath(app.getPath('appData')+ '/focus/')
-export const vaultConfigFileName:string = convertCrossPath('vaultConfig.json')
+export const pathConfigFolder: string = convertCrossPath(app.getPath('appData') + '/focus/')
+export const vaultConfigFileName: string = convertCrossPath('vaultConfig.json')
 export const generalConfigFileName: string = convertCrossPath('generalConfig.json')
-export const pathThemeConfigFileName:string = convertCrossPath('themes.json')
+export const pathThemeConfigFileName: string = convertCrossPath('themes.json')
 
 import { NodesSave } from './editorExtraFeaturesManagementModule/SaveEditorExtraFeatures'
 const editorExtraFeaturesConfigFileName: string = 'editorExtraFeaturesConfig.json'
@@ -25,51 +25,43 @@ type generalConfigType = {
 
 type themeConfigFileType = Theme[]
 
-let generalConfig:generalConfigType|null = null
+let generalConfig: generalConfigType | null = null
 
-let themeConfig:themeConfigFileType|null = null
+let themeConfig: themeConfigFileType | null = null
 
-export function initConfig(){
-    if(!fs.existsSync(pathConfigFolder)) {
-        outPut.printINFO('Config folder not found in ' + pathConfigFolder)
-        outPut.printINFO('Try to create ' + pathConfigFolder + '...')
+function createConfigFileIfNeeded(path: string, initConfig: string = '{}'): boolean {
+    if (!fs.existsSync(path)) {
+        outPut.printINFO('Config folder not found in ' + path)
+        outPut.printINFO('Try to create ' + path + '...')
         try {
-            fs.mkdirSync(pathConfigFolder)
+            fs.mkdirSync(path)
             outPut.printOK('Setting folder created !')
+
+            fs.writeFileSync(path, initConfig)
         } catch (error) {
             outPut.printError('Failed to create the folder. Aborting.')
             return false
         }
     }
-    if (!fs.existsSync(pathConfigFolder + vaultConfigFileName)) {
-        outPut.printINFO('Config file ' + pathConfigFolder + vaultConfigFileName + ' not found !')
-        try {
-            outPut.printINFO('Try to create ' + pathConfigFolder + vaultConfigFileName + '...')
-            fs.writeFileSync(pathConfigFolder + vaultConfigFileName, JSON.stringify({
-                location: null
-            }))
-            outPut.printOK('File created !')
-        } catch (error) {
-            outPut.printError('Failed to create the file. Aborting.')
-            return false;
+    return true
+}
+
+function createConfigFilesIfNeeded(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+        if (!createConfigFileIfNeeded(pathConfigFolder)
+            || !createConfigFileIfNeeded(pathConfigFolder + vaultConfigFileName, JSON.stringify({ location: '' }))
+            || !createConfigFileIfNeeded(pathConfigFolder + pathThemeConfigFileName, JSON.stringify({ themes: [] }))
+            || !createConfigFileIfNeeded(pathConfigFolder + generalConfigFileName, JSON.stringify({ size_sidebar: 300, openedFiles: [] }))
+            || !createConfigFileIfNeeded(pathConfigFolder + editorExtraFeaturesConfigFileName, JSON.stringify({ notes: [] }))) {
+            reject(false)
         }
-        return true
-    }
-    if(! fs.existsSync(pathConfigFolder+pathThemeConfigFileName)){
-        outPut.printINFO('Config file '+ pathConfigFolder+pathThemeConfigFileName + ' not found !')
-        try{
-            outPut.printINFO('Try to create ' + pathConfigFolder+pathThemeConfigFileName+ '...')
-            fs.writeFileSync(pathConfigFolder+pathThemeConfigFileName, JSON.stringify({
-                themes: [],
-            }))
-            outPut.printOK('File created !')
-        } catch (error) {
-            outPut.printError('Failed to create the file. Aborting.')
-            return false;
-        }
-        return true
-    }
+        resolve(true)
+    })
+}
+
+function initDataFromConfigFiles() {
     let data;
+
     try {
         data = fs.readFileSync(pathConfigFolder + vaultConfigFileName, 'utf8');
     } catch (error) {
@@ -81,33 +73,17 @@ export function initConfig(){
             let res: vaultConfigFileNameType = JSON.parse(data)
             vaultManagement.setPath(res.location)
             outPut.printOK('Config is OK!')
-            return true
         } catch (error: any) {
             outPut.printError('Failed to get setting. Aborting...')
             return false
         }
-    } else {
+    }
+    else {
         outPut.printError('Failed to get setting. Aborting...')
         return false
     }
-}
 
-export function initGeneralConfig():boolean{
-    if(! fs.existsSync(pathConfigFolder+generalConfigFileName)){
-        outPut.printINFO('Config file '+ pathConfigFolder+generalConfigFileName + ' not found !')
-        try{
-            outPut.printINFO('Try to create ' + pathConfigFolder+generalConfigFileName+ '...')
-            fs.writeFileSync(pathConfigFolder+generalConfigFileName, JSON.stringify({
-                size_sidebar: 300,
-                openedFiles: []
-            }))
-            outPut.printOK('File created !')
-        } catch (error) {
-            outPut.printError('Failed to create the file. Aborting.')
-            return false;
-        }
-    }
-    let data;
+
     try {
         data = fs.readFileSync(pathConfigFolder + generalConfigFileName, 'utf8');
     } catch (error) {
@@ -116,80 +92,64 @@ export function initGeneralConfig():boolean{
     }
     if (data) {
         try {
-            let res:generalConfigType = JSON.parse(data)
+            let res: generalConfigType = JSON.parse(data)
             res.openedFiles = FileSystemModule.removeNonExistentPath(res.openedFiles)
             generalConfig = res
             outPut.printOK('Config is OK!')
-            return true
         } catch (error: any) {
             outPut.printError('Failed to get setting. Aborting...')
             return false
         }
-    } else {
+    }
+    else {
         outPut.printError('Failed to get setting. Aborting...')
         return false
     }
-}
 
-export function initConfigEditorExtraFeature(): boolean {
-    outPut.printINFO('Try to init config editor extra feature...')
-    if (!fs.existsSync(pathConfigFolder + editorExtraFeaturesConfigFileName)) {
-        outPut.printINFO('Config file ' + pathConfigFolder + editorExtraFeaturesConfigFileName + ' not found !')
-        try {
-            outPut.printINFO('Try to create ' + pathConfigFolder + editorExtraFeaturesConfigFileName + '...')
-            fs.writeFileSync(pathConfigFolder + editorExtraFeaturesConfigFileName, '{}')
-            outPut.printOK('File created !')
-        } catch (error) {
-            outPut.printError('Failed to create the file. Aborting.')
-            return false;
-        }
-    }
-    return true;
-}
 
-export function initThemeConfig():boolean{
-    if(! fs.existsSync(pathConfigFolder+pathThemeConfigFileName)){
-        outPut.printINFO('Config file '+ pathConfigFolder+pathThemeConfigFileName + ' not found !')
-        try{
-            outPut.printINFO('Try to create ' + pathConfigFolder+pathThemeConfigFileName+ '...')
-            fs.writeFileSync(pathConfigFolder+pathThemeConfigFileName, JSON.stringify([]))
-            outPut.printOK('File created !')
-        }catch(error){
-            outPut.printError('Failed to create the file. Aborting.')
-            return false;
-        }
-    }
-    let data;
-    try{
-        data = fs.readFileSync(pathConfigFolder+pathThemeConfigFileName, 'utf8');
-    }catch(error){
+    try {
+        data = fs.readFileSync(pathConfigFolder + pathThemeConfigFileName, 'utf8');
+    } catch (error) {
         outPut.printError('Failed to read setting !')
         return false
     }
-    if(data){
+    if (data) {
         try {
-            let res:themeConfigFileType = JSON.parse(data)
+            let res: themeConfigFileType = JSON.parse(data)
             themeConfig = res
             outPut.printOK('Config is OK!')
-            return true
-        } catch (error:any) {
+        } catch (error: any) {
             outPut.printError('Failed to get setting. Aborting...')
             return false
         }
-    }else{
+    }
+    else {
         outPut.printError('Failed to get setting. Aborting...')
         return false
     }
+
+
+    outPut.printOK('Config is OK!')
+    return true
 }
 
+export function initConfig() {
+    createConfigFilesIfNeeded().then(() => {
+        if (!initDataFromConfigFiles()) {
+            outPut.printError('An error occur, the config is corrupted. Aborting...')
 
+            // TODO: Ask the user if he want to reset the config
+            return false
+        }
+        return true
+
+    }).catch((e) => {
+        outPut.printError('Failed to create config files: ' + e)
+    })
+}
 
 export function saveInSettingPathVault(path: string): boolean {
     outPut.printINFO("Try to save user's vault path...")
-    if (initConfig() == false) {
-        outPut.printError('An error occur, the config is corrupted. User\'s path not saved!')
-        return false
-    }
     if (!fs.existsSync(path)) {
         outPut.printError('An error occur, The require path doesn\'t exist !')
         return false
@@ -214,9 +174,6 @@ export function getSizeSidebar(): number {
 export async function saveSizeSideBar(newSize: number): Promise<string> {
     return new Promise((resolve, reject) => {
         outPut.printINFO('Try to save user\'s size of sidebar')
-        if (initGeneralConfig() == false) {
-            reject('An error occur, the config is corrupted. User\'s size of sidebar not saved!')
-        }
         if (newSize < 0) {
             reject('An error occur, the data is invalid. User\'s size of sidebar not saved!')
         }
@@ -230,44 +187,38 @@ export async function saveSizeSideBar(newSize: number): Promise<string> {
     })
 }
 
-export async function saveOpenedFiles(paths:string[]):Promise<string>{
+export async function saveOpenedFiles(paths: string[]): Promise<string> {
     return new Promise((resolve, reject) => {
         outPut.printINFO('Try to save user\'s opened files.')
-        if(paths.length == 0){
+        if (paths.length == 0) {
             resolve('There is no file path to save!')
         }
-        if(initGeneralConfig() == false){
-            reject('An error occur, the config is corrupted. User\'s size of sidebar not saved!')
-        }
         generalConfig.openedFiles = paths
-        try{
-            fs.writeFileSync(pathConfigFolder+generalConfigFileName, JSON.stringify(generalConfig))
-        }catch(error){
+        try {
+            fs.writeFileSync(pathConfigFolder + generalConfigFileName, JSON.stringify(generalConfig))
+        } catch (error) {
             reject('An error occured while trying to save general config in file system.')
         }
         resolve('Opened files is saved in setting!')
     })
 }
 
-export function getSavedOpenedFiles():string[]{
+export function getSavedOpenedFiles(): string[] {
     return FileSystemModule.removeNonExistentPath(generalConfig.openedFiles)
 }
 
-export function getThemes():themeConfigFileType{
-    if(themeConfig != null) return themeConfig
+export function getThemes(): themeConfigFileType {
+    if (themeConfig != null) return themeConfig
     return []
 }
 
-export async function saveThemes(themes:themeConfigFileType):Promise<string>{
+export async function saveThemes(themes: themeConfigFileType): Promise<string> {
     return new Promise((resolve, reject) => {
         outPut.printINFO('Try to save user\'s themes.')
-        if(initThemeConfig() == false){
-            reject('An error occur, the config is corrupted. User\'s size of sidebar not saved!')
-        }
-        try{
-            fs.writeFileSync(pathConfigFolder+pathThemeConfigFileName, JSON.stringify(themes))
+        try {
+            fs.writeFileSync(pathConfigFolder + pathThemeConfigFileName, JSON.stringify(themes))
             themeConfig = themes
-        }catch(error){
+        } catch (error) {
             reject('An error occured while trying to save general config in file system.')
         }
         resolve('Themes is saved in setting!')
@@ -275,10 +226,6 @@ export async function saveThemes(themes:themeConfigFileType):Promise<string>{
 }
 export function saveEditorExtraFeatures(notePath: string, nodes: Array<NodesSave>) {
     outPut.printINFO('Try to save editor extra features...')
-    if (!initConfigEditorExtraFeature()) {
-        outPut.printError('Failed to init config editor extra feature !')
-        return
-    }
     let content: JSON = JSON.parse(fs.readFileSync(pathConfigFolder + editorExtraFeaturesConfigFileName, 'utf8'));
     content[notePath] = {}
 
@@ -325,12 +272,18 @@ export function extraFeaturesExtistForNote(notePath: string): Promise<boolean> {
 export function getEditorExtraFeature(notePath: string, nodePath: string, key: string): any {
     outPut.printINFO('Try to get editor extra feature...')
 
-    let content: JSON = JSON.parse(fs.readFileSync(pathConfigFolder + editorExtraFeaturesConfigFileName, 'utf8'));
-    if (!content[notePath]) {
+    try {
+        let content: JSON = JSON.parse(fs.readFileSync(pathConfigFolder + editorExtraFeaturesConfigFileName, 'utf8'));
+        if (!content[notePath]) {
+            return null
+        }
+        outPut.printOK('Extra feature found: ' + key + '=>' + content[notePath][nodePath][key])
+        return content[notePath][nodePath][key]
+    }
+    catch (error) {
+        // extra feature doesn't exist
         return null
     }
-    outPut.printOK('Extra feature found: ' + key + '=>' + content[notePath][nodePath][key])
-    return content[notePath][nodePath][key]
 }
 
 export function updateEditorExtraFeaturesPath(oldPath: string, newPath: string): Promise<string> {

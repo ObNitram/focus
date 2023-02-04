@@ -15,19 +15,31 @@ export function getNbIndentsInLine(line: string): number {
 }
 
 /**
- * create text nodes, separated by bold, italic and normal text
+ * create text nodes, separated by boldItalic, bold, italic and normal text
  * @param text the text to be processed
  * @returns the created text nodes
  */
 export function proceedText(text: string): Array<TextNodeV1|LinkNodeV1> {
     let textNodes: Array<TextNodeV1|LinkNodeV1> = [];
-    let textParts = text.split(/(\*\*|\*)/);
+    let textParts = text.split(/(\*\*\*|\*\*|\*)/);
     let currentText = '';
     let currentFormat: textFormat = textFormat.normal;
 
     for (let i = 0; i < textParts.length; i++) {
         let part = textParts[i];
-        if (part === '**') {
+        if (part === '***') {
+            if (currentText !== '') {
+                textNodes.push(new TextNodeV1(currentText, currentFormat));
+                currentText = '';
+            }
+            if (currentFormat === textFormat.normal) {
+                currentFormat = textFormat.boldItalic;
+            }
+            else {
+                currentFormat = textFormat.normal;
+            }
+        }
+        else if (part === '**') {
             if (currentText !== '') {
                 textNodes.push(new TextNodeV1(currentText, currentFormat));
                 currentText = '';

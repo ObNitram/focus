@@ -22,7 +22,6 @@ export default function FileListItem(this: any, props: FileListItemProps) {
     const [dirCollapsedAll, setDirCollapsedAll] = React.useState<boolean | null>(null);
     const [renaming, setRenaming] = React.useState(false);
     const [dropdownHidden, setDropdownHidden] = React.useState(true);
-    const [isNoteOpened, setIsNoteOpened] = React.useState(false);
     const [dragOver, setDragOver] = React.useState(false);
     const [files, setFiles] = React.useState(props.files);
 
@@ -156,7 +155,6 @@ export default function FileListItem(this: any, props: FileListItemProps) {
         if (item.isDirectory) {
             return;
         }
-        setIsNoteOpened(false);
     }
 
     const handleDrop = (event: MouseEvent) => {
@@ -394,9 +392,8 @@ export default function FileListItem(this: any, props: FileListItemProps) {
     }
 
     function openNote() {
-        if (item.isDirectory || isNoteOpened) return
+        if (item.isDirectory) return
         ipcRenderer.send('open-note', item.path)
-        setIsNoteOpened(true)
     }
 
     if (!item) return null;
@@ -421,7 +418,7 @@ export default function FileListItem(this: any, props: FileListItemProps) {
 
     else {
         return (
-            <li className={`${isNoteOpened ? styles.sidebar_list_note_opened : ''}`} onDoubleClick={openNote}>
+            <li onDoubleClick={openNote}>
                 <div ref={refItem} onDragStart={dragStartHandler} draggable={true}>
                     <Dropdown items={dropdownRightClickNoteItems} onItemSelect={(dropdownItem: any) => { handleDropdownItemClickNote(dropdownItem, item.path) }} hidden={dropdownHidden} />
                     <input className={isSelected(item.path) ? styles.selected : ''} type="text" value={item.name} readOnly={!renaming} onChange={(e) => setItem({ ...item, name: e.target.value })} onClick={(event: React.MouseEvent) => handleSelectFile(event, item.path)} />

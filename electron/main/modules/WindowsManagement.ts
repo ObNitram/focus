@@ -12,6 +12,22 @@ export let mainWindow: BrowserWindow | null = null
 export let winVault: BrowserWindow | null = null
 
 
+export function setupEvents() {
+  ipcMain.on('maximizeWindow', (event) => {
+    printMessage.printLog('Maximize application is asked')
+    BrowserWindow.getFocusedWindow().maximize()
+  })
+
+  ipcMain.on('hideWindow', (event) => {
+    printMessage.printLog('hide application is asked')
+    BrowserWindow.getFocusedWindow().minimize()
+  })
+}
+
+
+
+
+
 // Here, you can also use other preload
 const preload = join(__dirname, '../../preload/index.js')
 

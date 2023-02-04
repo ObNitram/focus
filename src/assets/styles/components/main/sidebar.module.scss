@@ -70,7 +70,7 @@ body {
         &::-webkit-scrollbar{
             width: 10px;
         }
-        
+
         &::-webkit-scrollbar-thumb{
             visibility: hidden;
             background-color: $thumb_color;
@@ -92,18 +92,6 @@ body {
             display: flex;
             flex-direction: column;
             position: relative;
-
-
-            &.sidebar_list_note_opened {
-                background-color: $sidebar_list_note_opened_background_color;
-                position: relative;
-                display: flex;
-
-                div:hover,
-                &.sidebar_list_file:hover {
-                    background-color: unset;
-                }
-            }
 
             div {
                 border-radius: 0.5rem;
