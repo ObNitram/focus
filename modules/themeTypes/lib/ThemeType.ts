@@ -101,6 +101,12 @@ export type Theme = {
         'padding-left': string,
         'margin-bottom': string,
         'margin-top': string 
+    },
+    code: {
+        'margin-top': string,
+        'margin-bottom': string,
+        'background-color': string,
+        'font-size': string
     }
 }
 
@@ -207,5 +213,11 @@ export const defaultTheme:Theme = {
         'padding-left': '14px',
         'margin-bottom': '15px',
         'margin-top': '15px' 
+    },
+    code: {
+        'margin-top' : '8px',
+        'margin-bottom' : '8px',
+        'background-color': '#a5a5a588',
+        'font-size': '13px'
     }
 }

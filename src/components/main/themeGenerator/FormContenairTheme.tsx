@@ -34,6 +34,7 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
     const refLinkSetting = useRef<HTMLDivElement>(null)
     const refULSetting = useRef<HTMLDivElement>(null)
     const refOLSetting = useRef<HTMLDivElement>(null)
+    const refCodeSetting = useRef<HTMLDivElement>(null)
 
     const { notifications, addNotification, removeNotification } = useContext(NotificationContext);
 
@@ -222,6 +223,12 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                 color: ${refLinkSetting.current?.getElementsByTagName('input')[2].value};
                 text-decoration: ${refLinkSetting.current?.getElementsByTagName('select')[1].value};
             }
+            .editor_code{
+                margin-top : ${refCodeSetting.current?.getElementsByTagName('input')[0].value}px;
+                margin-bottom : ${refCodeSetting.current?.getElementsByTagName('input')[1].value}px;
+                background-color: ${refCodeSetting.current?.getElementsByTagName('input')[2].value as string+88};
+                font-size: ${refCodeSetting.current?.getElementsByTagName('input')[3].value}px;
+            }
         `
     }
 
@@ -341,7 +348,12 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
             refOLSetting.current.getElementsByTagName('input')[1].value = removePXString(loadedTheme.ol['margin-bottom'])
             refOLSetting.current.getElementsByTagName('input')[2].value = removePXString(loadedTheme.ol['margin-top'])
             refOLSetting.current.getElementsByTagName('input')[3].value = loadedTheme.ol['color']
-
+        }
+        if(refCodeSetting && refCodeSetting.current){
+            refCodeSetting.current.getElementsByTagName('input')[0].value = removePXString(loadedTheme.code['margin-top'])
+            refCodeSetting.current.getElementsByTagName('input')[1].value = removePXString(loadedTheme.code['margin-bottom'])
+            refCodeSetting.current.getElementsByTagName('input')[2].value = loadedTheme.code['background-color']
+            refCodeSetting.current.getElementsByTagName('input')[3].value = removePXString(loadedTheme.code['font-size'])
         }
         changeStyle();
     }, [themeSelected])
@@ -350,7 +362,7 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
         e.preventDefault();
         e.stopPropagation();
         // return if one ref or ref.current is null
-        if(!refGeneralSetting || !refGeneralSetting.current || !refParagraphSetting || !refParagraphSetting.current || !refBoldSetting || !refBoldSetting.current || !refItalicSetting || !refItalicSetting.current || !refUnderlineSetting || !refUnderlineSetting.current || !refH1Setting || !refH1Setting.current || !refH2Setting || !refH2Setting.current || !refH3Setting || !refH3Setting.current || !refH4Setting || !refH4Setting.current || !refH5Setting || !refH5Setting.current || !refH6Setting || !refH6Setting.current || !refQuoteSetting || !refQuoteSetting.current || !refLinkSetting || !refLinkSetting.current || !refULSetting || !refULSetting.current || !refOLSetting || !refOLSetting.current) return
+        if(!refGeneralSetting || !refGeneralSetting.current || !refParagraphSetting || !refParagraphSetting.current || !refBoldSetting || !refBoldSetting.current || !refItalicSetting || !refItalicSetting.current || !refUnderlineSetting || !refUnderlineSetting.current || !refH1Setting || !refH1Setting.current || !refH2Setting || !refH2Setting.current || !refH3Setting || !refH3Setting.current || !refH4Setting || !refH4Setting.current || !refH5Setting || !refH5Setting.current || !refH6Setting || !refH6Setting.current || !refQuoteSetting || !refQuoteSetting.current || !refLinkSetting || !refLinkSetting.current || !refULSetting || !refULSetting.current || !refOLSetting || !refOLSetting.current || !refCodeSetting || !refCodeSetting.current) return
         const theme:Theme = {
             name: themeSelected,
             general: {
@@ -454,6 +466,12 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                 'margin-bottom': refOLSetting.current.getElementsByTagName('input')[1].value + 'px',
                 'margin-top': refOLSetting.current.getElementsByTagName('input')[2].value + 'px',
                 'color': refOLSetting.current.getElementsByTagName('input')[3].value
+            },
+            code: {
+                'margin-top': refCodeSetting.current.getElementsByTagName('input')[0].value + 'px',
+                'margin-bottom': refCodeSetting.current.getElementsByTagName('input')[1].value + 'px',
+                'background-color': refCodeSetting.current.getElementsByTagName('input')[2].value + '88',
+                'font-size': refCodeSetting.current.getElementsByTagName('input')[3].value + 'px',
             }
             
         }
@@ -872,6 +890,29 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                                 <tr>
                                     <td><label htmlFor="colorOl">Color :</label></td>
                                     <td><input onChange={changeStyle} type="color" id="colorOl" /></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <h3 style={{padding: '10px'}} onClick={(e:React.MouseEvent) => toggleShowTable(e)} >Code <IoIosArrowDown style={{transform : 'rotate(-90deg)'}}/></h3>
+                    <div style={{height: '0px'}} className={styles.table_contenair} ref={refCodeSetting}>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td><label htmlFor="mbCode">Space below :</label></td>
+                                    <td><input onChange={changeStyle} type="number" id="mbCode" /></td>
+                                </tr>
+                                <tr>
+                                    <td><label htmlFor="mtCode">Space above :</label></td>
+                                    <td><input onChange={changeStyle} type="number" id="mtCode" /></td>
+                                </tr>
+                                <tr>
+                                    <td><label htmlFor="backgroundColorCode">Color :</label></td>
+                                    <td><input onChange={changeStyle} type="color" id="backgroundColorCode" /></td>
+                                </tr>
+                                <tr>
+                                    <td><label htmlFor="fontSizeCode">Font size :</label></td>
+                                    <td><input onChange={changeStyle} type="number" id="fontSizeCode" /></td>
                                 </tr>
                             </tbody>
                         </table>

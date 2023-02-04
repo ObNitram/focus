@@ -54,15 +54,16 @@
     }
 
     .editor_inner_code {
-      background-color: $editor_inner_code_background_color;
+      // background-color: $editor_inner_code_background_color;
+      opacity: 1;
       font-family: Menlo, Consolas, Monaco, monospace;
       display: block;
       padding: 8px 8px 8px 52px;
       line-height: 1.53;
-      font-size: 13px;
-      margin: 0;
-      margin-top: 8px;
-      margin-bottom: 8px;
+      // font-size: 13px;
+      // margin: 0;
+      // margin-top: 8px;
+      // margin-bottom: 8px;
       tab-size: 2;
       /* white-space: pre; */
       overflow-x: auto;

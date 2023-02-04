@@ -8,7 +8,7 @@ export const theme = {
   placeholder: `${styles.editor_inner_placeholder}`,
   paragraph: `${styles.editor_inner_paragraph} editor_paragraph`,
   quote: 'editor_quote',
-  code: styles.editor_inner_code,
+  code: `${styles.editor_inner_code} editor_code`,
   codeHighlight: {
     atrule: styles.editor_inner_codeHighlight_tokenAttr,
     attr: styles.editor_inner_codeHighlight_tokenAttr,
