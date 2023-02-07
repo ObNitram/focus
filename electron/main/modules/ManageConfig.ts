@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { app } from 'electron'
+import { app, dialog } from 'electron'
 import * as outPut from './OutputModule'
 import * as vaultManagement from './VaultManagementModule'
 import * as FileSystemModule from './FileSystemModule'
@@ -12,6 +12,7 @@ export const generalConfigFileName: string = convertCrossPath('generalConfig.jso
 export const pathThemeConfigFileName: string = convertCrossPath('themes.json')
 
 import { NodesSave } from './editorExtraFeaturesManagementModule/SaveEditorExtraFeatures'
+import { resolve } from 'path'
 const editorExtraFeaturesConfigFileName: string = 'editorExtraFeaturesConfig.json'
 
 type vaultConfigFileNameType = {
@@ -59,12 +60,25 @@ function createConfigFolderIfNeeded(path: string): boolean {
 
 function createConfigFilesIfNeeded(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-        if (!createConfigFolderIfNeeded(pathConfigFolder)
-            || !createConfigFileIfNeeded(pathConfigFolder + vaultConfigFileName, JSON.stringify({ location: null }))
-            || !createConfigFileIfNeeded(pathConfigFolder + pathThemeConfigFileName, JSON.stringify([]))
-            || !createConfigFileIfNeeded(pathConfigFolder + generalConfigFileName, JSON.stringify({ size_sidebar: 300, openedFiles: [] }))
-            || !createConfigFileIfNeeded(pathConfigFolder + editorExtraFeaturesConfigFileName)) {
-            reject(false)
+        if (!createConfigFileIfNeeded(pathConfigFolder)) {
+            displayResetConfigDialog('config folder', pathConfigFolder)
+            reject('Failed to create config folder.')
+        }
+        if (!createConfigFileIfNeeded(pathConfigFolder + vaultConfigFileName, JSON.stringify({ location: null }))) {
+            displayResetConfigDialog('vault config file', pathConfigFolder + vaultConfigFileName)
+            reject('Failed to create config files.')
+        }
+        if (!createConfigFileIfNeeded(pathConfigFolder + pathThemeConfigFileName, JSON.stringify([]))) {
+            displayResetConfigDialog('theme config file', pathConfigFolder + pathThemeConfigFileName)
+            reject('Failed to create config files.')
+        }
+        if (!createConfigFileIfNeeded(pathConfigFolder + generalConfigFileName, JSON.stringify({ size_sidebar: 300, openedFiles: [] }))) {
+            displayResetConfigDialog('general config file', pathConfigFolder + generalConfigFileName)
+            reject('Failed to create config files.')
+        }
+        if (!createConfigFileIfNeeded(pathConfigFolder + editorExtraFeaturesConfigFileName)) {
+            displayResetConfigDialog('editor extra features config file', pathConfigFolder + editorExtraFeaturesConfigFileName)
+            reject('Failed to create config files.')
         }
         resolve(true)
     })
@@ -77,6 +91,7 @@ function initDataFromConfigFiles() {
         data = fs.readFileSync(pathConfigFolder + vaultConfigFileName, 'utf8');
     } catch (error) {
         outPut.printError('Failed to read setting !')
+        displayResetConfigDialog('vault config file', pathConfigFolder + vaultConfigFileName)
         return false
     }
     if (data) {
@@ -86,11 +101,13 @@ function initDataFromConfigFiles() {
             outPut.printOK('Config is OK!')
         } catch (error: any) {
             outPut.printError('Failed to get setting. Aborting...')
+            displayResetConfigDialog('vault config file', pathConfigFolder + vaultConfigFileName)
             return false
         }
     }
     else {
         outPut.printError('Failed to get setting. Aborting...')
+        displayResetConfigDialog('vault config file', pathConfigFolder + vaultConfigFileName)
         return false
     }
 
@@ -99,6 +116,7 @@ function initDataFromConfigFiles() {
         data = fs.readFileSync(pathConfigFolder + generalConfigFileName, 'utf8');
     } catch (error) {
         outPut.printError('Failed to read setting !')
+        displayResetConfigDialog('general config file', pathConfigFolder + generalConfigFileName)
         return false
     }
     if (data) {
@@ -109,11 +127,13 @@ function initDataFromConfigFiles() {
             outPut.printOK('Config is OK!')
         } catch (error: any) {
             outPut.printError('Failed to get setting. Aborting...')
+            displayResetConfigDialog('general config file', pathConfigFolder + generalConfigFileName)
             return false
         }
     }
     else {
         outPut.printError('Failed to get setting. Aborting...')
+        displayResetConfigDialog('general config file', pathConfigFolder + generalConfigFileName)
         return false
     }
 
@@ -122,6 +142,7 @@ function initDataFromConfigFiles() {
         data = fs.readFileSync(pathConfigFolder + pathThemeConfigFileName, 'utf8');
     } catch (error) {
         outPut.printError('Failed to read setting !')
+        displayResetConfigDialog('theme config file', pathConfigFolder + pathThemeConfigFileName)
         return false
     }
     if (data) {
@@ -131,11 +152,13 @@ function initDataFromConfigFiles() {
             outPut.printOK('Config is OK!')
         } catch (error: any) {
             outPut.printError('Failed to get setting. Aborting...')
+            displayResetConfigDialog('theme config file', pathConfigFolder + pathThemeConfigFileName)
             return false
         }
     }
     else {
         outPut.printError('Failed to get setting. Aborting...')
+        displayResetConfigDialog('theme config file', pathConfigFolder + pathThemeConfigFileName)
         return false
     }
 
@@ -144,18 +167,57 @@ function initDataFromConfigFiles() {
     return true
 }
 
-export function initConfig() {
-    createConfigFilesIfNeeded().then(() => {
-        if (!initDataFromConfigFiles()) {
-            outPut.printError('An error occur, the config is corrupted. Aborting...')
+function displayResetConfigDialog(configName: string, path: string) {
+    // Ask the user if he want to reset the config
+    // If yes, delete the config folder and restart the app
+    // If no, quit the app
 
-            // TODO: Ask the user if he want to reset the config
-            return false
+    dialog.showMessageBox({
+        type: 'error',
+        title: 'Error',
+        message: 'An error occur, ' + configName + ' is corrupted.\nDo you want to reset the config ?\nIf you choose to do so, part of your config will be lost.',
+        buttons: ['Yes', 'No']
+    }).then((res) => {
+        if (res.response === 0) {
+            outPut.printINFO('Try to delete: ' + path)
+            try {
+                // Delete the config folder
+                fs.rmSync(path, { recursive: true, force: true })
+                outPut.printOK('Config: ' + path + ' deleted !')
+                outPut.printINFO('Try to restart the app...')
+                app.relaunch()
+                app.exit(0)
+            } catch (error) {
+                outPut.printError('Failed to delete the config: ' + path + ': ' + error)
+                dialog.showMessageBox({
+                    type: 'error',
+                    title: 'Error',
+                    message: 'Failed to delete: ' + path + '\nYou may try to delete it manually.',
+                    buttons: ['OK']
+                }).then(() => {
+                    app.exit(0)
+                })
+            }
         }
-        return true
+        else {
+            outPut.printINFO('User choose to quit the app.')
+            app.exit(0)
+        }
+    })
+}
 
-    }).catch((e) => {
-        outPut.printError('Failed to create config files: ' + e)
+export function initConfig(): Promise<void> {
+    return new Promise((resolve, reject) => {
+        createConfigFilesIfNeeded().then(() => {
+            if (!initDataFromConfigFiles()) {
+                outPut.printError('An error occur, the config is corrupted. Aborting...')
+                reject("An error occur, the config is corrupted. Aborting...")
+            }
+            resolve()
+        }).catch((e) => {
+            outPut.printError('Failed to create config files: ' + e)
+            reject("Failed to create config files: " + e)
+        })
     })
 }
 
@@ -238,20 +300,15 @@ export async function saveThemes(themes: themeConfigFileType): Promise<string> {
 export function saveEditorExtraFeatures(notePath: string, nodes: Array<NodesSave>) {
     outPut.printINFO('Try to save editor extra features...')
     let content: JSON = JSON.parse(fs.readFileSync(pathConfigFolder + editorExtraFeaturesConfigFileName, 'utf8'));
-    content[notePath] = {}
+    content[notePath] =  []
 
     for (let i = 0; i < nodes.length; i++) {
         if (!nodes[i].value) {
             continue
         }
 
-        if (!content[notePath][nodes[i].nodePath]) {
-            content[notePath][nodes[i].nodePath] = {}
-        }
-        if (!content[notePath][nodes[i].nodePath][nodes[i].key]) {
-            content[notePath][nodes[i].nodePath][nodes[i].key] = {}
-        }
-        content[notePath][nodes[i].nodePath][nodes[i].key] = nodes[i].value
+        // put data in associative array
+        content[notePath].push(nodes[i])
     }
 
     try {
@@ -280,21 +337,22 @@ export function extraFeaturesExtistForNote(notePath: string): Promise<boolean> {
     })
 }
 
-export function getEditorExtraFeature(notePath: string, nodePath: string, key: string): any {
-    outPut.printINFO('Try to get editor extra feature...')
+export function getEditorExtraFeatures(notePath: string): Promise<Array<NodesSave>> {
+    outPut.printINFO('Try to get editor extra features...')
 
-    try {
-        let content: JSON = JSON.parse(fs.readFileSync(pathConfigFolder + editorExtraFeaturesConfigFileName, 'utf8'));
-        if (!content[notePath]) {
-            return null
-        }
-        outPut.printOK('Extra feature found: ' + key + '=>' + content[notePath][nodePath][key])
-        return content[notePath][nodePath][key]
-    }
-    catch (error) {
-        // extra feature doesn't exist
-        return null
-    }
+    return new Promise((resolve, reject) => {
+        fs.readFile(pathConfigFolder + editorExtraFeaturesConfigFileName, 'utf8', (err, data) => {
+            if (err) {
+                outPut.printError('Failed to read editor extra feature config file !')
+                reject([])
+            }
+            let content: JSON = JSON.parse(data);
+            if (!content[notePath]) {
+                resolve([])
+            }
+            resolve(content[notePath])
+        })
+    })
 }
 
 export function updateEditorExtraFeaturesPath(oldPath: string, newPath: string): Promise<string> {

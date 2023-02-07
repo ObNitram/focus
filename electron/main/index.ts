@@ -106,11 +106,11 @@ function setupEvents() {
   ipcMain.on('closeApp', () => {
     printMessage.printLog('Close application is asked')
     mainWindow?.webContents.send('get_opened_files')
-    ipcMain.once('opened_files_response', (event:Electron.IpcMainEvent, paths:string[]) => {
+    ipcMain.once('opened_files_response', (event: Electron.IpcMainEvent, paths: string[]) => {
       printMessage.printLog('Opened responses')
-      saveOpenedFiles(paths).then((value:string) => {
+      saveOpenedFiles(paths).then((value: string) => {
         printMessage.printOK(value)
-      }).catch((reason:string) => {
+      }).catch((reason: string) => {
         printMessage.printError(reason)
       }).finally(() => closeApp())
     })
@@ -137,28 +137,25 @@ function setupEvents() {
     let saved_opened_files = getSavedOpenedFiles()
     let dataToSend = []
     Promise.all(saved_opened_files.map(path => {
-        return VaultManagement.openFile(path)
-        .then(([noteData, filePath]:string[]) => {
-            return MarkdownConverter.convertMarkdownToJSON(noteData)
+      return VaultManagement.openFile(path)
+        .then(([noteData, filePath]: string[]) => {
+          return MarkdownConverter.convertMarkdownToJSON(noteData)
             .then((noteData) => {
               return VaultManagement.getNoteOrFolderInfo(path, false)
-              .then((note) => {
+                .then((note) => {
                   printMessage.printOK(path + ' opened!!')
                   dataToSend.push([note.name, noteData, filePath])
-              })
+                })
             })
         })
     })).then(() => {
-        mainWindow?.webContents.send('saved_opened_files', dataToSend)
+      mainWindow?.webContents.send('saved_opened_files', dataToSend)
     })
-    .catch((err) => {
+      .catch((err) => {
         printMessage.printError(err)
-    })
+      })
   })
 }
-
-// Initialize the config files if needed (it also check if the config files are valid)
-initConfig()
 
 app.whenReady().then(() => {
   setupEvents();
@@ -167,17 +164,22 @@ app.whenReady().then(() => {
   VaultManagement.setupEvents();
   WindowsManagement.setupEvents();
 
-  pathVault = VaultManagement.getPathVault()
-  printMessage.printLog('Path found is ' + pathVault)
-  if (pathVault == null) {
-    printMessage.printINFO('This is the first time of application launch or the config was reseted !')
-    printMessage.printINFO('Launch select vault location window...')
-    WindowsManagement.createVaultWindow()
-  } else {
-    printMessage.printINFO('A valid configuration is found, launching the main window...')
-    VaultManagement.setPath(pathVault)
-    mainWindow = WindowsManagement.createMainWindow();
-  }
+  // Initialize the config files if needed (it also check if the config files are valid)
+  initConfig().then(() => {
+    pathVault = VaultManagement.getPathVault()
+    printMessage.printLog('Path found is ' + pathVault)
+    if (pathVault == null) {
+      printMessage.printINFO('This is the first time of application launch or the config was reseted !')
+      printMessage.printINFO('Launch select vault location window...')
+      WindowsManagement.createVaultWindow()
+    } else {
+      printMessage.printINFO('A valid configuration is found, launching the main window...')
+      VaultManagement.setPath(pathVault)
+      mainWindow = WindowsManagement.createMainWindow();
+    }
+  }).catch((err) => {
+    printMessage.printError(err)
+  })
 })
 
 function closeApp() {
