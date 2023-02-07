@@ -17,6 +17,7 @@ import { release } from 'os'
 import { join } from 'path'
 import chokidar from 'chokidar'
 
+import { restoreEditorExtraFeatures } from './modules/editorExtraFeaturesManagementModule/RestoreEditorExtraFeatures'
 import * as VaultManagement from './modules/VaultManagementModule'
 import * as WindowsManagement from './modules/WindowsManagement'
 import * as printMessage from './modules/OutputModule'
@@ -141,16 +142,19 @@ function setupEvents() {
         .then(([noteData, filePath]: string[]) => {
           return MarkdownConverter.convertMarkdownToJSON(noteData)
             .then((noteData) => {
-              return VaultManagement.getNoteOrFolderInfo(path, false)
-                .then((note) => {
-                  printMessage.printOK(path + ' opened!!')
-                  dataToSend.push([note.name, noteData, filePath])
-                })
+              return restoreEditorExtraFeatures(path, noteData)
+                .then((noteData) => {
+                  return VaultManagement.getNoteOrFolderInfo(path, false)
+                    .then((note) => {
+                      printMessage.printOK(path + ' opened!!')
+                      dataToSend.push([note.name, noteData, filePath])
+                    })
+                  })
+              })
             })
+        })).then(() => {
+          mainWindow?.webContents.send('saved_opened_files', dataToSend)
         })
-    })).then(() => {
-      mainWindow?.webContents.send('saved_opened_files', dataToSend)
-    })
       .catch((err) => {
         printMessage.printError(err)
       })
