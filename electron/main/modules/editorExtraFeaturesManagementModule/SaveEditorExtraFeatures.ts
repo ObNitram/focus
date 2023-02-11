@@ -1,11 +1,11 @@
 import * as ManageConfig from "../ManageConfig"
-import { Node } from "../../model/LexicalNodes"
+import { Node, TextNodeV1 } from "../../model/LexicalNodes"
 import { editorExtraFeatures } from "../../model/EditorExtraFeatures"
 
 export interface NodesSave {
     nodePath: string
     key: string
-    value: any
+    value: any,
 }
 
 function getNodesToSaveRecursively(node: Node, nodesSave: NodesSave[], nodePath: string): NodesSave[] {
@@ -13,6 +13,34 @@ function getNodesToSaveRecursively(node: Node, nodesSave: NodesSave[], nodePath:
         for (let i = 0; i < node.children.length; i++) {
             let child = node.children[i]
             let childPath = nodePath + '.children[' + i + ']'
+
+            if (node.type === 'paragraph' && child.type === 'text') {
+                let textNode = child as TextNodeV1
+                if (textNode.text === '') {
+                    continue
+                }
+
+                let nbTotOccurrences = 0
+                for (let j = 0; j < node.children.length; j++) {
+                    if (node.children[j].type === 'text') {
+                        let textNode2 = node.children[j] as TextNodeV1
+                        if (textNode2.text.includes(textNode.text)) {
+                            nbTotOccurrences++
+                        }
+                    }
+                }
+
+                let currOccurrence = nbTotOccurrences
+                for (let j = i; j < node.children.length; j++) {
+                    if (node.children[j].type === 'text') {
+                        let textNode2 = node.children[j] as TextNodeV1
+                        if (textNode2.text.includes(textNode.text)) {
+                            currOccurrence--
+                        }
+                    }
+                }
+                childPath = nodePath + '.children[' + textNode.text + '][' + currOccurrence + ']'
+            }
             nodesSave = getNodesToSaveRecursively(child, nodesSave, childPath)
         }
     }
