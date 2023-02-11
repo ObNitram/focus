@@ -60,7 +60,7 @@ function createConfigFolderIfNeeded(path: string): boolean {
 
 function createConfigFilesIfNeeded(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-        if (!createConfigFileIfNeeded(pathConfigFolder)) {
+        if (!createConfigFolderIfNeeded(pathConfigFolder)) {
             displayResetConfigDialog('config folder', pathConfigFolder)
             reject('Failed to create config folder.')
         }
