@@ -31,6 +31,7 @@ export function setupEvents() {
                                         margin: 0;
                                         padding: 0;
                                         position: relative;
+                                        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
                                     }
                                     .editor_general{
                                         resize: none;
@@ -39,6 +40,33 @@ export function setupEvents() {
                                         outline: 0;
                                         padding: 15px 10px;
                                     }
+                                    .editor_code{
+                                        opacity: 1;
+                                        font-family: Menlo, Consolas, Monaco, monospace;
+                                        display: block;
+                                        padding: 8px 8px 8px 52px;
+                                        line-height: 1.53;
+                                        tab-size: 2;
+                                        /* white-space: pre; */
+                                        overflow-x: auto;
+                                        position: relative;
+                                        border-radius: 10px;
+                                        color: #fff;
+                                    }
+                                    .editor_code::before {
+                                        content: attr(data-gutter);
+                                        position: absolute;
+                                        background-color: #3c3c3c;
+                                        left: 0;
+                                        top: 0;
+                                        border-right: 1px solid #ddd;
+                                        padding: 8px;
+                                        color: #fff;
+                                        white-space: pre-wrap;
+                                        text-align: right;
+                                        min-width: 25px;
+                                    }
+
                                 </style>
                                 ${css}
                             </head>
