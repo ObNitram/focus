@@ -3,6 +3,7 @@ import { app, dialog } from 'electron'
 import * as outPut from './OutputModule'
 import * as vaultManagement from './VaultManagementModule'
 import * as FileSystemModule from './FileSystemModule'
+import * as Notification from './NotificationModule'
 import { convertCrossPath } from 'pathmanage'
 import { Theme } from 'themetypes'
 
@@ -12,7 +13,6 @@ export const generalConfigFileName: string = convertCrossPath('generalConfig.jso
 export const pathThemeConfigFileName: string = convertCrossPath('themes.json')
 
 import { NodesSave } from './editorExtraFeaturesManagementModule/SaveEditorExtraFeatures'
-import { resolve } from 'path'
 const editorExtraFeaturesConfigFileName: string = 'editorExtraFeaturesConfig.json'
 
 type vaultConfigFileNameType = {
@@ -316,6 +316,7 @@ export function saveEditorExtraFeatures(notePath: string, nodes: Array<NodesSave
     }
     catch (error) {
         outPut.printError('Failed to save editor extra features !')
+        Notification.showNotification('Failed to save extra features! If you close the current note, you will lose the non-markdown content.', Notification.NotificationLevelEnum.ERROR)
     }
 }
 
