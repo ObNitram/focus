@@ -38,6 +38,8 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
 
     const { notifications, addNotification, removeNotification } = useContext(NotificationContext);
 
+    let timeoutId: NodeJS.Timeout;
+
     const toggleShowTable = (e:React.MouseEvent) => {
         const associatedTable = e.currentTarget.nextElementSibling as HTMLDivElement
         const logo = e.currentTarget.getElementsByTagName('svg')[0] as SVGElement
@@ -115,145 +117,166 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
         return pxString
     }
 
-    const changeStyle = () => {
-        const style_editor = document.getElementById('style_editor') as HTMLStyleElement
-        style_editor.innerHTML = `
-            .editor_general{
-                background-color: ${refGeneralSetting.current?.getElementsByTagName('input')[0].value};
-                caret-color: ${refGeneralSetting.current?.getElementsByTagName('input')[1].value};
+    function changeStyle(e:React.ChangeEvent<HTMLInputElement|HTMLSelectElement>|null) {
+        clearTimeout(timeoutId)
+        const input = e?.currentTarget
+        timeoutId = setTimeout(() => {
+            if(e != null && input != null && input.tagName == 'INPUT' && input.type == 'number') {
+                console.log(input.value)
+                let val = parseInt(input.value)
+                let min = parseInt((input as HTMLInputElement).min)
+                let max = parseInt((input as HTMLInputElement).max)
+                console.log("min is "  + (input as HTMLInputElement).min)
+                console.log("max is " + (input as HTMLInputElement).max)
+                if(val > max){
+                    input.value = '' + max
+                    console.log('reduce')
+                }else if(val < min) {
+                    input.value = '' + min
+                    console.log('up')
+                }
+            }else{
+                console.log( e)
             }
-            .editor_paragraph{
-                color: ${refParagraphSetting.current?.getElementsByTagName('input')[0].value};
-                margin-left: ${refParagraphSetting.current?.getElementsByTagName('input')[1].value}px;
-                margin-top: ${refParagraphSetting.current?.getElementsByTagName('input')[2].value}px;
-                margin-bottom: ${refParagraphSetting.current?.getElementsByTagName('input')[3].value}px;
-                font-size: ${refParagraphSetting.current?.getElementsByTagName('input')[4].value}px;
-            }
-            .editor_bold{
-                color: ${refBoldSetting.current?.getElementsByTagName('input')[0].value};
-                font-size: ${refBoldSetting.current?.getElementsByTagName('input')[1].value}px;
-                font-weight: bold;
-            }
-            .editor_italic{
-                color: ${refItalicSetting.current?.getElementsByTagName('input')[0].value};
-                font-size: ${refItalicSetting.current?.getElementsByTagName('input')[1].value}px;
-                font-style: italic;
-            }
-            .editor_underline{
-                color: ${refUnderlineSetting.current?.getElementsByTagName('input')[0].value};
-                font-size: ${refUnderlineSetting.current?.getElementsByTagName('input')[1].value}px;
-                text-decoration: underline;
-            }
-            .editor_h1{
-                color: ${refH1Setting.current?.getElementsByTagName('input')[0].value};
-                margin-left: ${refH1Setting.current?.getElementsByTagName('input')[1].value}px;
-                margin-top: ${refH1Setting.current?.getElementsByTagName('input')[2].value}px;
-                margin-bottom: ${refH1Setting.current?.getElementsByTagName('input')[3].value}px;
-                font-size: ${refH1Setting.current?.getElementsByTagName('input')[4].value}px;
-                font-weight: ${refH1Setting.current?.getElementsByTagName('input')[5].value};
-            }
-            .editor_h2{
-                color: ${refH2Setting.current?.getElementsByTagName('input')[0].value};
-                margin-left: ${refH2Setting.current?.getElementsByTagName('input')[1].value}px;
-                margin-top: ${refH2Setting.current?.getElementsByTagName('input')[2].value}px;
-                margin-bottom: ${refH2Setting.current?.getElementsByTagName('input')[3].value}px;
-                font-size: ${refH2Setting.current?.getElementsByTagName('input')[4].value}px;
-                font-weight: ${refH2Setting.current?.getElementsByTagName('input')[5].value};
-            }
-            .editor_h3{
-                color: ${refH3Setting.current?.getElementsByTagName('input')[0].value};
-                margin-left: ${refH3Setting.current?.getElementsByTagName('input')[1].value}px;
-                margin-top: ${refH3Setting.current?.getElementsByTagName('input')[2].value}px;
-                margin-bottom: ${refH3Setting.current?.getElementsByTagName('input')[3].value}px;
-                font-size: ${refH3Setting.current?.getElementsByTagName('input')[4].value}px;
-                font-weight: ${refH3Setting.current?.getElementsByTagName('input')[5].value};
-            }
-            .editor_h4{
-                color: ${refH4Setting.current?.getElementsByTagName('input')[0].value};
-                margin-left: ${refH4Setting.current?.getElementsByTagName('input')[1].value}px;
-                margin-top: ${refH4Setting.current?.getElementsByTagName('input')[2].value}px;
-                margin-bottom: ${refH4Setting.current?.getElementsByTagName('input')[3].value}px;
-                font-size: ${refH4Setting.current?.getElementsByTagName('input')[4].value}px;
-                font-weight: ${refH4Setting.current?.getElementsByTagName('input')[5].value};
-            }
-            .editor_h5{
-                color: ${refH5Setting.current?.getElementsByTagName('input')[0].value};
-                margin-left: ${refH5Setting.current?.getElementsByTagName('input')[1].value}px;
-                margin-top: ${refH5Setting.current?.getElementsByTagName('input')[2].value}px;
-                margin-bottom: ${refH5Setting.current?.getElementsByTagName('input')[3].value}px;
-                font-size: ${refH5Setting.current?.getElementsByTagName('input')[4].value}px;
-                font-weight: ${refH5Setting.current?.getElementsByTagName('input')[5].value};
-            }
-            .editor_h6{
-                color: ${refH6Setting.current?.getElementsByTagName('input')[0].value};
-                margin-left: ${refH6Setting.current?.getElementsByTagName('input')[1].value}px;
-                margin-top: ${refH6Setting.current?.getElementsByTagName('input')[2].value}px;
-                margin-bottom: ${refH6Setting.current?.getElementsByTagName('input')[3].value}px;
-                font-size: ${refH6Setting.current?.getElementsByTagName('input')[4].value}px;
-                font-weight: ${refH6Setting.current?.getElementsByTagName('input')[5].value};
-            }
-            .editor_quote{
-                margin-left: ${refQuoteSetting.current?.getElementsByTagName('input')[0].value}px;
-                margin-bottom: ${refQuoteSetting.current?.getElementsByTagName('input')[1].value}px;
-                font-size: ${refQuoteSetting.current?.getElementsByTagName('input')[2].value}px;
-                color: ${refQuoteSetting.current?.getElementsByTagName('input')[3].value};
-                border-left-color: ${refQuoteSetting.current?.getElementsByTagName('input')[4].value};
-                border-left-style: ${refQuoteSetting.current?.getElementsByTagName('select')[0].value};
-                border-left-width: ${refQuoteSetting.current?.getElementsByTagName('input')[5].value}px;
-                padding-left: ${refQuoteSetting.current?.getElementsByTagName('input')[6].value}px;
-            }
-            .editor_ul{
-                padding-left: ${refULSetting.current?.getElementsByTagName('input')[0].value}px;
-                margin-bottom: ${refULSetting.current?.getElementsByTagName('input')[1].value}px;
-                margin-top: ${refULSetting.current?.getElementsByTagName('input')[2].value}px;
-                color: ${refULSetting.current?.getElementsByTagName('input')[3].value};
-            }
-            .editor_ol{
-                padding-left: ${refOLSetting.current?.getElementsByTagName('input')[0].value}px;
-                margin-bottom: ${refOLSetting.current?.getElementsByTagName('input')[1].value}px;
-                margin-top: ${refOLSetting.current?.getElementsByTagName('input')[2].value}px;
-                color: ${refOLSetting.current?.getElementsByTagName('input')[3].value};
-            }
-            .editor_link{
-                font-size: ${refLinkSetting.current?.getElementsByTagName('input')[0].value}px;
-                color: ${refLinkSetting.current?.getElementsByTagName('input')[1].value};
-                text-decoration: ${refLinkSetting.current?.getElementsByTagName('select')[0].value};
-            }
-            .editor_link:hover{
-                color: ${refLinkSetting.current?.getElementsByTagName('input')[2].value};
-                text-decoration: ${refLinkSetting.current?.getElementsByTagName('select')[1].value};
-            }
-            .editor_code{
-                margin-top : ${refCodeSetting.current?.getElementsByTagName('input')[0].value}px;
-                margin-bottom : ${refCodeSetting.current?.getElementsByTagName('input')[1].value}px;
-                background-color: ${refCodeSetting.current?.getElementsByTagName('input')[2].value as string+88};
-                font-size: ${refCodeSetting.current?.getElementsByTagName('input')[3].value}px;
-            }
-            .editor_code_comment{
-                color: ${refCodeSetting.current?.getElementsByTagName('input')[4].value};
-            }
-            .editor_code_punctuation{
-                color: ${refCodeSetting.current?.getElementsByTagName('input')[5].value};
-            }
-            .editor_code_property{
-                color: ${refCodeSetting.current?.getElementsByTagName('input')[6].value};
-            }
-            .editor_code_selector{
-                color: ${refCodeSetting.current?.getElementsByTagName('input')[7].value};
-            }
-            .editor_code_operator{
-                color: ${refCodeSetting.current?.getElementsByTagName('input')[8].value};
-            }
-            .editor_code_attr{
-                color: ${refCodeSetting.current?.getElementsByTagName('input')[9].value};
-            }
-            .editor_code_variable{
-                color: ${refCodeSetting.current?.getElementsByTagName('input')[10].value};
-            }
-            .editor_code_function{
-                color: ${refCodeSetting.current?.getElementsByTagName('input')[11].value};
-            }
-        `
+            const style_editor = document.getElementById('style_editor') as HTMLStyleElement
+            style_editor.innerHTML = `
+                .editor_general{
+                    background-color: ${refGeneralSetting.current?.getElementsByTagName('input')[0].value};
+                    caret-color: ${refGeneralSetting.current?.getElementsByTagName('input')[1].value};
+                }
+                .editor_paragraph{
+                    color: ${refParagraphSetting.current?.getElementsByTagName('input')[0].value};
+                    margin-left: ${refParagraphSetting.current?.getElementsByTagName('input')[1].value}px;
+                    margin-top: ${refParagraphSetting.current?.getElementsByTagName('input')[2].value}px;
+                    margin-bottom: ${refParagraphSetting.current?.getElementsByTagName('input')[3].value}px;
+                    font-size: ${refParagraphSetting.current?.getElementsByTagName('input')[4].value}px;
+                }
+                .editor_bold{
+                    color: ${refBoldSetting.current?.getElementsByTagName('input')[0].value};
+                    font-size: ${refBoldSetting.current?.getElementsByTagName('input')[1].value}px;
+                    font-weight: bold;
+                }
+                .editor_italic{
+                    color: ${refItalicSetting.current?.getElementsByTagName('input')[0].value};
+                    font-size: ${refItalicSetting.current?.getElementsByTagName('input')[1].value}px;
+                    font-style: italic;
+                }
+                .editor_underline{
+                    color: ${refUnderlineSetting.current?.getElementsByTagName('input')[0].value};
+                    font-size: ${refUnderlineSetting.current?.getElementsByTagName('input')[1].value}px;
+                    text-decoration: underline;
+                }
+                .editor_h1{
+                    color: ${refH1Setting.current?.getElementsByTagName('input')[0].value};
+                    margin-left: ${refH1Setting.current?.getElementsByTagName('input')[1].value}px;
+                    margin-top: ${refH1Setting.current?.getElementsByTagName('input')[2].value}px;
+                    margin-bottom: ${refH1Setting.current?.getElementsByTagName('input')[3].value}px;
+                    font-size: ${refH1Setting.current?.getElementsByTagName('input')[4].value}px;
+                    font-weight: ${refH1Setting.current?.getElementsByTagName('input')[5].value};
+                }
+                .editor_h2{
+                    color: ${refH2Setting.current?.getElementsByTagName('input')[0].value};
+                    margin-left: ${refH2Setting.current?.getElementsByTagName('input')[1].value}px;
+                    margin-top: ${refH2Setting.current?.getElementsByTagName('input')[2].value}px;
+                    margin-bottom: ${refH2Setting.current?.getElementsByTagName('input')[3].value}px;
+                    font-size: ${refH2Setting.current?.getElementsByTagName('input')[4].value}px;
+                    font-weight: ${refH2Setting.current?.getElementsByTagName('input')[5].value};
+                }
+                .editor_h3{
+                    color: ${refH3Setting.current?.getElementsByTagName('input')[0].value};
+                    margin-left: ${refH3Setting.current?.getElementsByTagName('input')[1].value}px;
+                    margin-top: ${refH3Setting.current?.getElementsByTagName('input')[2].value}px;
+                    margin-bottom: ${refH3Setting.current?.getElementsByTagName('input')[3].value}px;
+                    font-size: ${refH3Setting.current?.getElementsByTagName('input')[4].value}px;
+                    font-weight: ${refH3Setting.current?.getElementsByTagName('input')[5].value};
+                }
+                .editor_h4{
+                    color: ${refH4Setting.current?.getElementsByTagName('input')[0].value};
+                    margin-left: ${refH4Setting.current?.getElementsByTagName('input')[1].value}px;
+                    margin-top: ${refH4Setting.current?.getElementsByTagName('input')[2].value}px;
+                    margin-bottom: ${refH4Setting.current?.getElementsByTagName('input')[3].value}px;
+                    font-size: ${refH4Setting.current?.getElementsByTagName('input')[4].value}px;
+                    font-weight: ${refH4Setting.current?.getElementsByTagName('input')[5].value};
+                }
+                .editor_h5{
+                    color: ${refH5Setting.current?.getElementsByTagName('input')[0].value};
+                    margin-left: ${refH5Setting.current?.getElementsByTagName('input')[1].value}px;
+                    margin-top: ${refH5Setting.current?.getElementsByTagName('input')[2].value}px;
+                    margin-bottom: ${refH5Setting.current?.getElementsByTagName('input')[3].value}px;
+                    font-size: ${refH5Setting.current?.getElementsByTagName('input')[4].value}px;
+                    font-weight: ${refH5Setting.current?.getElementsByTagName('input')[5].value};
+                }
+                .editor_h6{
+                    color: ${refH6Setting.current?.getElementsByTagName('input')[0].value};
+                    margin-left: ${refH6Setting.current?.getElementsByTagName('input')[1].value}px;
+                    margin-top: ${refH6Setting.current?.getElementsByTagName('input')[2].value}px;
+                    margin-bottom: ${refH6Setting.current?.getElementsByTagName('input')[3].value}px;
+                    font-size: ${refH6Setting.current?.getElementsByTagName('input')[4].value}px;
+                    font-weight: ${refH6Setting.current?.getElementsByTagName('input')[5].value};
+                }
+                .editor_quote{
+                    margin-left: ${refQuoteSetting.current?.getElementsByTagName('input')[0].value}px;
+                    margin-bottom: ${refQuoteSetting.current?.getElementsByTagName('input')[1].value}px;
+                    font-size: ${refQuoteSetting.current?.getElementsByTagName('input')[2].value}px;
+                    color: ${refQuoteSetting.current?.getElementsByTagName('input')[3].value};
+                    border-left-color: ${refQuoteSetting.current?.getElementsByTagName('input')[4].value};
+                    border-left-style: ${refQuoteSetting.current?.getElementsByTagName('select')[0].value};
+                    border-left-width: ${refQuoteSetting.current?.getElementsByTagName('input')[5].value}px;
+                    padding-left: ${refQuoteSetting.current?.getElementsByTagName('input')[6].value}px;
+                }
+                .editor_ul{
+                    padding-left: ${refULSetting.current?.getElementsByTagName('input')[0].value}px;
+                    margin-bottom: ${refULSetting.current?.getElementsByTagName('input')[1].value}px;
+                    margin-top: ${refULSetting.current?.getElementsByTagName('input')[2].value}px;
+                    color: ${refULSetting.current?.getElementsByTagName('input')[3].value};
+                }
+                .editor_ol{
+                    padding-left: ${refOLSetting.current?.getElementsByTagName('input')[0].value}px;
+                    margin-bottom: ${refOLSetting.current?.getElementsByTagName('input')[1].value}px;
+                    margin-top: ${refOLSetting.current?.getElementsByTagName('input')[2].value}px;
+                    color: ${refOLSetting.current?.getElementsByTagName('input')[3].value};
+                }
+                .editor_link{
+                    font-size: ${refLinkSetting.current?.getElementsByTagName('input')[0].value}px;
+                    color: ${refLinkSetting.current?.getElementsByTagName('input')[1].value};
+                    text-decoration: ${refLinkSetting.current?.getElementsByTagName('select')[0].value};
+                }
+                .editor_link:hover{
+                    color: ${refLinkSetting.current?.getElementsByTagName('input')[2].value};
+                    text-decoration: ${refLinkSetting.current?.getElementsByTagName('select')[1].value};
+                }
+                .editor_code{
+                    margin-top : ${refCodeSetting.current?.getElementsByTagName('input')[0].value}px;
+                    margin-bottom : ${refCodeSetting.current?.getElementsByTagName('input')[1].value}px;
+                    background-color: ${refCodeSetting.current?.getElementsByTagName('input')[2].value as string+88};
+                    font-size: ${refCodeSetting.current?.getElementsByTagName('input')[3].value}px;
+                }
+                .editor_code_comment{
+                    color: ${refCodeSetting.current?.getElementsByTagName('input')[4].value};
+                }
+                .editor_code_punctuation{
+                    color: ${refCodeSetting.current?.getElementsByTagName('input')[5].value};
+                }
+                .editor_code_property{
+                    color: ${refCodeSetting.current?.getElementsByTagName('input')[6].value};
+                }
+                .editor_code_selector{
+                    color: ${refCodeSetting.current?.getElementsByTagName('input')[7].value};
+                }
+                .editor_code_operator{
+                    color: ${refCodeSetting.current?.getElementsByTagName('input')[8].value};
+                }
+                .editor_code_attr{
+                    color: ${refCodeSetting.current?.getElementsByTagName('input')[9].value};
+                }
+                .editor_code_variable{
+                    color: ${refCodeSetting.current?.getElementsByTagName('input')[10].value};
+                }
+                .editor_code_function{
+                    color: ${refCodeSetting.current?.getElementsByTagName('input')[11].value};
+                }
+            `
+        }, 300)
     }
 
     useEffect(() => {
@@ -387,7 +410,7 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
             refCodeSetting.current.getElementsByTagName('input')[10].value = loadedTheme.code_variable['color']
             refCodeSetting.current.getElementsByTagName('input')[11].value = loadedTheme.code_function['color']
         }
-        changeStyle();
+        changeStyle(null);
     }, [themeSelected])
 
     const saveTheme = (e:React.MouseEvent) => {
@@ -550,11 +573,11 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                             <tbody>
                                 <tr>
                                     <td><label htmlFor="backgroundColor">Background Color :</label></td>
-                                    <td><input onChange={changeStyle} type={'color'} defaultValue='#ffffff' id='backgroundColor'></input></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type={'color'} defaultValue='#ffffff' id='backgroundColor'></input></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="caretColor">Caret Color :</label></td>
-                                    <td><input onChange={changeStyle} type="color" id="caretColor" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="color" id="caretColor" /></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -565,23 +588,23 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                             <tbody>
                                 <tr>
                                     <td><label htmlFor="ColorP">Color :</label></td>
-                                    <td><input onChange={changeStyle} type="color" id="ColorP"/></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="color" id="ColorP"/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="mlP">Space before :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mlP"/></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mlP" min={0} max={150}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="mtP">Space above :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mtP"/></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mtP" min={0} max={100}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="mbP">Space below :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mbP"/></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mbP" min={0} max={100}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="fontSizeP">Font size :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="fontSizeP"/></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="fontSizeP" min={8} max={50}/></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -592,11 +615,11 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                             <tbody>
                                 <tr>
                                     <td><label htmlFor="colorBold">Color :</label></td>
-                                    <td><input onChange={changeStyle} type="color" id="colorBold"/></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="color" id="colorBold"/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="fontSizeBold">Font size :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="fontSizeBold"/></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="fontSizeBold" min={8} max={50}/></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -607,11 +630,11 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                             <tbody>
                                 <tr>
                                     <td><label htmlFor="colorItalic">Color :</label></td>
-                                    <td><input onChange={changeStyle} type="color" id="colorItalic"/></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="color" id="colorItalic"/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="fontSizeItalic">Font size :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="fontSizeItalic"/></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="fontSizeItalic" min={8} max={50}/></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -622,11 +645,11 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                             <tbody>
                                 <tr>
                                     <td><label htmlFor="colorUnderline">Color :</label></td>
-                                    <td><input onChange={changeStyle} type="color" id="colorUnderline"/></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="color" id="colorUnderline"/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="fontSizeUnderline">Font size :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="fontSizeUnderline"/></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="fontSizeUnderline" min={8} max={50}/></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -637,27 +660,27 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                             <tbody>
                                 <tr>
                                     <td><label htmlFor="colorH1">Color :</label></td>
-                                    <td><input onChange={changeStyle} type="color" id="colorH1" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="color" id="colorH1" /></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="mlH1">Space before :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mlH1" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mlH1" min={0} max={150}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="mtH1">Space above :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mtH1" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mtH1" min={0} max={100}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="mbH1">Space below :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mbH1" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mbH1" min={0} max={100}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="fontSizeH1">Font size :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="fontSizeH1" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="fontSizeH1" min={8} max={50}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="fontWeightH1">Font weight :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="fontWeightH1" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="fontWeightH1" min={100} max={800}/></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -668,27 +691,27 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                             <tbody>
                                 <tr>
                                     <td><label htmlFor="colorH2">Color :</label></td>
-                                    <td><input onChange={changeStyle} type="color" id="colorH2" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="color" id="colorH2" /></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="mlH2">Space before :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mlH2" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mlH2" min={0} max={150}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="mtH2">Space above :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mtH2" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mtH2" min={0} max={100}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="mbH2">Space below :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mbH2" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mbH2" min={0} max={100}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="fontSizeH2">Font size :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="fontSizeH2" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="fontSizeH2" min={8} max={50}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="fontWeightH2">Font weight :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="fontWeightH2" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="fontWeightH2" min={100} max={800}/></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -699,27 +722,27 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                             <tbody>
                                 <tr>
                                     <td><label htmlFor="colorH3">Color :</label></td>
-                                    <td><input onChange={changeStyle} type="color" id="colorH3" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="color" id="colorH3" /></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="mlH3">Space before :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mlH3" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mlH3" min={0} max={150}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="mtH3">Space above :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mtH3" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mtH3" min={0} max={100}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="mbH3">Space below :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mbH3" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mbH3" min={0} max={100}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="fontSizeH3">Font size :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="fontSizeH3" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="fontSizeH3" min={8} max={50}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="fontWeightH3">Font weight :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="fontWeightH3" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="fontWeightH3" min={100} max={800}/></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -730,27 +753,27 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                             <tbody>
                                 <tr>
                                     <td><label htmlFor="colorH4">Color :</label></td>
-                                    <td><input onChange={changeStyle} type="color" id="colorH4" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="color" id="colorH4" /></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="mlH4">Space before :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mlH4" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mlH4" min={0} max={150}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="mtH4">Space above :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mtH4" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mtH4" min={0} max={100}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="mbH4">Space below :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mbH4" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mbH4" min={0} max={100}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="fontSizeH4">Font size :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="fontSizeH4" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="fontSizeH4" min={8} max={50}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="fontWeightH4">Font weight :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="fontWeightH4" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="fontWeightH4" min={100} max={800}/></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -761,27 +784,27 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                             <tbody>
                                 <tr>
                                     <td><label htmlFor="colorH5">Color :</label></td>
-                                    <td><input onChange={changeStyle} type="color" id="colorH5" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="color" id="colorH5" /></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="mlH5">Space before :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mlH5" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mlH5" min={0} max={150}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="mtH5">Space above :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mtH1" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mtH1" min={0} max={100}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="mbH5">Space below :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mbH5" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mbH5" min={0} max={100}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="fontSizeH5">Font size :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="fontSizeH5" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="fontSizeH5" min={8} max={50}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="fontWeightH5">Font weight :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="fontWeightH5" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="fontWeightH5" min={100} max={800}/></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -792,27 +815,27 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                             <tbody>
                                 <tr>
                                     <td><label htmlFor="colorH6">Color :</label></td>
-                                    <td><input onChange={changeStyle} type="color" id="colorH6" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="color" id="colorH6" /></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="mlH6">Space before :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mlH6" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mlH6" min={0} max={150}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="mtH6">Space above :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mtH6" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mtH6" min={0} max={100}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="mbH6">Space below :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mbH6" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mbH6" min={0} max={100}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="fontSizeH6">Font size :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="fontSizeH6" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="fontSizeH6" min={8} max={50}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="fontWeightH6">Font weight :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="fontWeightH6" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="fontWeightH6" min={100} max={800}/></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -823,31 +846,31 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                             <tbody>
                                 <tr>
                                     <td><label htmlFor="mlQuote">Space before :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mlQuote"/></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mlQuote" min={0} max={150}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="mbQuote">Space below :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mlQuote"/></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mlQuote" min={0} max={100}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="fontSizeQuote">Font size :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="fontSizeQuote" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="fontSizeQuote" min={8} max={50}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="colorQuote">Color :</label></td>
-                                    <td><input onChange={changeStyle} type="color" id="colorQuote"/></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="color" id="colorQuote"/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="borderLeftColorQuote">Border left color :</label></td>
-                                    <td><input onChange={changeStyle} type="color" id="borderLeftColorQuote" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="color" id="borderLeftColorQuote" /></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="borderLeftWidthQuote">Border left width :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="borderLeftWidthQuote" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="borderLeftWidthQuote" min={1} max={50}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="borderLeftStyle">Border left style :</label></td>
-                                    <td><select onChange={changeStyle} id="borderLeftStyle" defaultValue={'solid'}>
+                                    <td><select onChange={(e:React.ChangeEvent<HTMLSelectElement>) => changeStyle(e)} id="borderLeftStyle" defaultValue={'solid'}>
                                             <option value="none">none</option>
                                             <option value="dotted">Dotted</option>
                                             <option value="dashed">Dashed</option>
@@ -857,7 +880,7 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="plQuote">Padding left : :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="plQuote"/></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="plQuote" min={0} max={150}/></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -868,16 +891,16 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                             <tbody>
                                 <tr>
                                     <td><label htmlFor="fontSizeLink">Font size :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="fontSizeLink" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="fontSizeLink" min={8} max={50}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="colorLink">Color :</label></td>
-                                    <td><input onChange={changeStyle} type="color" id="colorLink"/></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="color" id="colorLink"/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="textDecorationLink">Text decoration :</label></td>
                                     <td>
-                                        <select onChange={changeStyle} id="textDecorationLink" defaultValue={'none'}>
+                                        <select onChange={(e:React.ChangeEvent<HTMLSelectElement>) => changeStyle(e)} id="textDecorationLink" defaultValue={'none'}>
                                             <option value="none">None</option>
                                             <option value="underline">Underline</option>
                                             <option value="overline">Overline</option>
@@ -887,12 +910,12 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="linkHoverColor">Color on hover :</label></td>
-                                    <td><input onChange={changeStyle}type="color" id="linkHoverColor" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)}type="color" id="linkHoverColor" /></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="textDecorationLinkHover">Text decoration on Hover :</label></td>
                                     <td>
-                                        <select onChange={changeStyle} id="textDecorationLinkHover" defaultValue={'none'}>
+                                        <select onChange={(e:React.ChangeEvent<HTMLSelectElement>) => changeStyle(e)} id="textDecorationLinkHover" defaultValue={'none'}>
                                             <option value="none">None</option>
                                             <option value="underline">Underline</option>
                                             <option value="overline">Overline</option>
@@ -909,19 +932,19 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                             <tbody>
                                 <tr>
                                     <td><label htmlFor="plUl">Space before :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="plUl" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="plUl" min={0} max={150}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="mbUl">Space below :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mbUl" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mbUl" min={0} max={100}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="mtUl">Space above :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mtUl" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mtUl" min={0} max={100}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="colorUl">Color :</label></td>
-                                    <td><input onChange={changeStyle} type="color" id="colorUl" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="color" id="colorUl" /></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -932,19 +955,19 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                             <tbody>
                                 <tr>
                                     <td><label htmlFor="plOl">Space before :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="plOl" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="plOl" min={0} max={150}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="mbOl">Space below :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mbOl" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mbOl" min={0} max={100}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="mtOl">Space above :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mtOl" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mtOl" min={0} max={100}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="colorOl">Color :</label></td>
-                                    <td><input onChange={changeStyle} type="color" id="colorOl" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="color" id="colorOl" /></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -955,51 +978,51 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                             <tbody>
                                 <tr>
                                     <td><label htmlFor="mbCode">Space below :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mbCode" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mbCode" min={0} max={100}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="mtCode">Space above :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="mtCode" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="mtCode" min={0} max={100}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="backgroundColorCode">Color :</label></td>
-                                    <td><input onChange={changeStyle} type="color" id="backgroundColorCode" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="color" id="backgroundColorCode" /></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="fontSizeCode">Font size :</label></td>
-                                    <td><input onChange={changeStyle} type="number" id="fontSizeCode" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="fontSizeCode" min={8} max={50}/></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="colorComment">Comment :</label></td>
-                                    <td><input onChange={changeStyle} type="color" id="colorComment" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="color" id="colorComment" /></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="colorPunctuation">Punctuation :</label></td>
-                                    <td><input onChange={changeStyle} type="color" id="colorPunctuation" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="color" id="colorPunctuation" /></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="colorProperty">Property :</label></td>
-                                    <td><input onChange={changeStyle} type="color" id="colorProperty" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="color" id="colorProperty" /></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="colorSelector">Selector :</label></td>
-                                    <td><input onChange={changeStyle} type="color" id="colorSelector" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="color" id="colorSelector" /></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="colorOperator">Operator :</label></td>
-                                    <td><input onChange={changeStyle} type="color" id="colorOperator" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="color" id="colorOperator" /></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="colorAttr">Attributs :</label></td>
-                                    <td><input onChange={changeStyle} type="color" id="colorAttr" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="color" id="colorAttr" /></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="colorVariable">Variable :</label></td>
-                                    <td><input onChange={changeStyle} type="color" id="colorVariable" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="color" id="colorVariable" /></td>
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="colorFunction">Function :</label></td>
-                                    <td><input onChange={changeStyle} type="color" id="colorFunction" /></td>
+                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="color" id="colorFunction" /></td>
                                 </tr>
                             </tbody>
                         </table>
