@@ -175,7 +175,9 @@ function displayResetConfigDialog(configName: string, path: string) {
     dialog.showMessageBox({
         type: 'error',
         title: 'Error',
-        message: 'An error occur, ' + configName + ' is corrupted.\nDo you want to reset the config ?\nIf you choose to do so, part of your config will be lost.',
+        message: 'An error occur, ' + configName + ' is corrupted.\nDo you want to reset the config ?\n' +
+        'If you choose to do so, part of your config will be lost.\n' +
+        'You will have to relaunch the app after the reset.',
         buttons: ['Yes', 'No']
     }).then((res) => {
         if (res.response === 0) {
@@ -184,8 +186,6 @@ function displayResetConfigDialog(configName: string, path: string) {
                 // Delete the config folder
                 fs.rmSync(path, { recursive: true, force: true })
                 outPut.printOK('Config: ' + path + ' deleted !')
-                outPut.printINFO('Try to restart the app...')
-                app.relaunch()
                 app.exit(0)
             } catch (error) {
                 outPut.printError('Failed to delete the config: ' + path + ': ' + error)
