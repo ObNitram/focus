@@ -21,8 +21,7 @@ const App: React.FC = () => {
   const [selectedTheme, setSelectedTheme] = useState<string>('default')
   const [notification, setNotification] = useState<NotificationType[]>([])
 
-  useEffect(() => {
-    ipcRenderer.send('getTheme')
+  function setupEvents() {
     ipcRenderer.on('getTheme_responses', (event, value: { name: string, css: string }[], themeToSet: string) => {
       let editor_style: HTMLStyleElement | null = document.getElementById('style_editor') as HTMLStyleElement
       if (editor_style == null) {
@@ -45,6 +44,19 @@ const App: React.FC = () => {
       setThemeReceived(true)
       setThemes(value)
     })
+
+    ipcRenderer.on('notification', (event, value: NotificationType) => {
+      setNotification([...notification, value])
+    })
+  }
+
+  useEffect(() => {
+    ipcRenderer.send('getTheme')
+    setupEvents()
+
+    return () => {
+      ipcRenderer.removeAllListeners('getTheme_responses')
+    }
   }, [])
 
   useEffect(() => {

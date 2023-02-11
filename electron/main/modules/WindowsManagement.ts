@@ -145,3 +145,6 @@ export function closeVaultWindowAndOpenMain(){
   return mainWindow
 }
 
+export function getMainWindow(): BrowserWindow | null {
+  return mainWindow;
+}
