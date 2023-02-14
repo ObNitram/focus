@@ -75,8 +75,11 @@ export function ExemplePage(this: any) {
 6
 7
 8
-9"
+9
+10"
                     dir="ltr">
+                        <span className="editor_code_comment" data-lexical-text="true">
+                            //This function is a function for show an exemple of code in the exemple page</span><br/>
                         <span className='editor_code_attr' data-lexical-text="true">const</span>
                         <span data-lexical-text="true"> </span>
                         <span data-lexical-text="true">testFunction</span>
