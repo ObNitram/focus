@@ -42,7 +42,7 @@ npm run build
 > Your executable will be in 
 > ./focus/release/
 
-### Attention
+### Warning
 
 If you modify pathManage and themeType, you must run :
 ```bash
