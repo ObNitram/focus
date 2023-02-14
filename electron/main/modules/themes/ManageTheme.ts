@@ -1,7 +1,7 @@
 import { mainWindow } from "../WindowsManagement";
-import { ipcMain } from "electron";
-import { getThemes, saveThemes } from "../ManageConfig";
-import { printError, printINFO, printLog } from "../OutputModule";
+import { dialog, ipcMain } from "electron";
+import { getThemes, saveThemes, removeTheme } from "../ManageConfig";
+import { printError, printINFO, printLog, printOK } from "../OutputModule";
 import {Theme, defaultTheme} from 'themetypes'
 
 export function convertThemeForStyle(theme:Theme):{name:string, css:string}{
@@ -95,6 +95,29 @@ export function setupEvents():void{
             mainWindow.webContents.send('saveTheme_reponse', false)
             printError('Error when save theme "' + themeName + '"')
             printError(reason)
+        })
+    })
+
+    ipcMain.on('removeTheme', (event, themeName: string) => {
+        printINFO('Remove theme "' + themeName + '" is asked.')
+        dialog.showMessageBox(mainWindow, {
+            type: 'question',
+            buttons: ['Yes', 'No'],
+            title: 'Remove theme',
+            message: 'Are you sure to remove theme "' + themeName + '" ?'
+        }).then((value) => {
+            if(value.response == 0){
+                removeTheme(themeName).then((value) => {
+                    printOK(value)
+                    mainWindow.webContents.send('removeTheme_response', true)
+                }).catch((reason:string) => {
+                    printError(reason)
+                    mainWindow.webContents.send('removeTheme_response', false)
+                })
+            }else{
+                printINFO('Remove theme "' + themeName + '" is canceled.')
+                mainWindow.webContents.send('removeTheme_response', false)
+            }
         })
     })
 }

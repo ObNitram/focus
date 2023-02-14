@@ -297,6 +297,23 @@ export async function saveThemes(themes: themeConfigFileType): Promise<string> {
         resolve('Themes is saved in setting!')
     })
 }
+
+export async function removeTheme(themeName:string): Promise<string> {
+    return new Promise( async (resolve, reject) => {
+        outPut.printINFO('Try to remove user\'s theme.')
+        if(themeConfig == null) reject('Theme config is null!')
+        let newThemeConfig: themeConfigFileType = themeConfig.filter((value:Theme) => {
+            return value.name != themeName
+        })
+        if(themeConfig.length == newThemeConfig.length) reject('Theme not found !')
+        await saveThemes(newThemeConfig).then((value:string) => {
+            resolve('The theme ' + themeName + ' is removed!');
+        }).catch((reason:string)=> {
+            reject(reason)
+        })
+    })
+}
+
 export function saveEditorExtraFeatures(notePath: string, nodes: Array<NodesSave>) {
     outPut.printINFO('Try to save editor extra features...')
     let content: JSON = JSON.parse(fs.readFileSync(pathConfigFolder + editorExtraFeaturesConfigFileName, 'utf8'));

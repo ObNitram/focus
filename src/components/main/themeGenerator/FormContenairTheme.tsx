@@ -17,6 +17,7 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
 
     const refNewNameInput = useRef<HTMLInputElement>(null)
     const refSelectExistingTheme = useRef<HTMLSelectElement>(null)
+    const refSelectRemoveTheme = useRef<HTMLSelectElement>(null)
 
     const refNewThemeContenair = useRef<HTMLDivElement>(null)
     const refGeneralSetting = useRef<HTMLDivElement>(null)
@@ -104,13 +105,24 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
         setThemeSelected(refSelectExistingTheme.current.value)
     }
 
-    const convertPXStringtoNumber = (pxString:string):number => {
-        //remove the px at the end of the string if it exists
-        if(pxString.endsWith('px')) pxString = pxString.slice(0, -2)
-        return parseInt(pxString)
+    const handleRemoveTheme = (e:React.MouseEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+        if(refSelectRemoveTheme == null || refSelectRemoveTheme.current == null) return
+        const themeName = refSelectRemoveTheme.current.value
+        if(themeName == '') return
+        ipcRenderer.send('removeTheme', themeName)
+        ipcRenderer.once('removeTheme_response', (event, done:boolean) => {
+            if(done){
+                addNotification('The theme ' + themeName + ' is removed!', NotificationLevelEnum.SUCESS);
+                ipcRenderer.send('getTheme')
+                ipcRenderer.send('getJSONTypes');
+            }else{
+                addNotification('The theme ' + themeName + ' is removed!', NotificationLevelEnum.ERROR);
+            }
+        })
     }
-
-
+        
     const removePXString = (pxString:string):string => {
         //remove the px at the end of the string if it exists
         if(pxString.endsWith('px')) pxString = pxString.slice(0, -2)
@@ -1052,6 +1064,23 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                     <input ref={refNewNameInput} type="text" placeholder='Name'/>
                     <button onClick={(e) => handleCreateNewTheme(e)}>Create</button>
                 </div>
+                <h4>Remove Theme : </h4>
+                {props.JSONThemes.length !== 1 
+                    ? (
+                        <div className={styles.newThemeContenair}>
+                            <select ref={refSelectRemoveTheme} id="removeTheme">
+                                {props.JSONThemes.map((value:Theme) => {
+                                    if(value.name !== 'default'){
+                                        return (<option key={value.name} value={value.name}>{value.name}</option>)
+                                    }
+                                })}
+                            </select>
+                            <button onClick={handleRemoveTheme}>Remove</button>
+                        </div>
+                        )
+                    
+                    : (<p>No availables themes</p>)
+                }
             </form>)}
         </div>
     )

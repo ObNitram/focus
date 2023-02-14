@@ -19,10 +19,12 @@ export default function ThemeGenerator(this:any, props:ThemeGeneratorProps){
 
     useEffect(() => {
         ipcRenderer.send('getJSONTypes');
-        ipcRenderer.once('JSONTypesReceived', (event, value:Theme[]) => {
-            setJSONThemes(value)
-            console.log(value)
+        ipcRenderer.on('JSONTypesReceived', (event, value:Theme[]) => {
+            setJSONThemes([...value])
         })
+        return () => {
+            ipcRenderer.removeAllListeners('JSONTypesReceived')
+        }
     }, [])
 
     return (
