@@ -1037,7 +1037,7 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                             <select ref={refSelectExistingTheme} id="selectTheme">
                                 {props.JSONThemes.map((value:Theme) => {
                                     if(value.name !== 'default'){
-                                        return (<option value={value.name}>{value.name}</option>)
+                                        return (<option key={value.name} value={value.name}>{value.name}</option>)
                                     }
                                 })}
                             </select>
