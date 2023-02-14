@@ -3,6 +3,7 @@ import { app, dialog } from 'electron'
 import * as outPut from './OutputModule'
 import * as vaultManagement from './VaultManagementModule'
 import * as FileSystemModule from './FileSystemModule'
+import * as Notification from './NotificationModule'
 import { convertCrossPath } from 'pathmanage'
 import { Theme } from 'themetypes'
 
@@ -12,7 +13,6 @@ export const generalConfigFileName: string = convertCrossPath('generalConfig.jso
 export const pathThemeConfigFileName: string = convertCrossPath('themes.json')
 
 import { NodesSave } from './editorExtraFeaturesManagementModule/SaveEditorExtraFeatures'
-import { resolve } from 'path'
 const editorExtraFeaturesConfigFileName: string = 'editorExtraFeaturesConfig.json'
 
 type vaultConfigFileNameType = {
@@ -60,7 +60,7 @@ function createConfigFolderIfNeeded(path: string): boolean {
 
 function createConfigFilesIfNeeded(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-        if (!createConfigFileIfNeeded(pathConfigFolder)) {
+        if (!createConfigFolderIfNeeded(pathConfigFolder)) {
             displayResetConfigDialog('config folder', pathConfigFolder)
             reject('Failed to create config folder.')
         }
@@ -175,7 +175,9 @@ function displayResetConfigDialog(configName: string, path: string) {
     dialog.showMessageBox({
         type: 'error',
         title: 'Error',
-        message: 'An error occur, ' + configName + ' is corrupted.\nDo you want to reset the config ?\nIf you choose to do so, part of your config will be lost.',
+        message: 'An error occur, ' + configName + ' is corrupted.\nDo you want to reset the config ?\n' +
+        'If you choose to do so, part of your config will be lost.\n' +
+        'You will have to relaunch the app after the reset.',
         buttons: ['Yes', 'No']
     }).then((res) => {
         if (res.response === 0) {
@@ -184,8 +186,6 @@ function displayResetConfigDialog(configName: string, path: string) {
                 // Delete the config folder
                 fs.rmSync(path, { recursive: true, force: true })
                 outPut.printOK('Config: ' + path + ' deleted !')
-                outPut.printINFO('Try to restart the app...')
-                app.relaunch()
                 app.exit(0)
             } catch (error) {
                 outPut.printError('Failed to delete the config: ' + path + ': ' + error)
@@ -333,6 +333,7 @@ export function saveEditorExtraFeatures(notePath: string, nodes: Array<NodesSave
     }
     catch (error) {
         outPut.printError('Failed to save editor extra features !')
+        Notification.showNotification('Failed to save extra features! If you close the current note, you will lose the non-markdown content.', Notification.NotificationLevelEnum.ERROR)
     }
 }
 

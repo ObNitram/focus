@@ -2,6 +2,7 @@ import * as FileSystemModule from './FileSystemModule'
 
 import * as pathManage from 'pathmanage'
 import * as printMessage from './OutputModule'
+import * as Notification from './NotificationModule'
 import { saveEditorExtraFeatures } from './editorExtraFeaturesManagementModule/SaveEditorExtraFeatures'
 import { restoreEditorExtraFeatures } from './editorExtraFeaturesManagementModule/RestoreEditorExtraFeatures'
 import * as MarkdownConverter from './markdownConversion/MarkdownConversionModule'
@@ -22,10 +23,12 @@ export function setupEvents() {
             printMessage.printOK('Note added')
           } else {
             printMessage.printError('Note not added')
+            Notification.showNotification('Impossible to create note, check the permissions', Notification.NotificationLevelEnum.ERROR)
           }
         })
           .catch((err) => {
             printMessage.printError(err)
+            Notification.showNotification('Impossible to create note, check the permissions', Notification.NotificationLevelEnum.ERROR)
           })
       })
 
@@ -37,10 +40,12 @@ export function setupEvents() {
             printMessage.printOK('Folder added')
           } else {
             printMessage.printError('Folder not added')
+            Notification.showNotification('Impossible to create folder, check the permissions', Notification.NotificationLevelEnum.ERROR)
           }
         })
           .catch((err) => {
             printMessage.printError(err)
+            Notification.showNotification('Impossible to create folder, check the permissions', Notification.NotificationLevelEnum.ERROR)
           })
       })
 
@@ -52,6 +57,7 @@ export function setupEvents() {
         })
           .catch((err) => {
             printMessage.printError(err)
+            Notification.showNotification('Impossible to delete note or folder, check the permissions', Notification.NotificationLevelEnum.ERROR)
           })
       })
 
@@ -68,6 +74,7 @@ export function setupEvents() {
             })
               .catch((err) => {
                 printMessage.printError(err)
+                Notification.showNotification('Impossible to rename note or folder, check the permissions', Notification.NotificationLevelEnum.ERROR)
               })
           })
       })
@@ -92,6 +99,7 @@ export function setupEvents() {
         })
           .catch((err) => {
             printMessage.printError(err)
+            Notification.showNotification('Impossible to move note or folder, check the permissions', Notification.NotificationLevelEnum.ERROR)
           })
       })
 
@@ -110,6 +118,7 @@ export function setupEvents() {
         })
           .catch((err) => {
             printMessage.printError(err)
+            Notification.showNotification('Impossible to copy note or folder, check the permissions', Notification.NotificationLevelEnum.ERROR)
           })
       })
 
@@ -125,18 +134,22 @@ export function setupEvents() {
               })
                 .catch((err) => {
                   printMessage.printError(err)
+                  Notification.showNotification('Impossible to open note, check the permissions', Notification.NotificationLevelEnum.ERROR)
                 })
             })
               .catch((err) => {
                 printMessage.printError(err)
+                Notification.showNotification('Impossible to open note, check the permissions', Notification.NotificationLevelEnum.ERROR)
               })
           })
             .catch((err) => {
               printMessage.printError(err)
+              Notification.showNotification('Impossible to open note, check the permissions', Notification.NotificationLevelEnum.ERROR)
             })
         })
           .catch((err) => {
             printMessage.printError(err)
+            Notification.showNotification('Impossible to open note, check the permissions', Notification.NotificationLevelEnum.ERROR)
           })
       })
 
@@ -146,18 +159,22 @@ export function setupEvents() {
           MarkdownConverter.convertJSONToMarkdown(noteData).then((noteData) => {
             saveFile(noteData, path).then(() => {
               printMessage.printOK(path + ' saved!')
+              Notification.showNotification('Note saved successfully!', Notification.NotificationLevelEnum.SUCESS)
               mainWindow?.webContents.send('note_saved', path)
             })
               .catch((err) => {
                 printMessage.printError(err)
+                Notification.showNotification('An error occured while saving the note!', Notification.NotificationLevelEnum.ERROR)
               })
           })
             .catch((err) => {
               printMessage.printError(err)
+              Notification.showNotification('An error occured while saving the note!', Notification.NotificationLevelEnum.ERROR)
             })
         })
           .catch((err) => {
             printMessage.printError(err)
+            Notification.showNotification('An error occured while saving the note!', Notification.NotificationLevelEnum.ERROR)
           })
       })
 

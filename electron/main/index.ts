@@ -61,6 +61,8 @@ function sendVaultContent() {
 }
 
 function setupWatcher() {
+  printMessage.printLog('Setup watcher')
+  console.log(VaultManagement.getPathVault())
   if (watcher) {
     watcher.close()
   }
@@ -162,14 +164,14 @@ function setupEvents() {
 }
 
 app.whenReady().then(() => {
-  setupEvents();
+  VaultManagement.setupEvents();
   ManageTheme.setupEvents();
   HtmlToPDF.setupEvents();
-  VaultManagement.setupEvents();
   WindowsManagement.setupEvents();
 
   // Initialize the config files if needed (it also check if the config files are valid)
   initConfig().then(() => {
+    setupEvents();
     pathVault = VaultManagement.getPathVault()
     printMessage.printLog('Path found is ' + pathVault)
     if (pathVault == null) {
