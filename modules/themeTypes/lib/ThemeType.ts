@@ -149,15 +149,15 @@ export const defaultTheme:Theme = {
     },
     bold: {
         'color': '#ffffff',
-        'font-size': '15px',
+        'font-size': '1em',
     },
     italic: {
         'color': '#ffffff',
-        'font-size': '15px',
+        'font-size': '1em',
     },
     underline: {
         'color': '#ffffff',
-        'font-size': '15px',
+        'font-size': '1em',
     },
     h1: {
         'color': '#ffffff',
