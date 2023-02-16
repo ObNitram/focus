@@ -11,7 +11,7 @@ import * as printMessage from './OutputModule'
 const pathManage = require('pathmanage')
 
 /**
- * Class representing a file or folder
+ * @description Class representing a file or folder
  * @property name The name of the file or folder
  * @property isDirectory True if the file is a folder, false otherwise
  * @property createdTime The creation time of the file or folder
@@ -38,7 +38,7 @@ export class File {
 }
 
 /**
- * Finds the next available file name for a new file or folder.
+ * @description Finds the next available file name for a new file or folder.
  * @param dir:string The directory to search for a file name
  * @param name:string The name of the file or folder 
  * @returns:Promise<string> A promise that resolves to the next available file name
@@ -88,9 +88,9 @@ export async function findAvailableName(dir: string, name: string): Promise<stri
 }
 
 /**
- * This function will return a promise that will resolve to an array of files. 
- * It will get the content of the folder * at the specified path. 
- * If the recursive flag is set to true, it will also get the content of all subfolders.
+ * @description This function will return a promise that will resolve to an array of files. 
+                It will get the content of the folder * at the specified path. 
+                If the recursive flag is set to true, it will also get the content of all subfolders.
  * @param folderPath:string The path of the folder to get the content of
  * @param recursive:boolean If true, the function will get the content of the subfolders
  * @returns:Promise<File[]> A promise that resolves to an array of File objects
@@ -144,7 +144,7 @@ async function getFolderContentInner(folderPath: string, recursive: boolean = fa
 }
 
 /**
- * Get recursively the content of a folder (the root folder is included)
+ * @description Get recursively the content of a folder (the root folder is included)
  * @param folderPath The path of the folder to get the content of
  * @param recursive If true, the function will get the content of the subfolders
  * @returns A promise that resolves to an array of File objects
@@ -170,7 +170,7 @@ export function showInExplorer(folderPath: string) {
 }
 
 /**
- * Get the info of a file or folder
+ * @description Get the info of a file or folder
  * @param path      The path of the file or folder
  * @param recursive If true, the function will get the content of the subfolders (default: false)
  * @returns A promise that resolves to a File object
@@ -197,7 +197,7 @@ export async function getFileOrFolderInfo(path: string, recursive: boolean = fal
 }
 
 /**
- * This function will delete a file or a folder
+ * @description This function will delete a file or a folder
  * @param path:string The path of the file or folder to delete
  * @returns:Promise<void> A promise that resolves when the file or folder is deleted
  */
@@ -215,7 +215,7 @@ export async function deleteFileOrFolder(path: string): Promise<void> {
 }
 
 /**
- * This function will create a new note in the specified folder
+ * @description This function will create a new note in the specified folder
  * @param dir:string The path of the folder where to create the note
  * @returns:string A promise that resolves to the path of the created note
  */
@@ -245,7 +245,7 @@ export async function createNote(dir: string): Promise<File> {
 }
 
 /**
- * This function will create a new folder in the specified folder
+ * @description This function will create a new folder in the specified folder
  * @param dir:string The path of the folder where to create the folder
  * @param folderName:string The name of the folder to create
  * @returns:string A promise that resolves to the File object of the created folder
@@ -276,7 +276,7 @@ export async function createFolder(dir: string, folderName: string): Promise<Fil
 }
 
 /**
- * Try to rename a file or a folder. If the new name is already taken, it will add a number at the end of the name to make it available
+ * @description Try to rename a file or a folder. If the new name is already taken, it will add a number at the end of the name to make it available
  * @param oldPath:string The path of the file or folder to rename
  * @param newPath:string The new path of the file or folder
  * @returns:Promise<void> A promise that resolves when the file or folder is renamed or rejected if an error occurs
@@ -326,7 +326,7 @@ export async function renameFileOrFolder(oldPath: string, newPath: string): Prom
 }
 
 /**
- * Try to move a file or a folder. If the new path is already taken, it will add a number at the end of the name to make it available
+ * @description Try to move a file or a folder. If the new path is already taken, it will add a number at the end of the name to make it available
  * @param oldPath:string The path of the file or folder to move
  * @param newPath:string The new path of the file or folder
  * @returns:Promise<void> A promise that resolves when the file or folder is moved or rejected if an error occurs
@@ -375,7 +375,7 @@ export async function moveFileOrFolder(oldPath: string, newPath: string): Promis
 }
 
 /**
- * Try to copy a file or a folder. If the new path is already taken, it will add a number at the end of the name to make it available
+ * @description Try to copy a file or a folder. If the new path is already taken, it will add a number at the end of the name to make it available
  * @param oldPath:string The path of the file or folder to copy
  * @param newPath:string The new path of the file or folder
  * @returns 
@@ -421,7 +421,7 @@ export async function copyFileOrFolder(oldPath: string, newPath: string): Promis
 }
 
 /**
- * The function takes a file path and returns a promise that resolves to the file contents. The file contents are read as a string and  * the promise is rejected if the file path is a directory or if there is an error.
+ * @description The function takes a file path and returns a promise that resolves to the file contents. The file contents are read as a string and  * the promise is rejected if the file path is a directory or if there is an error.
  * @param filePath:string The path of the file to read
  * @returns:Promise<string> A promise that resolves to the file contents or rejects if an error occurs or if the file path is a directory
  */
@@ -456,7 +456,7 @@ export async function openFileAndReadData(filePath: string): Promise<string> {
 }
 
 /**
- * Writes the file to the specified file path.
+ * @description Writes the file to the specified file path.
  * @param filePath:string The path of the file to write
  * @param data:string The data to write in the file
  * @returns:Promise<void> A promise that resolves when the file is written or rejected if an error occurs
@@ -479,7 +479,7 @@ export async function saveFile(filePath: string, data: string): Promise<void> {
 }
 
 /**
- * Remove the .md extension from a file name. Also Remove the .md extension from all the children of the file.
+ * @description Remove the .md extension from a file name. Also Remove the .md extension from all the children of the file.
  * @param file:File The file to remove the .md extension from
  * @returns:File The file without the .md extension and without the .md extension from all the children
  */
@@ -494,7 +494,7 @@ export function removeMD(file: File): File {
 }
 
 /**
- * Replace all the '\' by '/' in a file path. Also replace all the '\' by '/' in all the children of the file.
+ * @description Replace all the '\' by '/' in a file path. Also replace all the '\' by '/' in all the children of the file.
  * @param file:File The file to replace the '\' by '/' in
  * @returns:File The file with all the '\' replaced by '/' and with all the '\' replaced by '/' in all the children
  */
@@ -507,7 +507,7 @@ export function convertAllCrossPath(file:File){
 }
 
 /**
- * Takes an array of strings and returns a new array with the non-existent paths removed.
+ * @description Takes an array of strings and returns a new array with the non-existent paths removed.
  * @param paths:string[] The array of paths to check
  * @returns:string[] The array of paths without the non-existent paths
  */
