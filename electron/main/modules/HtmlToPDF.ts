@@ -1,3 +1,7 @@
+/**
+ * @file HtmlToPDF.ts
+ * @description This file contains the function to export a note as PDF
+ */
 import { launch } from 'puppeteer';
 import * as fs from 'fs'
 import { dialog, ipcMain } from 'electron';
@@ -7,9 +11,18 @@ import { mainWindow } from './WindowsManagement';
 import { getPathVault } from './VaultManagementModule';
 import { getName } from 'pathmanage';
 
-
+/**
+ * @description Set the handler for the event 'savePDF' which is sent when the user wants to export a note as PDF
+ */
 export function setupEvents() {
-    ipcMain.on('savePDF', async (event, html: string, css: string) => {
+    /**
+     * @description This function is called when the user wants to export a note as PDF
+     * @param event The event
+     * @param html The HTML content of the note
+     * @param css The CSS content of the note
+     */
+    ipcMain.on('savePDF', async (event: Electron.IpcMainEvent, html: string, css: string) => {
+        //Get the path where the PDF will be saved with a dialog
         const path = await dialog.showSaveDialog({
             title: 'Export note as PDF',
             defaultPath: getPathVault(),
@@ -18,8 +31,10 @@ export function setupEvents() {
             showsTagField: true
         })
         if(path.canceled) return
+        //If the path doesn't end with .pdf, add it
         let filePathPDF = path.filePath.endsWith('.pdf') ? path.filePath : path.filePath.concat('.pdf')
         printINFO('Save PDF is asked, at path : '+ filePathPDF)
+        //Define the HTML template
         const templateHTML = `<!DOCTYPE html>
                             <html>
                             <head>
@@ -76,6 +91,7 @@ export function setupEvents() {
                             
                             </html>
     `
+        //Create a temporary HTML file
         fs.writeFileSync(tmpdir().concat('/file.html'), templateHTML, 'utf-8');
         (async () => {
 
