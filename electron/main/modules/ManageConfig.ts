@@ -1,3 +1,7 @@
+/**
+ * @file ManageConfig.ts
+ * @description This file contains the functions to manage the config files
+ */
 import fs from 'fs'
 import { app, dialog } from 'electron'
 import * as outPut from './OutputModule'
@@ -7,29 +11,40 @@ import * as Notification from './NotificationModule'
 import { convertCrossPath } from 'pathmanage'
 import { Theme } from 'themetypes'
 
-export const pathConfigFolder: string = convertCrossPath(app.getPath('appData') + '/focus/')
-export const vaultConfigFileName: string = convertCrossPath('vaultConfig.json')
-export const generalConfigFileName: string = convertCrossPath('generalConfig.json')
-export const pathThemeConfigFileName: string = convertCrossPath('themes.json')
+export const pathConfigFolder: string = convertCrossPath(app.getPath('appData') + '/focus/') //Path to the config folder
+export const vaultConfigFileName: string = convertCrossPath('vaultConfig.json') //Name of the vault config file
+export const generalConfigFileName: string = convertCrossPath('generalConfig.json') //Name of the general config file
+export const pathThemeConfigFileName: string = convertCrossPath('themes.json') //Name of the theme config file
 
 import { NodesSave } from './editorExtraFeaturesManagementModule/SaveEditorExtraFeatures'
-const editorExtraFeaturesConfigFileName: string = 'editorExtraFeaturesConfig.json'
+const editorExtraFeaturesConfigFileName: string = 'editorExtraFeaturesConfig.json' //Name of the editor extra features config file
 
+//Type of the content of vault config file
 type vaultConfigFileNameType = {
     location: string;
 }
 
+//Type of the content of general config file
 type generalConfigType = {
     size_sidebar: number,
     openedFiles: string[]
 }
 
+//Type of the content of theme config file
 type themeConfigFileType = Theme[]
 
+//The general config found in the config file
 let generalConfig: generalConfigType | null = null
 
+//The vault config found in the config file
 let themeConfig: themeConfigFileType | null = null
 
+/**
+ * @description Called for create a config file if it doesn't exist
+ * @param path:string The path of the config file
+ * @param initConfig:string The content of the config file, empty by default
+ * @returns:boolean True if the config file exists or has been created, false otherwise
+ */
 function createConfigFileIfNeeded(path: string, initConfig: string = '{}'): boolean {
     if (!fs.existsSync(path)) {
         outPut.printINFO('Config folder not found in ' + path)
@@ -44,6 +59,11 @@ function createConfigFileIfNeeded(path: string, initConfig: string = '{}'): bool
     return true
 }
 
+/**
+ * @description Called for create the config folder if it doesn't exist
+ * @param path:string The path of the config folder
+ * @returns:boolean True if the config folder exists or has been created, false otherwise
+ */
 function createConfigFolderIfNeeded(path: string): boolean {
     if (!fs.existsSync(path)) {
         outPut.printINFO('Config folder not found in ' + path)
@@ -58,6 +78,10 @@ function createConfigFolderIfNeeded(path: string): boolean {
     return true
 }
 
+/**
+ * @description Called one time for create all config files if they don't exist
+ * @returns:Pormise<boolean> True if all config files exists or has been created, false otherwise
+ */
 function createConfigFilesIfNeeded(): Promise<boolean> {
     return new Promise((resolve, reject) => {
         if (!createConfigFolderIfNeeded(pathConfigFolder)) {
@@ -84,6 +108,10 @@ function createConfigFilesIfNeeded(): Promise<boolean> {
     })
 }
 
+/**
+ * @description Called one time for get the config saved in the config files. If a data is corrupted, the user is asked to reset the config
+ * @returns:boolean True if the data has been loaded, false if an error occured or if the user has reset the config
+ */
 function initDataFromConfigFiles() {
     let data;
 
@@ -167,6 +195,13 @@ function initDataFromConfigFiles() {
     return true
 }
 
+/**
+ * @description Called when an error occur with a config file. Ask the user if he want to reset the config. 
+                If yes, delete the config folder and restart the app
+                If no, quit the app
+ * @param configName: string The name of the config file
+ * @param path: string The path of the config file
+ */
 function displayResetConfigDialog(configName: string, path: string) {
     // Ask the user if he want to reset the config
     // If yes, delete the config folder and restart the app
@@ -206,6 +241,10 @@ function displayResetConfigDialog(configName: string, path: string) {
     })
 }
 
+/**
+ * @description Called one time for create the config files if they don't exist, get the config saved in the config files.
+ * @returns:Promise<void> A promise that resolve when the config is loaded, and reject if finally data is not loaded
+ */
 export function initConfig(): Promise<void> {
     return new Promise((resolve, reject) => {
         createConfigFilesIfNeeded().then(() => {
@@ -221,6 +260,11 @@ export function initConfig(): Promise<void> {
     })
 }
 
+/**
+ * @description Called for save the path of user vault in the config file
+ * @param path: string The path of the vault
+ * @returns: boolean True if the path is saved, false if an error occur
+ */
 export function saveInSettingPathVault(path: string): boolean {
     outPut.printINFO("Try to save user's vault path...")
     if (!fs.existsSync(path)) {
@@ -240,10 +284,19 @@ export function saveInSettingPathVault(path: string): boolean {
     return true
 }
 
+/**
+ * @description Called for get the path of user vault in the config file
+ * @returns:number The size of the sidebar
+ */
 export function getSizeSidebar(): number {
     return generalConfig.size_sidebar
 }
 
+/**
+ * @description Called for save the size of the sidebar in the config file
+ * @param newSize: number The new size of the sidebar
+ * @returns:Promise<string> A promise that resolve when the size is saved, and reject if an error occur
+ */
 export async function saveSizeSideBar(newSize: number): Promise<string> {
     return new Promise((resolve, reject) => {
         outPut.printINFO('Try to save user\'s size of sidebar')
@@ -260,6 +313,11 @@ export async function saveSizeSideBar(newSize: number): Promise<string> {
     })
 }
 
+/**
+ * @description Called for save paths of the file opened in the editor in the config file.
+ * @param paths:string[] The paths of the files opened in the editor
+ * @returns:Promise<string> A promise that resolve when the paths are saved, and reject if an error occur
+ */
 export async function saveOpenedFiles(paths: string[]): Promise<string> {
     return new Promise((resolve, reject) => {
         outPut.printINFO('Try to save user\'s opened files.')
@@ -276,15 +334,28 @@ export async function saveOpenedFiles(paths: string[]): Promise<string> {
     })
 }
 
+/**
+ * @description Called to retrieve paths that were open in the editor when the user closed the application.
+ * @returns:string[] The path of files were open in the editor when the user closed the application.
+ */
 export function getSavedOpenedFiles(): string[] {
     return FileSystemModule.removeNonExistentPath(generalConfig.openedFiles)
 }
 
+/**
+ * @description Called for get saved Themes in the config file
+ * @returns:themeConfigFileType The saved themes
+ */
 export function getThemes(): themeConfigFileType {
     if (themeConfig != null) return themeConfig
     return []
 }
 
+/**
+ * @description Called for save the themes in the config file
+ * @param themes: themeConfigFileType The themes to save
+ * @returns:Promise<string> A promise that resolve when the themes are saved, and reject if an error occur
+ */
 export async function saveThemes(themes: themeConfigFileType): Promise<string> {
     return new Promise((resolve, reject) => {
         outPut.printINFO('Try to save user\'s themes.')
@@ -298,6 +369,11 @@ export async function saveThemes(themes: themeConfigFileType): Promise<string> {
     })
 }
 
+/**
+ * @description Called for remove a Theme in the config file
+ * @param themeName: string The name of the theme to remove
+ * @returns:Promise<string> A promise that resolve when the theme is removed, and reject if an error occur
+ */
 export async function removeTheme(themeName:string): Promise<string> {
     return new Promise( async (resolve, reject) => {
         outPut.printINFO('Try to remove user\'s theme.')
@@ -314,6 +390,11 @@ export async function removeTheme(themeName:string): Promise<string> {
     })
 }
 
+/**
+ * @description Called for save exta mardown features in the config file
+ * @param notePath: string The path of the note
+ * @param nodes: Array<NodesSave> The extra features to save
+ */
 export function saveEditorExtraFeatures(notePath: string, nodes: Array<NodesSave>) {
     outPut.printINFO('Try to save editor extra features...')
     let content: JSON = JSON.parse(fs.readFileSync(pathConfigFolder + editorExtraFeaturesConfigFileName, 'utf8'));
@@ -337,6 +418,11 @@ export function saveEditorExtraFeatures(notePath: string, nodes: Array<NodesSave
     }
 }
 
+/**
+ * @description Called for know if a note has extra features
+ * @param notePath: string The path of the note
+ * @returns:Promise<boolean> A promise that resolve true if the note has extra features, and false if not. The promise reject if an error occur
+ */
 export function extraFeaturesExtistForNote(notePath: string): Promise<boolean> {
     outPut.printINFO('Try to check if extra features exist for note...')
 
@@ -355,6 +441,11 @@ export function extraFeaturesExtistForNote(notePath: string): Promise<boolean> {
     })
 }
 
+/**
+ * @description Called for get extra features for a note
+ * @param notePath: string The path of the note
+ * @returns:Promise<Array<NodesSave>> A promise that resolve the extra features for the note. The promise reject if an error occur
+ */
 export function getEditorExtraFeatures(notePath: string): Promise<Array<NodesSave>> {
     outPut.printINFO('Try to get editor extra features...')
 
@@ -373,6 +464,12 @@ export function getEditorExtraFeatures(notePath: string): Promise<Array<NodesSav
     })
 }
 
+/**
+ * @description Called for update the path of a note in the extra features config file
+ * @param oldPath: string The old path of the note
+ * @param newPath: string The new path of the note 
+ * @returns:Promise<string> A promise that resolve when the path is updated, and reject if an error occur
+ */
 export function updateEditorExtraFeaturesPath(oldPath: string, newPath: string): Promise<string> {
     outPut.printINFO('Try to update editor extra features path...')
 
@@ -397,6 +494,11 @@ export function updateEditorExtraFeaturesPath(oldPath: string, newPath: string):
     })
 }
 
+/**
+ * @description Called for delete extra features for a note
+ * @param notePath: string The path of the note
+ * @returns:Promise<string> A promise that resolve when the extra features are deleted, and reject if an error occur 
+ */
 export function deleteEditorExtraFeaturesPath(notePath: string): Promise<string> {
     outPut.printINFO('Try to delete editor extra features path...')
 
@@ -420,6 +522,12 @@ export function deleteEditorExtraFeaturesPath(notePath: string): Promise<string>
     })
 }
 
+/**
+ * @description Called for copy extra feature to the new note when a file is copied
+ * @param path: string The path of the old note
+ * @param newPath: string The path of the new note
+ * @returns:Promise<string> A promise that resolve when the extra features are copied, and reject if an error occur
+ */
 export function copyEditorExtraFeaturesNoteToNewPath(path: string, newPath: string): Promise<string> {
     outPut.printINFO('Try to copy editor extra features note to new path...')
 
