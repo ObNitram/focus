@@ -54,6 +54,7 @@ export function proceedHeading(headingNode: HeadingNodeV1): string {
  * @returns the markdown text
  */
 export function proceedText(node: Node): string {
+    console.log(node);
     if (node.type === 'linebreak') {
         return '\n';
     }
@@ -72,7 +73,7 @@ export function proceedText(node: Node): string {
                 return textNode.text;
         }
     }
-    else if (node.type === 'link') {
+    else if (node.type === 'link' || node.type === 'autolink') {
         let linkNode = node as LinkNodeV1;
         let linkText = '';
         for (let i = 0; i < linkNode.children.length; i++) {
