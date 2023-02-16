@@ -130,6 +130,17 @@ function setupEvents() {
 
   ipcMain.on('open-link', (event, link) => {
     link = link.replace(/['"]+/g, '')
+
+    if (!link.startsWith('mailto:') && !link.startsWith('file://')) {
+      if (!link.startsWith('http')) {
+        link = 'https://' + link
+      }
+      if (!link.startsWith('https://www.') && !link.startsWith('http://www.')) {
+        link = link.replace('https://', 'https://www.')
+        link = link.replace('http://', 'http://www.')
+      }
+    }
+
     printMessage.printLog('Open link asked: ' + link)
 
     shell.openExternal(link)
@@ -151,12 +162,12 @@ function setupEvents() {
                       printMessage.printOK(path + ' opened!!')
                       dataToSend.push([note.name, noteData, filePath])
                     })
-                  })
-              })
+                })
             })
-        })).then(() => {
-          mainWindow?.webContents.send('saved_opened_files', dataToSend)
         })
+    })).then(() => {
+      mainWindow?.webContents.send('saved_opened_files', dataToSend)
+    })
       .catch((err) => {
         printMessage.printError(err)
       })
