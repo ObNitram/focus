@@ -1,5 +1,6 @@
 /**
- * Top level component. Used to setup the context and the events, and to display the components
+ * @file App.tsx
+ * @description Top level component. Used to setup the context and the events, and to display the components
  */
 import { useEffect, useState } from 'react'
 const { ipcRenderer } = window.require('electron')
