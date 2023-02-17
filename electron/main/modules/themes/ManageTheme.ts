@@ -1,9 +1,19 @@
+/**
+ * @file ManageTheme.ts
+ * @description Contains all functions to manage themes
+ */
+
 import { mainWindow } from "../WindowsManagement";
 import { dialog, ipcMain } from "electron";
 import { getThemes, saveThemes, removeTheme } from "../ManageConfig";
 import { printError, printINFO, printLog, printOK } from "../OutputModule";
 import {Theme, defaultTheme} from 'themetypes'
 
+/**
+ * @description Convert a theme object to a html css link element
+ * @param theme: Theme - The theme to convert
+ * @returns: {name:string, css:string} - The theme converted, with the name and the css
+ */
 export function convertThemeForStyle(theme:Theme):{name:string, css:string}{
     let css:string = ''
     for(const selector in theme){
@@ -36,6 +46,10 @@ export function convertThemeForStyle(theme:Theme):{name:string, css:string}{
     }
 }
 
+/**
+ * @description Convert all saved themes to html css links elements and return them
+ * @returns: Promise<{name:string, css:string}[]> - The themes converted, with the name and the css
+ */
 async function createAllThemesConverted():Promise<{name:string, css:string}[]>{
     return new Promise((resolve, reject) => {
         let convertedThemes: {name:string, css:string}[] = []
@@ -53,7 +67,13 @@ async function createAllThemesConverted():Promise<{name:string, css:string}[]>{
     })
 }
 
+/**
+ * @description Setup all events for themes
+ */
 export function setupEvents():void{
+    /**
+     * @description Called when renderer ask all themes. Convert all themes and send them to renderer
+     */
     ipcMain.on('getTheme', () => {
         printINFO('getTheme receive')
         createAllThemesConverted().then((value: {name:string, css:string}[]) => {
@@ -65,11 +85,20 @@ export function setupEvents():void{
         })
     })
 
+    /**
+     * @description Callend when renderer want the JSON version of themes. Send them to renderer
+     */
     ipcMain.on('getJSONTypes', () => {
         printINFO('JSON themes is asked ! Send they to front.')
         mainWindow?.webContents.send('JSONTypesReceived', [defaultTheme, ...getThemes()])
     })
 
+    /**
+     * @description Called when renderer ask to save a theme. Save the theme and send the result to renderer
+     * @param event: Electron.IpcMainEvent - The event
+     * @param themeName: string - The name of the theme
+     * @param theme: Theme - The theme to save
+     */
     ipcMain.on('saveTheme', (event, themeName: string, theme: Theme) => {
         printINFO('Save theme "' + themeName + '" is asked.')
         console.log(theme)
@@ -98,6 +127,12 @@ export function setupEvents():void{
         })
     })
 
+    /**
+     * @description Called when renderer ask to remove a theme. Ask to user if he is sure to remove the theme, and if yes, remove it.
+                    Send the result to renderer
+     * @param event: Electron.IpcMainEvent - The event
+     * @param themeName: string - The name of the theme to remove
+     */
     ipcMain.on('removeTheme', (event, themeName: string) => {
         printINFO('Remove theme "' + themeName + '" is asked.')
         dialog.showMessageBox(mainWindow, {
