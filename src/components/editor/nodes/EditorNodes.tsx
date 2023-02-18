@@ -13,6 +13,9 @@ import {AutoLinkNode, LinkNode} from '@lexical/link';
 import {ListItemNode, ListNode} from '@lexical/list';
 import {HeadingNode, QuoteNode} from '@lexical/rich-text';
 
+/**
+ * @description The list of nodes that are available in the editor.
+ */
 const EditorNodes: Array<Klass<LexicalNode>> = [
   HeadingNode,
   ListNode,

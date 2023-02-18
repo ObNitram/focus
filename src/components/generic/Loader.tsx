@@ -1,3 +1,8 @@
+/**
+ * @file Loader.tsx
+ * @description Generic component for a loader.
+ */
+
 import { ColorRing } from 'react-loader-spinner'
 
 

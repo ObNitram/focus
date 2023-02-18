@@ -1,3 +1,8 @@
+/**
+ * @file Dropdown.tsx
+ * @description Generic component for a dropdown.
+ */
+
 import React, { useEffect } from "react"
 
 import styles from 'styles/components/generic/dropdown.module.scss'
@@ -5,16 +10,16 @@ import styles from 'styles/components/generic/dropdown.module.scss'
 import { BsCheckLg } from 'react-icons/bs'
 
 export interface DropdownItem {
-    title: string,
-    selected?: boolean,
-    key: string
+    title: string,           // Title of the item
+    selected?: boolean,      // Whether the item is selected
+    key: string              // Unique key for the item
 }
 
 export interface DropdownProps {
-    items: DropdownItem[],
-    displaySelectionIndicator?: boolean,
-    onItemSelect: (item: DropdownItem) => void,
-    hidden: boolean
+    items: DropdownItem[],                        // Items to display in the dropdown
+    displaySelectionIndicator?: boolean,          // Whether to display a selection indicator
+    onItemSelect: (item: DropdownItem) => void,   // Function to call when an item is selected
+    hidden: boolean                               // Whether the dropdown is hidden
 }
 
 export default function Dropdown(props: DropdownProps) {

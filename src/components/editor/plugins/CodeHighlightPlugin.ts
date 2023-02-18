@@ -6,7 +6,9 @@
  *
  */
 
-// Change the color of various elements in code blocks
+/**
+ * @description This plugin will highlight text in code blocks according to what they represent (e.g. operators, keywords, etc.)
+ */
 
 import {registerCodeHighlighting} from '@lexical/code';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';

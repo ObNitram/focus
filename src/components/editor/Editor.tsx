@@ -1,3 +1,8 @@
+/**
+ * @file Editor.tsx
+ * @description Global component for the editor.
+ */
+
 import {useContext, useEffect, useRef, useState} from 'react';
 
 import styles from "styles/components/editor/editor.module.scss";

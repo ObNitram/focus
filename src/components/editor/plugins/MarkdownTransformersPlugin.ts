@@ -6,7 +6,9 @@
  *
  */
 
-// Convert recognized markdown syntax to Lexical elements
+/**
+ * @description This plugin will transform markdown tags into Lexical nodes
+ */
 
 import type {
     Transformer,

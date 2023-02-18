@@ -5,6 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
+
+/**
+ * @description Utility function to get the selected node in the editor.
+ */
+
 import {$isAtNodeEnd} from '@lexical/selection';
 import {ElementNode, RangeSelection, TextNode} from 'lexical';
 

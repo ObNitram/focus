@@ -1,3 +1,8 @@
+/**
+ * @file NotificationInfo.tsx
+ * @description Generic component for a notification.
+ */
+
 import styles from 'styles/components/generic/notification.module.scss'
 import { useEffect, useRef, useContext } from "react";
 import { IoClose } from 'react-icons/io5'
@@ -7,7 +12,7 @@ import { NotificationContext, NotificationLevelEnum, NotificationType } from '@/
 
 
 type NotificationProps = {
-    notification: NotificationType
+    notification: NotificationType  // Type of the notification (error, warning, success)
 }
 
 export function NotificationInfo(this:any, props:NotificationProps):JSX.Element{

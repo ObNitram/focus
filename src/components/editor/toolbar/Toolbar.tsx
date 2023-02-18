@@ -1,3 +1,8 @@
+/**
+ * @file Toolbar.tsx
+ * @description Toolbar component for the editor.
+ */
+
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useState, useEffect, useCallback, useRef } from "react";
 
@@ -42,7 +47,6 @@ import {
     TextNode,
     ElementNode,
     $isParagraphNode,
-    ParagraphNode,
     CAN_UNDO_COMMAND,
     CAN_REDO_COMMAND,
     UNDO_COMMAND,
@@ -62,6 +66,9 @@ import Divider from "./Divider";
 import { FaIndent, FaLink, FaOutdent, FaRedo, FaUndo, FaFilePdf } from "react-icons/fa";
 import { sanitizeUrl } from "../utils/url";
 
+/**
+ * Content of the dropdown for the text format.
+ */
 const dropdownTextFormatItems = [
     {
         title: 'Normal',
@@ -120,6 +127,9 @@ const dropdownTextFormatItems = [
     },
 ]
 
+/**
+ * Content of the dropdown for the text alignment.
+ */
 const dropdownTextAlignItems = [
     {
         title: 'Left',
@@ -150,8 +160,8 @@ let currTextAlignKey = 'left';
 let currTextAlignTitle = 'Left';
 
 export interface ToolBarProps {
-    isSaved:boolean,
-    exportTOPDF: () => void
+    isSaved:boolean,           // Whether the current document is saved or not.
+    exportTOPDF: () => void    // Function to export the document to PDF.
 
 }
 

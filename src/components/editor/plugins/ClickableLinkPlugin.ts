@@ -6,7 +6,9 @@
  *
  */
 
-// Allow clicking on links to open them in a new tab
+/**
+ * @description This plugin lets you click on links in the editor and open them in the browser
+ */
 
 import type {LinkNode} from '@lexical/link';
 import type {LexicalEditor} from 'lexical';
