@@ -165,17 +165,17 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                 }
                 .editor_bold{
                     color: ${refBoldSetting.current?.getElementsByTagName('input')[0].value};
-                    font-size: ${refBoldSetting.current?.getElementsByTagName('input')[1].value}px;
+                    font-size: ${refBoldSetting.current?.getElementsByTagName('input')[1].value}em;
                     font-weight: bold;
                 }
                 .editor_italic{
                     color: ${refItalicSetting.current?.getElementsByTagName('input')[0].value};
-                    font-size: ${refItalicSetting.current?.getElementsByTagName('input')[1].value}px;
+                    font-size: ${refItalicSetting.current?.getElementsByTagName('input')[1].value}em;
                     font-style: italic;
                 }
                 .editor_underline{
                     color: ${refUnderlineSetting.current?.getElementsByTagName('input')[0].value};
-                    font-size: ${refUnderlineSetting.current?.getElementsByTagName('input')[1].value}px;
+                    font-size: ${refUnderlineSetting.current?.getElementsByTagName('input')[1].value}em;
                     text-decoration: underline;
                 }
                 .editor_h1{
@@ -321,15 +321,15 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
         }
         if(refBoldSetting && refBoldSetting.current){
             refBoldSetting.current.getElementsByTagName('input')[0].value = loadedTheme.bold['color']
-            refBoldSetting.current.getElementsByTagName('input')[1].value = removePXString(loadedTheme.bold['font-size'])
+            refBoldSetting.current.getElementsByTagName('input')[1].value = loadedTheme.bold['font-size'].slice(0,-2)
         }
         if(refItalicSetting && refItalicSetting.current){
             refItalicSetting.current.getElementsByTagName('input')[0].value = loadedTheme.italic['color']
-            refItalicSetting.current.getElementsByTagName('input')[1].value = removePXString(loadedTheme.italic['font-size'])
+            refItalicSetting.current.getElementsByTagName('input')[1].value = loadedTheme.italic['font-size'].slice(0,-2)
         }
         if(refUnderlineSetting && refUnderlineSetting.current){
             refUnderlineSetting.current.getElementsByTagName('input')[0].value = loadedTheme.underline['color']
-            refUnderlineSetting.current.getElementsByTagName('input')[1].value = removePXString(loadedTheme.underline['font-size'])
+            refUnderlineSetting.current.getElementsByTagName('input')[1].value = loadedTheme.underline['font-size'].slice(0,-2)
         }
         if(refH1Setting && refH1Setting.current){
             refH1Setting.current.getElementsByTagName('input')[0].value = loadedTheme.h1['color']
@@ -445,15 +445,15 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
             },
             bold: {
                 'color': refBoldSetting.current.getElementsByTagName('input')[0].value,
-                'font-size': refBoldSetting.current.getElementsByTagName('input')[1].value + 'px',
+                'font-size': refBoldSetting.current.getElementsByTagName('input')[1].value + 'em',
             },
             italic: {
                 'color': refItalicSetting.current.getElementsByTagName('input')[0].value,
-                'font-size':  refItalicSetting.current.getElementsByTagName('input')[1].value + 'px',
+                'font-size':  refItalicSetting.current.getElementsByTagName('input')[1].value + 'em',
             },
             underline: {
                 'color': refUnderlineSetting.current.getElementsByTagName('input')[0].value,
-                'font-size': refUnderlineSetting.current.getElementsByTagName('input')[1].value + 'px',
+                'font-size': refUnderlineSetting.current.getElementsByTagName('input')[1].value + 'em',
             },
             h1: {
                 'color': refH1Setting.current.getElementsByTagName('input')[0].value,
@@ -631,7 +631,7 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="fontSizeBold">Font size :</label></td>
-                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="fontSizeBold" min={8} max={50}/></td>
+                                    <td><input type="range" id="fontSizeBold" min={0.2} max={3} step={0.1} onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)}/></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -646,7 +646,7 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="fontSizeItalic">Font size :</label></td>
-                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="fontSizeItalic" min={8} max={50}/></td>
+                                    <td><input type="range" id="fontSizeItalic" min={0.2} max={3} step={0.1} onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)}/></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -661,7 +661,7 @@ export function FormContenairTheme(this:any, props:FormContenairThemeprops){
                                 </tr>
                                 <tr>
                                     <td><label htmlFor="fontSizeUnderline">Font size :</label></td>
-                                    <td><input onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)} type="number" id="fontSizeUnderline" min={8} max={50}/></td>
+                                    <td><input type="range" id="fontSizeUnderline" min={0.2} max={3} step={0.1} onChange={(e:React.ChangeEvent<HTMLInputElement>) => changeStyle(e)}/></td>
                                 </tr>
                             </tbody>
                         </table>

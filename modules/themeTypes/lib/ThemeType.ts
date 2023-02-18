@@ -1,3 +1,9 @@
+/**
+ * @file ThemeType.ts
+ * @description Declare and export the Theme type and the default theme
+ */
+
+// Theme type.
 export type Theme = {
     name: string
     general: {
@@ -134,6 +140,7 @@ export type Theme = {
     }
 }
 
+// Default theme.
 export const defaultTheme:Theme = {
     name: 'default',
     general: {
@@ -149,15 +156,15 @@ export const defaultTheme:Theme = {
     },
     bold: {
         'color': '#ffffff',
-        'font-size': '15px',
+        'font-size': '1em',
     },
     italic: {
         'color': '#ffffff',
-        'font-size': '15px',
+        'font-size': '1em',
     },
     underline: {
         'color': '#ffffff',
-        'font-size': '15px',
+        'font-size': '1em',
     },
     h1: {
         'color': '#ffffff',

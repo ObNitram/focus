@@ -1,3 +1,7 @@
+/**
+ * @file App.tsx
+ * @description Top level component. Used to setup the context and the events, and to display the components
+ */
 import { useEffect, useState } from 'react'
 const { ipcRenderer } = window.require('electron')
 import './assets/styles/index.scss'
@@ -14,14 +18,23 @@ import { NotificationInfo } from './components/generic/NotificationInfo'
 
 
 const App: React.FC = () => {
-  const [selectedFiles, setSelectedFiles] = useState<string[]>([])
-  const [displayThemeGenerator, setDisplayThemeGenerator] = useState<boolean>(false)
-  const [themeReceived, setThemeReceived] = useState<boolean>(false)
-  const [themes, setThemes] = useState<{ name: string, css: string }[] | null>(null)
-  const [selectedTheme, setSelectedTheme] = useState<string>('default')
-  const [notification, setNotification] = useState<NotificationType[]>([])
+  const [selectedFiles, setSelectedFiles] = useState<string[]>([]) // State who save the selected files
+  const [displayThemeGenerator, setDisplayThemeGenerator] = useState<boolean>(false) // State used to display the theme generator
+  const [themeReceived, setThemeReceived] = useState<boolean>(false) // Used to know if display the loader or not
+  const [themes, setThemes] = useState<{ name: string, css: string }[] | null>(null) // Used to save the themes
+  const [selectedTheme, setSelectedTheme] = useState<string>('default') // Used to save the selected theme
+  const [notification, setNotification] = useState<NotificationType[]>([]) // Used to display the notifications
 
+  /**
+   * Setup the events
+   */
   function setupEvents() {
+    /**
+     * @description Called when main process send the themes
+     * @param event Electron.IpcRendererEvent
+     * @param value { name: string, css: string }[] The themes
+     * @param themeToSet string The theme to set
+     */
     ipcRenderer.on('getTheme_responses', (event, value: { name: string, css: string }[], themeToSet: string) => {
       let editor_style: HTMLStyleElement | null = document.getElementById('style_editor') as HTMLStyleElement
       if (editor_style == null) {
@@ -45,11 +58,19 @@ const App: React.FC = () => {
       setThemes(value)
     })
 
+    /**
+     * @description Called when main process send a notification
+     * @param event Electron.IpcRendererEvent
+     * @param value NotificationType The notification
+     */
     ipcRenderer.on('notification', (event, value: NotificationType) => {
       setNotification([...notification, value])
     })
   }
 
+  /**
+   * Called when the component is mounted, only once. Ask the main process to get the themes and setup the events.
+   */
   useEffect(() => {
     ipcRenderer.send('getTheme')
     setupEvents()
@@ -59,6 +80,9 @@ const App: React.FC = () => {
     }
   }, [])
 
+  /**
+   * Called when the selected theme change. Set the css of the editor
+   */
   useEffect(() => {
     let style = document.getElementById('style_editor')
     if (style != null) {
@@ -66,19 +90,18 @@ const App: React.FC = () => {
     }
   }, [selectedTheme])
 
-  useEffect(() => {
-    console.log(selectedFiles)
-  }, [selectedFiles])
-
-  useEffect(() => {
-    console.log(notification)
-  }, [notification])
-  // TODO: Set folder name and dir after retrieving the saved values
-
+  /**
+   * @description Called when the user click on the close button of the theme generator. Change the state.
+   */
   const closeThemeGenerator = () => {
     setDisplayThemeGenerator(false)
   }
 
+  /**
+   * @description Function who add a notification. Shared by context to all the components
+   * @param s: string The text of the notification
+   * @param level: NotificationLevelEnum The level of the notification
+   */
   const addNotif = (s:string, level:NotificationLevelEnum) => {
     console.log('ADD NOTIF')
     let newNotif:NotificationType = {
@@ -88,6 +111,10 @@ const App: React.FC = () => {
     setNotification([...notification, newNotif])
   }
 
+  /**
+   * @description Function who remove a notification. Shared by context to all the components
+   * @param notificationToDelete:NotificationType The notification to delete
+   */
   const removeNotif = (notificationToDelete:NotificationType) => {
     setNotification(notification.filter((value:NotificationType) => {
       return (value.level != notificationToDelete.level && value.text != notificationToDelete.text)

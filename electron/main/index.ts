@@ -1,13 +1,7 @@
-// The built directory structure
-//
-// ├─┬ dist-electron
-// │ ├─┬ main
-// │ │ └── index.js    > Electron-Main
-// │ └─┬ preload
-// │   └── index.js    > Preload-Scripts
-// ├─┬ dist
-// │ └── index.html    > Electron-Renderer
-//
+/**
+ * @file index.ts
+ * @description Entry point of the application. Set the environment variables, the events, launch application
+ */
 process.env.DIST_ELECTRON = join(__dirname, '../..')
 process.env.DIST = join(process.env.DIST_ELECTRON, '../dist')
 process.env.PUBLIC = app.isPackaged ? process.env.DIST : join(process.env.DIST_ELECTRON, '../public')
@@ -38,18 +32,20 @@ if (!app.requestSingleInstanceLock()) {
   process.exit(0)
 }
 
-// Here, you can also use other preload
-const preload = join(__dirname, '../preload/index.js')
-const urlDev = process.env.VITE_DEV_SERVER_URL
-const urlProd = join('file://', process.env.DIST, 'index.html')
+const preload = join(__dirname, '../preload/index.js') // Path to the preload script
+const urlDev = process.env.VITE_DEV_SERVER_URL // Url of the dev server
+const urlProd = join('file://', process.env.DIST, 'index.html') // Url of the production server
 
-let pathVault: string | null = null
-let mainWindow: BrowserWindow | null = null
+let pathVault: string | null = null // Path of the vault
+let mainWindow: BrowserWindow | null = null // Contains the main window of the application
 
-let watcher: chokidar.FSWatcher | null = null
+let watcher: chokidar.FSWatcher | null = null // Watcher to detect modifications in the vault
 
-let modificationsInVaultTimer: NodeJS.Timeout | null = null
+let modificationsInVaultTimer: NodeJS.Timeout | null = null // Timer to avoid multiple calls to sendVaultContent
 
+/**
+ * @description Send to renderer the content of the vault, as a list of files
+ */
 function sendVaultContent() {
   printMessage.printINFO('Request to get folder content !')
   VaultManagement.getVaultContent().then((content) => {
@@ -60,6 +56,12 @@ function sendVaultContent() {
     })
 }
 
+/**
+ * @description Set the watcher to detect modifications in the vault. If watcher is already set, close it before.
+                If the vault is not itialized, do nothing
+                When modifications are detected, send the content of the vault to the renderer
+                If many modifications are detected in a short time, only send the content once
+ */
 function setupWatcher() {
   printMessage.printLog('Setup watcher')
   console.log(VaultManagement.getPathVault())
@@ -91,13 +93,24 @@ function setupWatcher() {
   })
 }
 
+/**
+ * @description Set the events of the application
+ */
 function setupEvents() {
   setupWatcher()
 
+  /**
+   * @description When renderer went vault content, send the content of the vault
+   */
   ipcMain.on('get-folder-content', () => {
     sendVaultContent()
   })
 
+  /**
+   * @description When renderer ask to open main window, close vault window if necessary and open main window
+   * @param event Event
+   * @param path:string Path of the vault
+   */
   ipcMain.on('open_main_window', (event, path: string) => {
     if (!saveInSettingPathVault(path)) {
       app.exit();
@@ -106,6 +119,9 @@ function setupEvents() {
     mainWindow = WindowsManagement.closeVaultWindowAndOpenMain()
   })
 
+  /**
+   * @description Called when user want close the application. Save the opened files and close the application
+   */
   ipcMain.on('closeApp', () => {
     printMessage.printLog('Close application is asked')
     mainWindow?.webContents.send('get_opened_files')
@@ -119,15 +135,29 @@ function setupEvents() {
     })
   })
 
+  /**
+   * @description Called when renderer want the saved sidebar size
+   * @param event Event
+   */
   ipcMain.on('getSizeSidebar', (event) => {
     event.reply('size_sidebar', getSizeSidebar())
   })
 
+  /**
+   * @description Called when user change size of sidebar. Save the new size of sidebar in the config file
+   * @param event Event
+   * @param number:number New size of sidebar
+   */
   ipcMain.on('newSizeSideBar', (event, number) => {
     printMessage.printLog('Save size of sidebar asked')
     saveSizeSideBar(number).then((value) => printMessage.printOK(value)).catch((reason) => printMessage.printError(reason))
   })
 
+  /**
+   * @description Called when user want to open a link in the default browser. Open the link in the default browser
+   * @param event Event
+   * @param link:string Link to open
+   */
   ipcMain.on('open-link', (event, link) => {
     link = link.replace(/['"]+/g, '')
 
@@ -146,6 +176,9 @@ function setupEvents() {
     shell.openExternal(link)
   })
 
+  /**
+   * @description Called when main windows is opened. Send the paths of the previously opened files before closing the application
+   */
   ipcMain.on('get_saved_opened_files', () => {
     printMessage.printINFO('Saved opened files is asked!')
     let saved_opened_files = getSavedOpenedFiles()
@@ -174,6 +207,10 @@ function setupEvents() {
   })
 }
 
+/**
+ * @description When the application is ready, setup event, initialize the config files if needed and launch the main window if its the first time of application launch
+                or the config was reseted. If the config is valid, launch the main window
+ */
 app.whenReady().then(() => {
   VaultManagement.setupEvents();
   ManageTheme.setupEvents();
@@ -199,16 +236,24 @@ app.whenReady().then(() => {
   })
 })
 
+/**
+ * @description Close the application
+ */
 function closeApp() {
   app.quit()
 }
 
-
+/**
+ * @description When all windows are closed, close the application
+ */
 app.on('window-all-closed', () => {
   mainWindow = null
   if (process.platform !== 'darwin') app.quit()
 })
 
+/**
+ * @description Avoid multiple instance of the application
+ */
 app.on('second-instance', () => {
   if (mainWindow) {
     // Focus on the main window if the user tried to open another
@@ -217,6 +262,10 @@ app.on('second-instance', () => {
   }
 })
 
+/**
+ * @description When the application is activated, the code checks whether the application is already running.
+                If the application is already running, it focuses the first window. If the application is not running, it creates a new window.
+ */
 app.on('activate', () => {
   const allWindows = BrowserWindow.getAllWindows()
   if (allWindows.length) {

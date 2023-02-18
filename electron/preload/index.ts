@@ -1,3 +1,9 @@
+/**
+ * @file index.ts
+ * @description Default preload script of electron project
+ */
+
+
 function domReady(condition: DocumentReadyState[] = ['complete', 'interactive']) {
   return new Promise(resolve => {
     if (condition.includes(document.readyState)) {
