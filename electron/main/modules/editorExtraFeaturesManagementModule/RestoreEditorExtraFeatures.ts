@@ -1,8 +1,20 @@
+/**
+ * @file RestoreEditorExtraFeatures.ts
+ * @description Restore extra features not supported by the Markdown language in the editor
+ */
+
 import { extraFeaturesExtistForNote, getEditorExtraFeatures } from "../ManageConfig"
 import * as printMessage from '../OutputModule'
 import { TextNodeV1, textFormat } from "../../model/LexicalNodes"
 import { NodesSave } from "./SaveEditorExtraFeatures"
 
+/**
+ * @description Split a text at the nth occurrence of a delimiter
+ * @param text The text to split
+ * @param delimiter The delimiter to split the text at
+ * @param n The occurrence of the delimiter to split the text at
+ * @returns An array containing the text before the delimiter and the text after the delimiter
+ */
 function splitTextAtNth(text: string, delimiter: string, n: number): string[] {
     let index = -1
     let currOccurrence = 0
@@ -16,7 +28,6 @@ function splitTextAtNth(text: string, delimiter: string, n: number): string[] {
 
     return [textBefore, textAfter]
 }
-
 
 function restoreExtraFeaturesRecursively(jsonObject: any, nodesSave: NodesSave[], nodePath: string): any {
     for (let nodeToRestore of nodesSave) {
@@ -91,6 +102,12 @@ function restoreExtraFeaturesRecursively(jsonObject: any, nodesSave: NodesSave[]
     return jsonObject
 }
 
+/**
+ * @description Restore extra features not supported by the Markdown language in the editor
+ * @param notePath The path of the note to restore the extra features in
+ * @param json The JSON string to restore the extra features in
+ * @returns The JSON string with the extra features restored
+ */
 export async function restoreEditorExtraFeatures(notePath: string, json: string): Promise<string> {
     return new Promise((resolve, reject) => {
         if (extraFeaturesExtistForNote(notePath)) {

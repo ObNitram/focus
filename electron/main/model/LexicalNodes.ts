@@ -1,3 +1,11 @@
+/**
+ * @description The different types of nodes supported by the editor
+ */
+
+
+/**
+ * @description The different formats of text supported by the editor and the Markdown language
+ */
 export enum textFormat {
     normal = 0,
     bold = 1,
@@ -5,6 +13,9 @@ export enum textFormat {
     boldItalic = 3
 }
 
+/**
+ * @description The different types of heading supported by the editor and the Markdown language
+ */
 export enum headingLevel {
     h1 = "h1",
     h2 = "h2",
@@ -14,6 +25,9 @@ export enum headingLevel {
     h6 = "h6"
 }
 
+/**
+ * @description the level of heading as a number
+ */
 export enum headingLevelNumber {
     h1 = 1,
     h2 = 2,
@@ -23,6 +37,9 @@ export enum headingLevelNumber {
     h6 = 6
 }
 
+/**
+ * @description The most general type of node
+ */
 export interface Node {
     children?: Node[];
     direction?: 'ltr' | 'rtl';
@@ -32,6 +49,10 @@ export interface Node {
     version: number;
 }
 
+/**
+ * @description The root node in a lexical tree.
+ * It should be only found once, at the top of the tree.
+ */
 export class RootNodeV1 implements Node {
     children: Node[];
     direction: 'ltr' | 'rtl';
@@ -50,6 +71,10 @@ export class RootNodeV1 implements Node {
     }
 }
 
+/**
+ * @description A paragraph node
+ * It can contains text nodes, line break nodes, link nodes
+ */
 export class ParagraphNodeV1 implements Node {
     children: Node[];
     direction: 'ltr' | 'rtl';
@@ -68,6 +93,10 @@ export class ParagraphNodeV1 implements Node {
     }
 }
 
+/**
+ * @description A line break node
+ * Used to separate two lines of text in a paragraph, a quote, a code block, etc.
+ */
 export class LineBreakNodeV1 implements Node {
     type: string;
     version: number;
@@ -98,6 +127,9 @@ export class TextNodeV1 implements Node {
     }
 }
 
+/**
+ * @description A Link node
+ */
 export class LinkNodeV1 implements Node {
     children: Node[];
     direction: 'ltr' | 'rtl';

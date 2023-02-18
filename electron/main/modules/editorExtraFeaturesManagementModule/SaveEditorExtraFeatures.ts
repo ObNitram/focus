@@ -1,7 +1,18 @@
+/**
+ * @file SaveEditorExtraFeatures.ts
+ * @description Save extra features not supported by the Markdown language in a JSON object
+ */
+
 import * as ManageConfig from "../ManageConfig"
 import { Node, TextNodeV1 } from "../../model/LexicalNodes"
 import { editorExtraFeatures } from "../../model/EditorExtraFeatures"
 
+/**
+ * @description A node to save
+ * @property nodePath The path of the node to save
+ * @property key The key of the node to save
+ * @property value The value of the node to save
+ */
 export interface NodesSave {
     nodePath: string
     key: string
@@ -60,6 +71,12 @@ function getNodesToSaveRecursively(node: Node, nodesSave: NodesSave[], nodePath:
     return nodesSave
 }
 
+/**
+ * @description Save extra features not supported by the Markdown language in a JSON object
+ * @param notePath The path of the note to save the extra features in
+ * @param json The JSON string to save the extra features in
+ * @returns A promise that resolves when the extra features are saved
+ */
 export function saveEditorExtraFeatures(notePath: string, json: string): Promise<void> {
     return new Promise((resolve, reject) => {
         try {

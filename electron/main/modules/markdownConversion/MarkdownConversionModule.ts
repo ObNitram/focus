@@ -139,6 +139,11 @@ export function convertMarkdownToJSON(markdown: string): Promise<string> {
     });
 }
 
+/**
+ * Converts a JSON string representing the lexical tree to a markdown string
+ * @param json The JSON string to convert
+ * @returns A promise that resolves to the markdown string
+ */
 export function convertJSONToMarkdown(json: string): Promise<string> {
     return new Promise((resolve, reject) => {
         let jsonObject = JSON.parse(json);
