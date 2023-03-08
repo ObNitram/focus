@@ -58,7 +58,7 @@ export const theme = {
     italic: `editor_italic ${styles.editor_inner_italic}`,
     underline: `editor_underline ${styles.editor_inner_underline}`
   },
-  link: 'editor_link'
+  link: `editor_link ${styles.editor_inner_link}`,
 }
 
 const editorConfig = {
