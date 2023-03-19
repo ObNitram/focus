@@ -42,6 +42,14 @@ npm run build
 > Your executable will be in 
 > ./focus/release/
 
+### Warning
+
+If you modify pathManage and themeType, you must run :
+```bash
+npm run reinstall
+```
+For rebuild and reinstall dependencies
+
 ## Config
 In linux, your configurations files will be saved in 
 ```
