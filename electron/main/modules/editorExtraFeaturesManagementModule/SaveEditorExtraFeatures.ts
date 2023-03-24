@@ -19,12 +19,20 @@ export interface NodesSave {
     value: any,
 }
 
+/**
+ * @description Get the nodes to save recursively
+ * @param node The node from which to get the nodes to save
+ * @param nodesSave The nodes to save
+ * @param nodePath The path of the node
+ * @returns The nodes to save in an array
+ */
 function getNodesToSaveRecursively(node: Node, nodesSave: NodesSave[], nodePath: string): NodesSave[] {
     if (node.children) {
         for (let i = 0; i < node.children.length; i++) {
             let child = node.children[i]
             let childPath = nodePath + '.children[' + i + ']'
 
+            // for text nodes, we need to get the occurrence of the text in the paragraph
             if (node.type === 'paragraph' && child.type === 'text') {
                 let textNode = child as TextNodeV1
                 if (textNode.text === '') {
@@ -55,9 +63,12 @@ function getNodesToSaveRecursively(node: Node, nodesSave: NodesSave[], nodePath:
             nodesSave = getNodesToSaveRecursively(child, nodesSave, childPath)
         }
     }
+    // If the node type is not supported, return the nodes to save
     if (editorExtraFeatures[node.type] === undefined) {
         return nodesSave
     }
+
+    // Save the extra features of the node
     for (let item=0; item <= editorExtraFeatures[node.type].length; item++) {
         let value = node[editorExtraFeatures[node.type][item]]
         if (value !== undefined) {
