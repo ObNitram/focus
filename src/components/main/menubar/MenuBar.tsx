@@ -35,7 +35,7 @@ export default function MenuBar(props: MenuBarProps) {
     return(
         <div className={styles.menubar}>
             <div className={styles.menu_contenair}>
-                <img src="/electron.png" alt="Logo of Focus"/>
+                <img src='./electron.png' title='Logo of Electron'/>
                 <ul className={styles.listMenu}>
                     <li onClick={() => setThemeUnroll(!themeUnroll)}>
                         <ThemeMenu themes={props.themes} selectedTheme={props.selectedTheme} isUnrolled={themeUnroll} displayManageTheme={props.displayManageTheme} displayThemeGenerator={props.displayThemeGenerator} setSelectedTheme={props.setSelectedTheme}/>
