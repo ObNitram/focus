@@ -1,3 +1,7 @@
+/**
+ * @file MenuBar.tsx
+ * @description Component representing the top bar of the app
+ */
 import styles from 'styles/components/main/menubar.module.scss'
 
 import {useState} from 'react'
@@ -9,6 +13,7 @@ import React from 'react'
 import { ipcRenderer } from 'electron'
 import { ThemeMenu } from './ThemeMenu'
 
+//Type of the props of menubar
 type MenuBarProps = {
     themes: {name:string, css:string}[]|null,
     selectedTheme:string,
@@ -18,16 +23,28 @@ type MenuBarProps = {
 }
 
 export default function MenuBar(props: MenuBarProps) {
-    const [themeUnroll, setThemeUnroll] = useState<boolean>(false)
+    const [themeUnroll, setThemeUnroll] = useState<boolean>(false) // Used to know if the theme menu is unrolled
 
+    /**
+     * @description Called when the user click on the close button, send a message to the main process to close the app
+     * @param e React.MouseEvent
+     */
     const onClickClose = (e:React.MouseEvent) => {
         ipcRenderer.send('closeApp')
     }
 
+    /**
+     * @description Called when the user click on the maximize button, send a message to the main process to maximize the app
+     * @param e React.MouseEvent
+     */
     const onClickMaximize = (e:React.MouseEvent) => {
         ipcRenderer.send('maximizeWindow')
     }
 
+    /**
+     * @description Called when the user click on the hide button, send a message to the main process to hide the app
+     * @param e React.MouseEvent
+     */
     const onClickHide = (e:React.MouseEvent) => {
         ipcRenderer.send('hideWindow')
     }

@@ -1,3 +1,7 @@
+/**
+ * @file Dropdown.tsx
+ * @description Dropdown component. Used to display a list of items. 
+ */
 import React, { useEffect } from "react"
 
 import styles from 'styles/components/generic/dropdown.module.scss'

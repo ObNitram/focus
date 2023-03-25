@@ -1,3 +1,7 @@
+/**
+ * @file TopBar.tsx
+ * @description Top bar of the sidebar. Contains the buttons to create a note, create a folder, sort the files and folders, collapse or expand all folders.
+ */
 import styles from 'styles/components/main/sidebar.module.scss'
 
 import React, { useContext, useEffect, useRef, useState } from 'react'
@@ -14,6 +18,7 @@ import { SelectedFilesContext } from '@/context/selectedFilesContext'
 
 const { ipcRenderer } = window.require('electron')
 
+// Sort order items. Used to create the dropdown of the sort order button
 const sortOrderItems = [
     {
         title: 'Name (A to Z)',
@@ -47,6 +52,7 @@ const sortOrderItems = [
     }
 ]
 
+// Props of the component TopBar
 export interface TopBarProps {
     onCollapseAll: (collapse: boolean) => void
     onSortOrderChange: (item: DropdownItem) => void
@@ -55,13 +61,17 @@ export interface TopBarProps {
 }
 
 export default function TopBar(props: TopBarProps) {
-    const [collapsed, setCollapsed] = useState(true)
-    const [changeSortOrderHidden, setChangeSortOrderHidden] = useState(true)
+    const [collapsed, setCollapsed] = useState(true) // If the folders are collapsed or not
+    const [changeSortOrderHidden, setChangeSortOrderHidden] = useState(true) // If the dropdown of the sort order button is hidden or not
 
-    const changeSortOrderButtonRef = useRef<HTMLButtonElement>(null)
+    const changeSortOrderButtonRef = useRef<HTMLButtonElement>(null) // Reference to the sort order button
 
-    const selectionedItem = useContext(SelectedFilesContext)
+    const selectionedItem = useContext(SelectedFilesContext) // Selected files context
 
+    /**
+     * @description Called when the the selectionedItem context changes. 
+                    Adds a click event listener to the document to hide the dropdown of the sort order button when the user clicks outside of it.
+     */
     useEffect(() => {
         document.addEventListener('click', clickOutside)
         
@@ -70,22 +80,39 @@ export default function TopBar(props: TopBarProps) {
         }
     }, [selectionedItem])
 
+    /**
+     * @description Use for collapsing or expanding all folders. Change state of the folders and call the onCollapseAll function of the props.
+     * @param collapse If the folders should be collapsed or expanded. If not specified, the folders will be collapsed if they are expanded and expanded if they are collapsed.
+     */
     function collapseOrExpandAll(collapse: boolean = !collapsed) {
         setCollapsed(collapse)
         props.onCollapseAll(collapse)
     }
 
-
+    /**
+     * @description Called when the user clicks on the collapse all button. Collapse or expand all folders.
+     * @param event: React.MouseEvent The event of the click
+     */
     function handleCollapseAll(event:React.MouseEvent) {
         event.stopPropagation()
         collapseOrExpandAll()
     }
 
+    /**
+     * @description Called when the user clicks on the sort order button. Change state.
+     * @param event: React.MouseEvent The event of the click
+     */
     function handleChangeSortOrder(event:React.MouseEvent) {
         event.stopPropagation()
         setChangeSortOrderHidden(!changeSortOrderHidden)
     }
 
+    /**
+     * @description Called when the user clicks on the create note button. 
+                    If a folder is selected, create a note in this folder. 
+                    If no folder is selected, create a note in the root folder. Send a message to the main process to create the note.
+     * @param event: React.MouseEvent The event of the click
+     */
     function handleCreateNote(event:React.MouseEvent) {
         event.stopPropagation()
         // collapseOrExpandAll(true)
@@ -96,6 +123,12 @@ export default function TopBar(props: TopBarProps) {
         }
     }
 
+    /**
+     * @description Called when the user clicks on the create folder button.
+                    If a folder is selected, create a folder in this folder.
+                    If no folder is selected, create a folder in the root folder. Send a message to the main process to create the folder.
+     * @param event: React.MouseEvent The event of the click
+     */
     function handleCreateFolder(event:React.MouseEvent) {
         event.stopPropagation()
         // collapseOrExpandAll(true)
@@ -106,6 +139,10 @@ export default function TopBar(props: TopBarProps) {
         }
     }
 
+    /**
+     * @description Called when the user clicks outside of the dropdown of the sort order button. Hide the dropdown.
+     * @param e: React.MouseEvent The event of the click
+     */
     const clickOutside = (e: MouseEvent) => {
         if (changeSortOrderButtonRef.current && !changeSortOrderButtonRef.current.contains(e.target as Node)) {
             setChangeSortOrderHidden(true)
