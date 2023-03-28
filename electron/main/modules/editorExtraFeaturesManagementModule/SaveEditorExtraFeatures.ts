@@ -92,6 +92,7 @@ export function saveEditorExtraFeatures(notePath: string, json: string): Promise
     return new Promise((resolve, reject) => {
         try {
             let jsonObject = JSON.parse(json)
+            console.log('jsonObject', jsonObject)
             let nodesSave: NodesSave[] = getNodesToSaveRecursively(jsonObject.root, [], 'root')
             console.log('nodesSave', nodesSave)
             ManageConfig.saveEditorExtraFeatures(notePath, nodesSave)
