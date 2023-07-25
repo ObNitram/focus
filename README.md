@@ -1,6 +1,5 @@
 # FOCUS
-Lightweight and simple note editor with customizable theme. 
-Realize as part of a license project.
+Lightweight and simple note editor with customizable theme realize as part of a  Bachelor’s degree in IT.
 
 ## ✅ Current Features ✅
    - 💫 Full markdown support
